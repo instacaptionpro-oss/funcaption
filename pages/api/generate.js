@@ -139,6 +139,9 @@ const regions = {
   }
 }
 
+// Add Instagram footer constant
+const IG_FOOTER = "\n\n📷 Help please make us a favour follow us on Instagram @instaalgohacker - https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA=="
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -159,16 +162,13 @@ export default async function handler(req, res) {
   const cleanSubject = subject.trim()
   const captions = []
 
-  // Instagram follow message
-  const instagramFollow = "Help please make us a favour follow us on Instagram @instaalgohacker"
-
   // CAPTION 1: Direct
   let cap1 = cleanSubject + '.\n' + moodObj.punch
   if (regionObj) {
     cap1 += '\n' + regionObj.variants[0]
   }
   cap1 += '\n\n' + moodObj.hashtags
-  cap1 += '\n\n📷 ' + instagramFollow
+  cap1 += IG_FOOTER
   captions.push({ caption: cap1, regionLabel: regionObj?.label || null })
 
   // CAPTION 2: Story Style
@@ -177,7 +177,7 @@ export default async function handler(req, res) {
     cap2 += '\n' + regionObj.variants[1]
   }
   cap2 += '\n\n' + moodObj.hashtags
-  cap2 += '\n\n📷 ' + instagramFollow
+  cap2 += IG_FOOTER
   captions.push({ caption: cap2, regionLabel: regionObj?.label || null })
 
   // CAPTION 3: Bold/Reversed
@@ -186,7 +186,7 @@ export default async function handler(req, res) {
     cap3 += '\n' + regionObj.variants[2]
   }
   cap3 += '\n\n' + moodObj.hashtags
-  cap3 += '\n\n📷 ' + instagramFollow
+  cap3 += IG_FOOTER
   captions.push({ caption: cap3, regionLabel: regionObj?.label || null })
 
   return res.status(200).json({ variants: captions })
