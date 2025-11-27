@@ -1,5 +1,5 @@
 const moods = [
-  { id: "attitude", label: "Attitude", punch: "Real ones move in silence, results make the noise.", hashtags: "#Attitude #SilentGrind #Results #Boss #Unbothered #RealOnes" },
+  { id: "attitude", label: "Attitude", punch: "Iron heals what people break.", hashtags: "#Attitude #SilentGrind #Results #Boss #Unbothered #RealOnes" },
   { id: "motivation", label: "Motivation", punch: "The grind is lonely but legends are born here.", hashtags: "#Motivation #Grind #Legend #HustleHard #NeverGiveUp #SuccessMindset" },
   { id: "love", label: "Love", punch: "Some feelings rewrite the heart, silently.", hashtags: "#Love #DeepFeelings #HeartMatter #Romance #TrueLove #SoulConnection" },
   { id: "breakup", label: "Breakup", punch: "I lost them, but I found myself — and that's the win.", hashtags: "#Breakup #SelfGrowth #MovingOn #StrongerNow #HealingJourney #SelfLove" },
@@ -157,35 +157,37 @@ export default async function handler(req, res) {
 
   const regionObj = region && region !== 'none' ? regions[region] : null
   const cleanSubject = subject.trim()
-
   const captions = []
 
-  // Generate 3 caption variants
-  for (let i = 0; i < 3; i++) {
-    let caption = ''
-    
-    // Main line (2 variants)
-    if (i === 0) {
-      caption = cleanSubject + '.\n' + moodObj.punch
-    } else if (i === 1) {
-      caption = cleanSubject + ' — the kind of moment that stays.\n' + moodObj.punch
-    } else {
-      caption = cleanSubject + '.\n' + moodObj.punch + '\nNo filter needed.'
-    }
+  // Instagram follow message
+  const instagramFollow = "Help please make us a favour follow us on Instagram @instaalgohacker"
 
-    // Add regional line if selected
-    if (regionObj) {
-      caption += '\n\n' + regionObj.variants[i % regionObj.variants.length]
-    }
-
-    // Add hashtags
-    caption += '\n\n' + moodObj.hashtags
-
-    captions.push({
-      caption: caption,
-      regionLabel: regionObj?.label || null
-    })
+  // CAPTION 1: Direct
+  let cap1 = cleanSubject + '.\n' + moodObj.punch
+  if (regionObj) {
+    cap1 += '\n' + regionObj.variants[0]
   }
+  cap1 += '\n\n' + moodObj.hashtags
+  cap1 += '\n\n📷 ' + instagramFollow
+  captions.push({ caption: cap1, regionLabel: regionObj?.label || null })
+
+  // CAPTION 2: Story Style
+  let cap2 = cleanSubject + ' — the kind that stays with you.\n' + moodObj.punch
+  if (regionObj) {
+    cap2 += '\n' + regionObj.variants[1]
+  }
+  cap2 += '\n\n' + moodObj.hashtags
+  cap2 += '\n\n📷 ' + instagramFollow
+  captions.push({ caption: cap2, regionLabel: regionObj?.label || null })
+
+  // CAPTION 3: Bold/Reversed
+  let cap3 = moodObj.punch + "\nThat's what " + cleanSubject + ' taught me.'
+  if (regionObj) {
+    cap3 += '\n' + regionObj.variants[2]
+  }
+  cap3 += '\n\n' + moodObj.hashtags
+  cap3 += '\n\n📷 ' + instagramFollow
+  captions.push({ caption: cap3, regionLabel: regionObj?.label || null })
 
   return res.status(200).json({ variants: captions })
 }
