@@ -1,203 +1,285 @@
 import { useState } from 'react'
 import Head from 'next/head'
 
+const moods = [
+  { id: "gym", label: "Gym", tagline: "Iron heals what people broke." },
+  { id: "attitude", label: "Attitude", tagline: "I don't chase. I replace." },
+  { id: "aesthetic", label: "Aesthetic", tagline: "Soft face, sharp mind." },
+  { id: "love", label: "Love", tagline: "Some connections were written before we were." },
+  { id: "heartbreak", label: "Heartbreak", tagline: "Broken doesn't mean finished." },
+  { id: "hustle", label: "Hustle", tagline: "Slow progress is still loyalty to your dream." },
+  { id: "luxury", label: "Luxury", tagline: "Soft life, loud ambition." },
+  { id: "travel", label: "Travel", tagline: "Collect memories, not people." },
+  { id: "lonely", label: "Lonely / Dark", tagline: "I disappear to rebuild." },
+  { id: "friendship", label: "Friendship", tagline: "Chosen family hits different." },
+  { id: "genz", label: "Gen-Z", tagline: "Main character energy loading…" },
+  { id: "cute", label: "Cute / Soft", tagline: "Smiling like life finally got soft." },
+  { id: "party", label: "Party", tagline: "Bad decisions make good stories." },
+  { id: "photodump", label: "Photodump", tagline: "Proof I'm living, not posting." },
+  { id: "selflove", label: "Self-Love", tagline: "Choosing myself wasn't selfish — it was survival." },
+  { id: "savage", label: "Savage", tagline: "I don't argue, I upgrade." },
+  { id: "sad", label: "Sad / Emotional", tagline: "Some chapters hurt but shape you." }
+]
+
+const regions = [
+  { id: "none", label: "No Region" },
+  { id: "gujarati", label: "Gujarati" },
+  { id: "punjabi", label: "Punjabi" },
+  { id: "marathi", label: "Marathi" },
+  { id: "bengali", label: "Bengali" },
+  { id: "tamil", label: "Tamil" },
+  { id: "telugu", label: "Telugu" },
+  { id: "kannada", label: "Kannada" },
+  { id: "malayalam", label: "Malayalam" },
+  { id: "rajasthani", label: "Rajasthani" },
+  { id: "bhojpuri", label: "Bhojpuri" },
+  { id: "haryanvi", label: "Haryanvi" },
+  { id: "hyderabadi", label: "Hyderabadi" },
+  { id: "kashmiri", label: "Kashmiri" },
+  { id: "assamese", label: "Assamese / NE" },
+  { id: "odia", label: "Odia" },
+  { id: "goan", label: "Goan" },
+  { id: "up", label: "UP / North" },
+  { id: "genz", label: "Gen-Z" },
+  { id: "global", label: "Global" }
+]
+
+const sampleSubjects = ["gym transformation", "street food in Surat", "college fest", "late night drive", "chai pe charcha"]
+
 export default function Home() {
   const [subject, setSubject] = useState('')
-  const [mood, setMood] = useState('Aesthetic')
-  const [regionalVibe, setRegionalVibe] = useState('None')
+  const [mood, setMood] = useState('gym')
+  const [region, setRegion] = useState('none')
   const [loading, setLoading] = useState(false)
-  const [captions, setCaptions] = useState([])
-  const [copied, setCopied] = useState(null)
-  const [error, setError] = useState('')
-
-  const moods = [
-    'Aesthetic', 'Motivational', 'Funny', 'Savage', 'Poetic',
-    'Cinematic', 'Chill', 'Bold', 'Romantic', 'Minimal'
-  ]
-  
-  const regionalVibes = [
-    'None', 'Gujarati', 'Punjabi', 'Marathi', 'Bengali', 'Tamil',
-    'Telugu', 'Malayalam', 'Kannada', 'Rajasthani', 'Haryanvi',
-    'Bhojpuri', 'Hyderabadi', 'Delhi Vibe', 'MumBhai Vibe',
-    'South Indian', 'Kashmiri', 'Odia', 'Assamese'
-  ]
+  const [variants, setVariants] = useState([])
+  const [copiedIndex, setCopiedIndex] = useState(null)
 
   const handleGenerate = async (e) => {
     e.preventDefault()
     setLoading(true)
-    setCaptions([])
-    setError('')
+    setVariants([])
 
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject, mood, regionalVibe })
+        body: JSON.stringify({ subject, mood, region })
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to generate')
-      }
-
       const data = await response.json()
-      setCaptions(data.captions || [])
+      if (response.ok) {
+        setVariants(data.variants || [])
+      }
     } catch (err) {
-      setError('Error generating captions. Try again.')
+      console.error(err)
     } finally {
       setLoading(false)
     }
   }
 
   const copyCaption = (text, index) => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text)
-      setCopied(index)
-      setTimeout(() => setCopied(null), 2000)
-    }
+    navigator.clipboard.writeText(text)
+    setCopiedIndex(index)
+    setTimeout(() => setCopiedIndex(null), 2000)
   }
 
   return (
     <>
       <Head>
-        <title>FunCaption - Regional Instagram Captions</title>
+        <title>FunCaption — Captions that feel like your life</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-b from-purple-900 via-black to-black text-white">
-        <nav className="border-b border-purple-500/30 bg-black/50 backdrop-blur-lg">
-          <div className="container mx-auto px-4 py-4">
-            <h1 className="text-2xl font-bold gradient-text">FunCaption</h1>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%)' }}>
+        {/* Header */}
+        <nav style={{ borderBottom: '1px solid #E2E8F0', background: 'white', padding: '1rem 0' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: '700', background: 'linear-gradient(135deg, #00E5FF, #6A00FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              FunCaption
+            </div>
+            <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.9rem', color: '#64748B' }}>
+              <span>How it works</span>
+              <span style={{ opacity: 0.5 }}>Pricing</span>
+            </div>
           </div>
         </nav>
 
-        <section className="container mx-auto px-4 py-20 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 gradient-text">
-            Where Real Trendsetters Are Made.
-          </h2>
-          <p className="text-lg md:text-xl text-gray-300 mb-6 max-w-3xl mx-auto">
-            Create viral Instagram captions with regional pride!
+        {/* Hero */}
+        <section style={{ maxWidth: '900px', margin: '0 auto', padding: '3rem 1rem', textAlign: 'center' }}>
+          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: '700', marginBottom: '1rem', color: '#1E293B' }}>
+            FunCaption — get captions that feel like your life.
+          </h1>
+          <p style={{ fontSize: '1.1rem', color: '#64748B', marginBottom: '2rem' }}>
+            Subject + Mood + Region → 3 emotional captions.
           </p>
-          <p className="text-base text-purple-300">
-            ✨ 18 Regional Vibes | Native Scripts ✨
-          </p>
-        </section>
 
-        <section className="container mx-auto px-4 py-8">
-          <h3 className="text-xl font-bold text-center mb-4">
-            Your Culture. Your Language. Your Caption.
-          </h3>
-          <div className="flex flex-wrap gap-2 justify-center max-w-5xl mx-auto">
-            {regionalVibes.filter(v => v !== 'None').map((vibe, i) => (
-              <span 
-                key={i} 
-                className="bg-purple-800/40 border border-purple-500/50 px-3 py-1 rounded-full text-xs"
-              >
-                {vibe}
-              </span>
-            ))}
-          </div>
-        </section>
-
-        <section className="container mx-auto px-4 py-12 max-w-2xl">
-          <div className="bg-gradient-to-br from-purple-900/40 to-black border border-purple-500/30 rounded-3xl p-6 md:p-8">
-            <h3 className="text-2xl font-bold mb-6 text-center">
-              Generate Your Caption
-            </h3>
-            
-            <form onSubmit={handleGenerate} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  📸 What's your post about?
+          {/* Generator Card */}
+          <div style={{ 
+            background: 'rgba(255, 255, 255, 0.8)', 
+            backdropFilter: 'blur(10px)', 
+            borderRadius: '1.5rem', 
+            padding: '2rem', 
+            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+            border: '1px solid rgba(255,255,255,0.2)'
+          }}>
+            <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {/* Subject Input */}
+              <div style={{ textAlign: 'left' }}>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem', color: '#334155' }}>
+                  Subject
                 </label>
                 <input 
                   type="text" 
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="e.g., chai pe charcha, beach sunset"
-                  className="w-full px-4 py-3 bg-black/50 border border-purple-500/50 rounded-lg focus:outline-none focus:border-purple-400 text-white placeholder-gray-500"
+                  placeholder="What's your post about?"
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.75rem 1rem', 
+                    border: '2px solid #E2E8F0', 
+                    borderRadius: '0.5rem', 
+                    fontSize: '1rem',
+                    outline: 'none'
+                  }}
                   required
                 />
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.75rem' }}>
+                  {sampleSubjects.map(s => (
+                    <button 
+                      key={s}
+                      type="button"
+                      onClick={() => setSubject(s)}
+                      style={{
+                        padding: '0.4rem 0.8rem',
+                        background: '#F1F5F9',
+                        border: 'none',
+                        borderRadius: '1rem',
+                        fontSize: '0.8rem',
+                        cursor: 'pointer',
+                        color: '#64748B'
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  😎 Choose Mood
+              {/* Mood Dropdown */}
+              <div style={{ textAlign: 'left' }}>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem', color: '#334155' }}>
+                  Mood
                 </label>
                 <select 
                   value={mood}
                   onChange={(e) => setMood(e.target.value)}
-                  className="w-full px-4 py-3 bg-black/50 border border-purple-500/50 rounded-lg focus:outline-none focus:border-purple-400 text-white"
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.75rem 1rem', 
+                    border: '2px solid #E2E8F0', 
+                    borderRadius: '0.5rem', 
+                    fontSize: '1rem',
+                    outline: 'none'
+                  }}
                 >
                   {moods.map(m => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  🏛️ Regional Vibe (Optional)
-                </label>
-                <select 
-                  value={regionalVibe}
-                  onChange={(e) => setRegionalVibe(e.target.value)}
-                  className="w-full px-4 py-3 bg-black/50 border border-purple-500/50 rounded-lg focus:outline-none focus:border-purple-400 text-white"
-                >
-                  {regionalVibes.map(v => (
-                    <option key={v} value={v}>
-                      {v === 'None' ? '🌍 No Regional (Global)' : '🎯 ' + v}
+                    <option key={m.id} value={m.id}>
+                      {m.label} — {m.tagline}
                     </option>
                   ))}
                 </select>
               </div>
 
-              {error && (
-                <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-2 rounded text-sm">
-                  {error}
-                </div>
-              )}
+              {/* Region Dropdown */}
+              <div style={{ textAlign: 'left' }}>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem', color: '#334155' }}>
+                  Region (optional)
+                </label>
+                <select 
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.75rem 1rem', 
+                    border: '2px solid #E2E8F0', 
+                    borderRadius: '0.5rem', 
+                    fontSize: '1rem',
+                    outline: 'none'
+                  }}
+                >
+                  {regions.map(r => (
+                    <option key={r.id} value={r.id}>{r.label}</option>
+                  ))}
+                </select>
+              </div>
 
+              {/* Generate Button */}
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition"
+                style={{ 
+                  width: '100%', 
+                  padding: '1rem', 
+                  background: 'linear-gradient(135deg, #00E5FF, #6A00FF)', 
+                  color: 'white', 
+                  border: 'none', 
+                  borderRadius: '0.75rem', 
+                  fontSize: '1.1rem', 
+                  fontWeight: '600', 
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.6 : 1
+                }}
               >
-                {loading ? '✨ Generating...' : '🚀 Generate Captions (Free!)'}
+                {loading ? 'Generating...' : 'Generate Caption'}
               </button>
+
+              <p style={{ fontSize: '0.85rem', color: '#94A3B8', textAlign: 'center' }}>
+                Free — 3 captions per generation • No login
+              </p>
             </form>
 
-            {captions.length > 0 && (
-              <div className="mt-8 space-y-4">
-                <h4 className="text-xl font-bold text-center">
-                  Your Captions Are Ready! 🎉
-                </h4>
-                
-                {captions.map((cap, i) => (
-                  <div key={i} className="bg-gradient-to-br from-purple-800/20 to-pink-800/20 p-4 rounded-xl border border-purple-500/40">
-                    <div className="bg-black/40 p-4 rounded-lg mb-3">
-                      <p className="text-gray-100 whitespace-pre-line text-sm md:text-base leading-relaxed">
-                        {cap.caption}
-                      </p>
-                    </div>
-                    
-                    {cap.translation && (
-                      <details className="mb-3">
-                        <summary className="text-xs text-purple-300 cursor-pointer hover:text-purple-200 mb-2">
-                          📖 English Translation (click)
-                        </summary>
-                        <div className="bg-black/30 p-3 rounded mt-2">
-                          <p className="text-sm text-gray-300 italic whitespace-pre-line">
-                            {cap.translation}
-                          </p>
-                        </div>
-                      </details>
+            {/* Results */}
+            {variants.length > 0 && (
+              <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {variants.map((v, i) => (
+                  <div key={i} style={{ 
+                    background: 'white', 
+                    padding: '1.5rem', 
+                    borderRadius: '1rem', 
+                    border: '1px solid #E2E8F0',
+                    textAlign: 'left'
+                  }}>
+                    <p style={{ fontSize: '0.95rem', lineHeight: '1.6', color: '#334155', marginBottom: '1rem', whiteSpace: 'pre-line' }}>
+                      {v.caption}
+                    </p>
+                    {v.regionLabel && (
+                      <span style={{ 
+                        display: 'inline-block', 
+                        padding: '0.25rem 0.75rem', 
+                        background: '#F1F5F9', 
+                        borderRadius: '1rem', 
+                        fontSize: '0.75rem', 
+                        color: '#64748B',
+                        marginBottom: '0.75rem'
+                      }}>
+                        {v.regionLabel}
+                      </span>
                     )}
-                    
                     <button 
-                      onClick={() => copyCaption(cap.caption, i)}
-                      className="w-full bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm font-medium transition"
+                      onClick={() => copyCaption(v.caption, i)}
+                      style={{ 
+                        width: '100%', 
+                        padding: '0.75rem', 
+                        background: copiedIndex === i ? '#10B981' : '#6366F1', 
+                        color: 'white', 
+                        border: 'none', 
+                        borderRadius: '0.5rem', 
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                        fontWeight: '500'
+                      }}
                     >
-                      {copied === i ? '✓ Copied!' : '📋 Copy Caption'}
+                      {copiedIndex === i ? '✓ Copied!' : 'Copy Caption'}
                     </button>
                   </div>
                 ))}
@@ -206,10 +288,27 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="border-t border-purple-500/30 py-6 mt-12">
-          <div className="container mx-auto px-4 text-center text-gray-400 text-xs">
-            <p>FunCaption © 2025 - Celebrate Regional Pride 🇮🇳</p>
+        {/* Why Section */}
+        <section style={{ maxWidth: '900px', margin: '2rem auto', padding: '0 1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', textAlign: 'center' }}>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1E293B' }}>Belonging</h3>
+              <p style={{ fontSize: '0.9rem', color: '#64748B' }}>Captions that sound like you, not the algorithm.</p>
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1E293B' }}>Speed</h3>
+              <p style={{ fontSize: '0.9rem', color: '#64748B' }}>3 emotional captions in 3 seconds.</p>
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1E293B' }}>Psychology</h3>
+              <p style={{ fontSize: '0.9rem', color: '#64748B' }}>Built on mood science, not templates.</p>
+            </div>
           </div>
+        </section>
+
+        {/* Footer */}
+        <footer style={{ borderTop: '1px solid #E2E8F0', marginTop: '4rem', padding: '2rem 1rem', textAlign: 'center', color: '#94A3B8', fontSize: '0.85rem' }}>
+          <p>FunCaption © 2025 — Made for creators</p>
         </footer>
       </div>
     </>
