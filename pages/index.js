@@ -90,42 +90,90 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%)' }}>
+      <div style={{ 
+        minHeight: '100vh', 
+        background: 'linear-gradient(135deg, #0F0C29 0%, #302B63 50%, #24243e 100%)',
+        color: 'white'
+      }}>
         {/* Header */}
-        <nav style={{ borderBottom: '1px solid #E2E8F0', background: 'white', padding: '1rem 0' }}>
-          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: '700', background: 'linear-gradient(135deg, #00E5FF, #6A00FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        <nav style={{ 
+          borderBottom: '1px solid rgba(139, 92, 246, 0.3)', 
+          background: 'rgba(0, 0, 0, 0.4)', 
+          backdropFilter: 'blur(10px)',
+          padding: '1.2rem 0',
+          position: 'sticky',
+          top: 0,
+          zIndex: 50
+        }}>
+          <div style={{ 
+            maxWidth: '1200px', 
+            margin: '0 auto', 
+            padding: '0 1.5rem', 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center' 
+          }}>
+            <div style={{ 
+              fontSize: '1.8rem', 
+              fontWeight: '800', 
+              background: 'linear-gradient(135deg, #00E5FF 0%, #FF00E5 100%)', 
+              WebkitBackgroundClip: 'text', 
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-0.02em'
+            }}>
               FunCaption
             </div>
-            <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.9rem', color: '#64748B' }}>
-              <span>How it works</span>
+            <div style={{ display: 'flex', gap: '2rem', fontSize: '0.95rem', color: '#A78BFA' }}>
+              <span style={{ cursor: 'pointer', transition: 'color 0.2s' }}>How it works</span>
               <span style={{ opacity: 0.5 }}>Pricing</span>
             </div>
           </div>
         </nav>
 
         {/* Hero */}
-        <section style={{ maxWidth: '900px', margin: '0 auto', padding: '3rem 1rem', textAlign: 'center' }}>
-          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: '700', marginBottom: '1rem', color: '#1E293B' }}>
-            FunCaption — get captions that feel like your life.
+        <section style={{ maxWidth: '900px', margin: '0 auto', padding: '4rem 1.5rem 2rem', textAlign: 'center' }}>
+          <h1 style={{ 
+            fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', 
+            fontWeight: '900', 
+            marginBottom: '1.5rem', 
+            background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 50%, #EF4444 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            lineHeight: '1.1',
+            letterSpacing: '-0.03em'
+          }}>
+            Get captions that feel like your life.
           </h1>
-          <p style={{ fontSize: '1.1rem', color: '#64748B', marginBottom: '2rem' }}>
-            Subject + Mood + Region → 3 emotional captions.
+          <p style={{ 
+            fontSize: '1.3rem', 
+            color: '#C4B5FD', 
+            marginBottom: '3rem',
+            fontWeight: '500'
+          }}>
+            Subject + Mood + Region → 3 emotional captions. 🔥
           </p>
 
           {/* Generator Card */}
           <div style={{ 
-            background: 'rgba(255, 255, 255, 0.8)', 
-            backdropFilter: 'blur(10px)', 
-            borderRadius: '1.5rem', 
-            padding: '2rem', 
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-            border: '1px solid rgba(255,255,255,0.2)'
+            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
+            backdropFilter: 'blur(20px)', 
+            borderRadius: '2rem', 
+            padding: '2.5rem', 
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(139, 92, 246, 0.3)',
+            border: '1px solid rgba(139, 92, 246, 0.2)'
           }}>
-            <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', gap: '1.8rem' }}>
               {/* Subject Input */}
               <div style={{ textAlign: 'left' }}>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem', color: '#334155' }}>
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '1rem', 
+                  fontWeight: '700', 
+                  marginBottom: '0.75rem', 
+                  color: '#E9D5FF',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
                   Subject
                 </label>
                 <input 
@@ -135,28 +183,43 @@ export default function Home() {
                   placeholder="What's your post about?"
                   style={{ 
                     width: '100%', 
-                    padding: '0.75rem 1rem', 
-                    border: '2px solid #E2E8F0', 
-                    borderRadius: '0.5rem', 
-                    fontSize: '1rem',
-                    outline: 'none'
+                    padding: '1rem 1.25rem', 
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '2px solid rgba(139, 92, 246, 0.3)', 
+                    borderRadius: '0.75rem', 
+                    fontSize: '1.1rem',
+                    outline: 'none',
+                    color: 'white',
+                    transition: 'all 0.3s'
                   }}
+                  onFocus={(e) => e.target.style.borderColor = '#8B5CF6'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(139, 92, 246, 0.3)'}
                   required
                 />
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.75rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', marginTop: '1rem' }}>
                   {sampleSubjects.map(s => (
                     <button 
                       key={s}
                       type="button"
                       onClick={() => setSubject(s)}
                       style={{
-                        padding: '0.4rem 0.8rem',
-                        background: '#F1F5F9',
-                        border: 'none',
-                        borderRadius: '1rem',
-                        fontSize: '0.8rem',
+                        padding: '0.5rem 1rem',
+                        background: 'rgba(139, 92, 246, 0.2)',
+                        border: '1px solid rgba(139, 92, 246, 0.4)',
+                        borderRadius: '2rem',
+                        fontSize: '0.85rem',
                         cursor: 'pointer',
-                        color: '#64748B'
+                        color: '#C4B5FD',
+                        transition: 'all 0.2s',
+                        fontWeight: '500'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.background = 'rgba(139, 92, 246, 0.4)'
+                        e.target.style.transform = 'scale(1.05)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.background = 'rgba(139, 92, 246, 0.2)'
+                        e.target.style.transform = 'scale(1)'
                       }}
                     >
                       {s}
@@ -167,7 +230,15 @@ export default function Home() {
 
               {/* Mood Dropdown */}
               <div style={{ textAlign: 'left' }}>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem', color: '#334155' }}>
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '1rem', 
+                  fontWeight: '700', 
+                  marginBottom: '0.75rem', 
+                  color: '#E9D5FF',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
                   Mood
                 </label>
                 <select 
@@ -175,15 +246,18 @@ export default function Home() {
                   onChange={(e) => setMood(e.target.value)}
                   style={{ 
                     width: '100%', 
-                    padding: '0.75rem 1rem', 
-                    border: '2px solid #E2E8F0', 
-                    borderRadius: '0.5rem', 
+                    padding: '1rem 1.25rem', 
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '2px solid rgba(139, 92, 246, 0.3)', 
+                    borderRadius: '0.75rem', 
                     fontSize: '1rem',
-                    outline: 'none'
+                    outline: 'none',
+                    color: 'white',
+                    cursor: 'pointer'
                   }}
                 >
                   {moods.map(m => (
-                    <option key={m.id} value={m.id}>
+                    <option key={m.id} value={m.id} style={{ background: '#1F1B2E', color: 'white' }}>
                       {m.label} — {m.tagline}
                     </option>
                   ))}
@@ -192,7 +266,15 @@ export default function Home() {
 
               {/* Region Dropdown */}
               <div style={{ textAlign: 'left' }}>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem', color: '#334155' }}>
+                <label style={{ 
+                  display: 'block', 
+                  fontSize: '1rem', 
+                  fontWeight: '700', 
+                  marginBottom: '0.75rem', 
+                  color: '#E9D5FF',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
                   Region (optional)
                 </label>
                 <select 
@@ -200,15 +282,20 @@ export default function Home() {
                   onChange={(e) => setRegion(e.target.value)}
                   style={{ 
                     width: '100%', 
-                    padding: '0.75rem 1rem', 
-                    border: '2px solid #E2E8F0', 
-                    borderRadius: '0.5rem', 
+                    padding: '1rem 1.25rem', 
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '2px solid rgba(139, 92, 246, 0.3)', 
+                    borderRadius: '0.75rem', 
                     fontSize: '1rem',
-                    outline: 'none'
+                    outline: 'none',
+                    color: 'white',
+                    cursor: 'pointer'
                   }}
                 >
                   {regions.map(r => (
-                    <option key={r.id} value={r.id}>{r.label}</option>
+                    <option key={r.id} value={r.id} style={{ background: '#1F1B2E', color: 'white' }}>
+                      {r.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -219,67 +306,106 @@ export default function Home() {
                 disabled={loading}
                 style={{ 
                   width: '100%', 
-                  padding: '1rem', 
-                  background: 'linear-gradient(135deg, #00E5FF, #6A00FF)', 
+                  padding: '1.25rem', 
+                  background: loading ? 'rgba(139, 92, 246, 0.5)' : 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)', 
                   color: 'white', 
                   border: 'none', 
-                  borderRadius: '0.75rem', 
-                  fontSize: '1.1rem', 
-                  fontWeight: '600', 
+                  borderRadius: '1rem', 
+                  fontSize: '1.2rem', 
+                  fontWeight: '700', 
                   cursor: loading ? 'not-allowed' : 'pointer',
-                  opacity: loading ? 0.6 : 1
+                  boxShadow: loading ? 'none' : '0 10px 30px rgba(139, 92, 246, 0.4)',
+                  transition: 'all 0.3s',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}
+                onMouseEnter={(e) => {
+                  if (!loading) e.target.style.transform = 'translateY(-2px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'translateY(0)'
                 }}
               >
-                {loading ? 'Generating...' : 'Generate Caption'}
+                {loading ? '⚡ Generating...' : '🚀 Generate Captions'}
               </button>
 
-              <p style={{ fontSize: '0.85rem', color: '#94A3B8', textAlign: 'center' }}>
-                Free — 3 captions per generation • No login
+              <p style={{ fontSize: '0.9rem', color: '#A78BFA', textAlign: 'center', fontWeight: '500' }}>
+                ✨ Free — 3 captions per generation • No login
               </p>
             </form>
 
             {/* Results */}
             {variants.length > 0 && (
-              <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <h3 style={{ 
+                  fontSize: '1.5rem', 
+                  fontWeight: '700', 
+                  textAlign: 'center',
+                  background: 'linear-gradient(135deg, #FBBF24, #F59E0B)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent'
+                }}>
+                  🎉 Your Captions Are Ready!
+                </h3>
                 {variants.map((v, i) => (
                   <div key={i} style={{ 
-                    background: 'white', 
-                    padding: '1.5rem', 
-                    borderRadius: '1rem', 
-                    border: '1px solid #E2E8F0',
-                    textAlign: 'left'
+                    background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(59, 130, 246, 0.1) 100%)', 
+                    padding: '1.75rem', 
+                    borderRadius: '1.25rem', 
+                    border: '1px solid rgba(139, 92, 246, 0.3)',
+                    textAlign: 'left',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)'
                   }}>
-                    <p style={{ fontSize: '0.95rem', lineHeight: '1.6', color: '#334155', marginBottom: '1rem', whiteSpace: 'pre-line' }}>
+                    <p style={{ 
+                      fontSize: '1.05rem', 
+                      lineHeight: '1.7', 
+                      color: '#E9D5FF', 
+                      marginBottom: '1.25rem', 
+                      whiteSpace: 'pre-line',
+                      fontWeight: '400'
+                    }}>
                       {v.caption}
                     </p>
                     {v.regionLabel && (
                       <span style={{ 
                         display: 'inline-block', 
-                        padding: '0.25rem 0.75rem', 
-                        background: '#F1F5F9', 
-                        borderRadius: '1rem', 
-                        fontSize: '0.75rem', 
-                        color: '#64748B',
-                        marginBottom: '0.75rem'
+                        padding: '0.4rem 1rem', 
+                        background: 'rgba(139, 92, 246, 0.3)', 
+                        borderRadius: '2rem', 
+                        fontSize: '0.8rem', 
+                        color: '#C4B5FD',
+                        marginBottom: '1rem',
+                        fontWeight: '600',
+                        border: '1px solid rgba(139, 92, 246, 0.4)'
                       }}>
-                        {v.regionLabel}
+                        🌍 {v.regionLabel}
                       </span>
                     )}
                     <button 
                       onClick={() => copyCaption(v.caption, i)}
                       style={{ 
                         width: '100%', 
-                        padding: '0.75rem', 
-                        background: copiedIndex === i ? '#10B981' : '#6366F1', 
+                        padding: '1rem', 
+                        background: copiedIndex === i 
+                          ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' 
+                          : 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)', 
                         color: 'white', 
                         border: 'none', 
-                        borderRadius: '0.5rem', 
+                        borderRadius: '0.75rem', 
                         cursor: 'pointer',
-                        fontSize: '0.9rem',
-                        fontWeight: '500'
+                        fontSize: '1rem',
+                        fontWeight: '700',
+                        transition: 'all 0.3s',
+                        boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.transform = 'scale(1.02)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.transform = 'scale(1)'
                       }}
                     >
-                      {copiedIndex === i ? '✓ Copied!' : 'Copy Caption'}
+                      {copiedIndex === i ? '✓ Copied!' : '📋 Copy Caption'}
                     </button>
                   </div>
                 ))}
@@ -289,26 +415,68 @@ export default function Home() {
         </section>
 
         {/* Why Section */}
-        <section style={{ maxWidth: '900px', margin: '2rem auto', padding: '0 1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', textAlign: 'center' }}>
-            <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1E293B' }}>Belonging</h3>
-              <p style={{ fontSize: '0.9rem', color: '#64748B' }}>Captions that sound like you, not the algorithm.</p>
+        <section style={{ maxWidth: '900px', margin: '3rem auto', padding: '0 1.5rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+            gap: '2rem', 
+            textAlign: 'center' 
+          }}>
+            <div style={{ 
+              background: 'rgba(139, 92, 246, 0.1)', 
+              padding: '2rem', 
+              borderRadius: '1.25rem',
+              border: '1px solid rgba(139, 92, 246, 0.2)'
+            }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>💛</div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.75rem', color: '#FBBF24' }}>
+                Belonging
+              </h3>
+              <p style={{ fontSize: '0.95rem', color: '#C4B5FD', lineHeight: '1.5' }}>
+                Captions that sound like you, not the algorithm.
+              </p>
             </div>
-            <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1E293B' }}>Speed</h3>
-              <p style={{ fontSize: '0.9rem', color: '#64748B' }}>3 emotional captions in 3 seconds.</p>
+            <div style={{ 
+              background: 'rgba(139, 92, 246, 0.1)', 
+              padding: '2rem', 
+              borderRadius: '1.25rem',
+              border: '1px solid rgba(139, 92, 246, 0.2)'
+            }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>⚡</div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.75rem', color: '#FBBF24' }}>
+                Speed
+              </h3>
+              <p style={{ fontSize: '0.95rem', color: '#C4B5FD', lineHeight: '1.5' }}>
+                3 emotional captions in 3 seconds.
+              </p>
             </div>
-            <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1E293B' }}>Psychology</h3>
-              <p style={{ fontSize: '0.9rem', color: '#64748B' }}>Built on mood science, not templates.</p>
+            <div style={{ 
+              background: 'rgba(139, 92, 246, 0.1)', 
+              padding: '2rem', 
+              borderRadius: '1.25rem',
+              border: '1px solid rgba(139, 92, 246, 0.2)'
+            }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🧠</div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.75rem', color: '#FBBF24' }}>
+                Psychology
+              </h3>
+              <p style={{ fontSize: '0.95rem', color: '#C4B5FD', lineHeight: '1.5' }}>
+                Built on mood science, not templates.
+              </p>
             </div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer style={{ borderTop: '1px solid #E2E8F0', marginTop: '4rem', padding: '2rem 1rem', textAlign: 'center', color: '#94A3B8', fontSize: '0.85rem' }}>
-          <p>FunCaption © 2025 — Made for creators</p>
+        <footer style={{ 
+          borderTop: '1px solid rgba(139, 92, 246, 0.2)', 
+          marginTop: '4rem', 
+          padding: '2.5rem 1.5rem', 
+          textAlign: 'center', 
+          color: '#A78BFA', 
+          fontSize: '0.9rem' 
+        }}>
+          <p style={{ fontWeight: '500' }}>FunCaption © 2025 — Made for creators 🚀</p>
         </footer>
       </div>
     </>
