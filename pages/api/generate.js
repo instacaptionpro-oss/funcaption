@@ -1,146 +1,247 @@
+const config = {
+  moods: [
+    { id: "gym", label: "Gym", tagline: "Iron heals what people broke." },
+    { id: "attitude", label: "Attitude", tagline: "I don't chase. I replace." },
+    { id: "aesthetic", label: "Aesthetic", tagline: "Soft face, sharp mind." },
+    { id: "love", label: "Love", tagline: "Some connections were written before we were." },
+    { id: "heartbreak", label: "Heartbreak", tagline: "Broken doesn't mean finished." },
+    { id: "hustle", label: "Hustle", tagline: "Slow progress is still loyalty to your dream." },
+    { id: "luxury", label: "Luxury", tagline: "Soft life, loud ambition." },
+    { id: "travel", label: "Travel", tagline: "Collect memories, not people." },
+    { id: "lonely", label: "Lonely / Dark", tagline: "I disappear to rebuild." },
+    { id: "friendship", label: "Friendship", tagline: "Chosen family hits different." },
+    { id: "genz", label: "Gen-Z", tagline: "Main character energy loading…" },
+    { id: "cute", label: "Cute / Soft", tagline: "Smiling like life finally got soft." },
+    { id: "party", label: "Party", tagline: "Bad decisions make good stories." },
+    { id: "photodump", label: "Photodump", tagline: "Proof I'm living, not posting." },
+    { id: "selflove", label: "Self-Love", tagline: "Choosing myself wasn't selfish — it was survival." },
+    { id: "savage", label: "Savage", tagline: "I don't argue, I upgrade." },
+    { id: "sad", label: "Sad / Emotional", tagline: "Some chapters hurt but shape you." }
+  ],
+  regions: [
+    {
+      id: "gujarati",
+      label: "Gujarati",
+      suffixVariants: [
+        "આ અમારું કાઠિયાવાડી સ્ટાઈલ છે.",
+        "હવે ગમશે તો ગમશે — ગજરાતી ઢબ.",
+        "શાંત દેખાયું, દિલ ગરમ છે."
+      ]
+    },
+    {
+      id: "punjabi",
+      label: "Punjabi",
+      suffixVariants: [
+        "ਇਹ ਸਾਡੀ ਪੰਜਾਬੀ ਵਾਈਬ ਹੈ.",
+        "Punjabi blood, global mood.",
+        "Loud heart, warm home."
+      ]
+    },
+    {
+      id: "marathi",
+      label: "Marathi",
+      suffixVariants: [
+        "हा आमचा मराठी स्टाइल आहे.",
+        "Marathi heart — steady & strong.",
+        "मज्जा करतो, परफेक्शन शोधतो."
+      ]
+    },
+    {
+      id: "bengali",
+      label: "Bengali",
+      suffixVariants: [
+        "এটাই আমাদের বাংলা ভায়েব।",
+        "Calm river, loud story.",
+        "A little poetry, a lot of soul."
+      ]
+    },
+    {
+      id: "tamil",
+      label: "Tamil",
+      suffixVariants: [
+        "இது எங்கள் தமிழ் வைபு.",
+        "Roots deep, rhythm steady.",
+        "Quiet strength — Tamil way."
+      ]
+    },
+    {
+      id: "telugu",
+      label: "Telugu",
+      suffixVariants: [
+        "ఇది మా తెలుగు స్టైల్.",
+        "Strong roots, bold moves.",
+        "Homegrown fire, calm mind."
+      ]
+    },
+    {
+      id: "kannada",
+      label: "Kannada",
+      suffixVariants: [
+        "ಇದು ನಮ್ಮ ಕನ್ನಡ ಸ್ಟೈಲ್.",
+        "Simple heart, quiet pride.",
+        "Roots first, trend later."
+      ]
+    },
+    {
+      id: "malayalam",
+      label: "Malayalam",
+      suffixVariants: [
+        "ഇത് നമ്മുടേത് മലയാളി വൈബ്.",
+        "Calm seas, loud memories.",
+        "Soft voice, deep story."
+      ]
+    },
+    {
+      id: "rajasthani",
+      label: "Rajasthani",
+      suffixVariants: [
+        "यो आपरो राजस्थानो स्टाइल है.",
+        "Desert heat, proud heart.",
+        "Old roots, new hustle."
+      ]
+    },
+    {
+      id: "bhojpuri",
+      label: "Bhojpuri",
+      suffixVariants: [
+        "ई हमार भोजपुरी स्टाइल बा.",
+        "Raw heart, loud laugh.",
+        "Simple life, solid pride."
+      ]
+    },
+    {
+      id: "haryanvi",
+      label: "Haryanvi",
+      suffixVariants: [
+        "इब्बै साड्डा हरियाणवी अंदाज है.",
+        "Tough talk, softer heart.",
+        "We keep it honest."
+      ]
+    },
+    {
+      id: "hyderabadi",
+      label: "Hyderabadi",
+      suffixVariants: [
+        "Ye hamara Hyderabadi andaaz hai.",
+        "Chill swag, spicy soul.",
+        "Calm on outside — fire inside."
+      ]
+    },
+    {
+      id: "kashmiri",
+      label: "Kashmiri",
+      suffixVariants: [
+        "Kashmiri warmth in a cool world.",
+        "Quiet valleys, loud feelings.",
+        "Soft snow, steady heart."
+      ]
+    },
+    {
+      id: "assamese",
+      label: "Assamese / NE",
+      suffixVariants: [
+        "From the northeast — different, real.",
+        "Fresh air, honest stories.",
+        "Roots deep, horizon wide."
+      ]
+    },
+    {
+      id: "odia",
+      label: "Odia",
+      suffixVariants: [
+        "ଏହା ଆମର ଓଡ଼ିଆ ଶୈଳୀ।",
+        "Coastal calm, inner fire.",
+        "Small town, big heart."
+      ]
+    },
+    {
+      id: "goan",
+      label: "Goan",
+      suffixVariants: [
+        "Goan chill, salty soul.",
+        "Beach-born, dream-forward.",
+        "Sunset mindsets only."
+      ]
+    },
+    {
+      id: "up",
+      label: "UP / North",
+      suffixVariants: [
+        "Desi roots — loud and proud.",
+        "East meets grit — that's our vibe.",
+        "Street stories, honest heart."
+      ]
+    },
+    {
+      id: "genz",
+      label: "Gen-Z",
+      suffixVariants: [
+        "Main character energy — full episode.",
+        "Vibe check: trending, not trying.",
+        "Short clips, long feels."
+      ]
+    },
+    {
+      id: "global",
+      label: "Global",
+      suffixVariants: [
+        "Made for the world, not the algorithm.",
+        "Global mindset, local roots.",
+        "Post wide — trend worldwide."
+      ]
+    }
+  ]
+}
+
+const hooks = ["Read this", "Listen", "Slow down", "Stop scrolling", "Real talk", "Honest moment"]
+const bridges = ["and I proved it", "and I'm just getting started", "because truth is simple", "no filters needed", "just reality", "the rest is noise"]
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { subject, mood, regionalVibe } = req.body
+  const { subject, mood, region } = req.body
 
   if (!subject || !mood) {
     return res.status(400).json({ error: 'Subject and mood required' })
   }
 
-  const emoji = getEmoji(mood)
-  const pride = getPride(regionalVibe)
-  const power = getPower(regionalVibe)
+  const moodObj = config.moods.find(m => m.id === mood)
+  const regionObj = region && region !== 'none' ? config.regions.find(r => r.id === region) : null
 
-  const cap1 = subject + ' ' + emoji + '\n\n' + pride.text + '\n\n' + power.text
-  const trans1 = pride.english + '\n\n' + power.english
-
-  const cap2 = 'Just ' + subject + ' ' + emoji + '\n\n' + pride.text + '\n\n' + power.text
-  const trans2 = pride.english + '\n\n' + power.english
-
-  const cap3 = subject + ' vibes ' + emoji + '\n\n' + pride.text + '\n\n' + power.text
-  const trans3 = pride.english + '\n\n' + power.english
-
-  const captions = [
-    { caption: cap1, translation: regionalVibe !== 'None' ? trans1 : null },
-    { caption: cap2, translation: regionalVibe !== 'None' ? trans2 : null },
-    { caption: cap3, translation: regionalVibe !== 'None' ? trans3 : null }
-  ]
-
-  return res.status(200).json({ captions })
-}
-
-function getEmoji(mood) {
-  const emojis = {
-    'Aesthetic': '✨', 'Motivational': '💪', 'Funny': '😂',
-    'Savage': '😎', 'Poetic': '🌙', 'Cinematic': '🎬',
-    'Chill': '😌', 'Bold': '🔥', 'Romantic': '💕', 'Minimal': '🤍'
+  if (!moodObj) {
+    return res.status(400).json({ error: 'Invalid mood' })
   }
-  return emojis[mood] || '✨'
-}
 
-function getPride(vibe) {
-  const lines = {
-    'Gujarati': { text: 'આ અમારા કાઠિયાવાડની મોજ છે! 🙏', english: 'This is the joy of our Kathiyawad!' },
-    'Punjabi': { text: 'ਪੰਜਾਬੀਆਂ ਦਾ ਜਿਗਰਾ ਵੱਖਰਾ ਆ! 👑', english: 'Punjabis have different spirit!' },
-    'Marathi': { text: 'जय महाराष्ट्र! 🚩', english: 'Jai Maharashtra!' },
-    'Bengali': { text: 'বাঙালির গর্ব! 💙', english: 'Bengali pride!' },
-    'Tamil': { text: 'தமிழன் என்று சொல்லடா! 🔥', english: 'Say you are Tamil!' },
-    'Telugu': { text: 'తెలుగు గర్వం! 💛', english: 'Telugu pride!' },
-    'Malayalam': { text: 'കേരളത്തിന്റെ അഭിമാനം! 🌴', english: "Kerala's pride!" },
-    'Kannada': { text: 'ಕರ್ನಾಟಕದ ಹೆಮ್ಮೆ! 💛', english: 'Karnataka pride!' },
-    'Rajasthani': { text: 'म्हारो राजस्थान! 👑', english: 'My Rajasthan!' },
-    'Haryanvi': { text: 'हरियाणे की शान! 🦁', english: "Haryana's glory!" },
-    'Bhojpuri': { text: 'भोजपुरिया के जिगरा! 🎶', english: 'Bhojpuri spirit!' },
-    'Hyderabadi': { text: 'Hyderabad ka swag! 🏛️', english: "Hyderabad's swag!" },
-    'Delhi Vibe': { text: 'Dilli dil walon ki! ❤️', english: 'Delhi hearted!' },
-    'MumBhai Vibe': { text: 'Aamchi Mumbai! 🌊', english: 'Our Mumbai!' },
-    'South Indian': { text: 'South pride! 🌺', english: 'South pride!' },
-    'Kashmiri': { text: 'कश्मीर स्वर्ग! 🏔️', english: 'Kashmir heaven!' },
-    'Odia': { text: 'ଓଡ଼ିଶା ଗର୍ବ! 🏖️', english: 'Odisha pride!' },
-    'Assamese': { text: 'অসম গৌৰৱ! 🌿', english: 'Assam pride!' }
-  }
-  return lines[vibe] || { text: '', english: '' }
-}
+  const cleanSubject = subject.trim()
+  const moodPunch = moodObj.tagline
 
-function getPower(vibe) {
-  const lines = {
-    'Gujarati': { 
-      text: '🌟 તમે viral નથી થતા, તમે શક્તિ બહાર કાઢો છો.', 
-      english: "🌟 You're not getting viral, you're bringing out potential." 
-    },
-    'Punjabi': { 
-      text: '🌟 ਤੁਸੀਂ viral ਨੀ, ਤਾਕਤ ਬਾਹਰ ਕੱਢ ਰਹੇ ਹੋ।', 
-      english: "🌟 You're not getting viral, you're bringing out power." 
-    },
-    'Marathi': { 
-      text: '🌟 तुम्ही viral नाही, शक्ती काढत आहात.', 
-      english: "🌟 You're not getting viral, you're bringing out strength." 
-    },
-    'Bengali': { 
-      text: '🌟 তুমি viral না, সম্ভাবনা বের করছো।', 
-      english: "🌟 You're not getting viral, you're bringing out potential." 
-    },
-    'Tamil': { 
-      text: '🌟 நீங்கள் viral இல்ல, திறமை வெளிக்கொண்டு வர்றீங்க.', 
-      english: "🌟 You're not getting viral, you're bringing out talent." 
-    },
-    'Telugu': { 
-      text: '🌟 మీరు viral కాదు, శక్తిని బయటకు తీస్తున్నారు.', 
-      english: "🌟 You're not getting viral, you're bringing out power." 
-    },
-    'Malayalam': { 
-      text: '🌟 നിങ്ങൾ viral അല്ല, കഴിവ് പുറത്തെടുക്കുകയാണ്.', 
-      english: "🌟 You're not getting viral, you're bringing out potential." 
-    },
-    'Kannada': { 
-      text: '🌟 ನೀವು viral ಅಲ್ಲ, ಶಕ್ತಿಯನ್ನು ಹೊರಗೆ ತರುತ್ತಿದ್ದೀರಿ.', 
-      english: "🌟 You're not getting viral, you're bringing out power." 
-    },
-    'Rajasthani': { 
-      text: '🌟 थे viral नी, ताकत बाहर काढ रह्या हो.', 
-      english: "🌟 You're not getting viral, you're bringing out strength." 
-    },
-    'Haryanvi': { 
-      text: '🌟 तू viral नी, ताकत बाहर काढ रहा है.', 
-      english: "🌟 You're not getting viral, you're bringing out power." 
-    },
-    'Bhojpuri': { 
-      text: '🌟 रउआ viral नाहीं, ताकत बाहर निकाल रहल बानी.', 
-      english: "🌟 You're not getting viral, you're bringing out strength." 
-    },
-    'Hyderabadi': { 
-      text: '🌟 Tu viral nahi, taakat bahar nikal raha hai.', 
-      english: "🌟 You're not getting viral, you're bringing out power." 
-    },
-    'Delhi Vibe': { 
-      text: '🌟 Tu viral nahi, shakti bahar la raha hai.', 
-      english: "🌟 You're not getting viral, you're bringing out power." 
-    },
-    'MumBhai Vibe': { 
-      text: '🌟 तू viral नाही, शक्ती बाहेर काढतोयस.', 
-      english: "🌟 You're not getting viral, you're bringing out strength." 
-    },
-    'South Indian': { 
-      text: "🌟 You're not getting viral, you're bringing out potential.", 
-      english: "🌟 You're not getting viral, you're bringing out potential." 
-    },
-    'Kashmiri': { 
-      text: '🌟 आप viral नहीं, शक्ति बाहर ला रहे हैं.', 
-      english: "🌟 You're not getting viral, you're bringing out power." 
-    },
-    'Odia': { 
-      text: '🌟 ଆପଣ viral ନୁହଁନ୍ତି, ଶକ୍ତି ବାହାରକୁ ଆଣୁଛନ୍ତି.', 
-      english: "🌟 You're not getting viral, you're bringing out power." 
-    },
-    'Assamese': { 
-      text: '🌟 আপুনি viral নহয়, শক্তি বাহিৰলৈ উলিয়াই আনিছে.', 
-      english: "🌟 You're not getting viral, you're bringing out power." 
-    }
+  const variants = []
+
+  // Template 1: Hook + Subject + Mood Punch
+  const hook1 = hooks[Math.floor(Math.random() * hooks.length)]
+  let caption1 = hook1 + ' — ' + cleanSubject + ' — ' + moodPunch + '.'
+  if (regionObj) {
+    caption1 += '\n\n' + regionObj.suffixVariants[0]
   }
-  return lines[vibe] || { 
-    text: "🌟 You're not getting viral, you're bringing out your potential.", 
-    english: "🌟 You're not getting viral, you're bringing out your potential." 
+  variants.push({ caption: caption1, regionLabel: regionObj?.label || null })
+
+  // Template 2: Subject + Mood Punch + Bridge
+  const bridge2 = bridges[Math.floor(Math.random() * bridges.length)]
+  let caption2 = cleanSubject + ' — ' + moodPunch + ' ' + bridge2 + '.'
+  if (regionObj) {
+    caption2 += '\n\n' + regionObj.suffixVariants[1 % regionObj.suffixVariants.length]
   }
+  variants.push({ caption: caption2, regionLabel: regionObj?.label || null })
+
+  // Template 3: Short story + Subject + Mood Punch
+  const story = 'When I started, ' + cleanSubject + ' was a dream'
+  let caption3 = story + '. ' + moodPunch + '.'
+  if (regionObj) {
+    caption3 += '\n\n' + regionObj.suffixVariants[2 % regionObj.suffixVariants.length]
+  }
+  variants.push({ caption: caption3, regionLabel: regionObj?.label || null })
+
+  return res.status(200).json({ variants })
 }
