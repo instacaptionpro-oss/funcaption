@@ -11,103 +11,106 @@ const Logo = () => (
   <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 10 }}>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" width="60" height="60" role="img" aria-label="FunCaption neon logo">
       <defs>
-        <linearGradient id="gNeon1" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stop-color="#5b29ff"/>
-          <stop offset="0.45" stop-color="#00d0ff"/>
-          <stop offset="1" stop-color="#ff2db8"/>
+        <linearGradient id="gNeon1-fc" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stopColor="#5b29ff"/>
+          <stop offset="0.45" stopColor="#00d0ff"/>
+          <stop offset="1" stopColor="#ff2db8"/>
         </linearGradient>
-        <linearGradient id="gNeon2" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stop-color="#00d0ff"/>
-          <stop offset="1" stop-color="#7b2bff"/>
+        <linearGradient id="gNeon2-fc" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stopColor="#00d0ff"/>
+          <stop offset="1" stopColor="#7b2bff"/>
         </linearGradient>
-        <linearGradient id="metal" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stop-color="#cbd5ff" stop-opacity="0.35"/>
-          <stop offset="1" stop-color="#0b1220" stop-opacity="0.15"/>
+        <linearGradient id="metal-fc" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="#cbd5ff" stopOpacity="0.35"/>
+          <stop offset="1" stopColor="#0b1220" stopOpacity="0.15"/>
         </linearGradient>
-        <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%">
+        <filter id="softGlow-fc" x="-60%" y="-60%" width="220%" height="220%">
           <feGaussianBlur stdDeviation="18" result="b1"/>
           <feMerge>
             <feMergeNode in="b1"/>
             <feMergeNode in="SourceGraphic"/>
           </feMerge>
         </filter>
-        <filter id="neonGlow" x="-200%" y="-200%" width="400%" height="400%">
+        <filter id="neonGlow-fc" x="-200%" y="-200%" width="400%" height="400%">
           <feGaussianBlur stdDeviation="22" result="g1"/>
           <feColorMatrix in="g1" type="matrix" values="1 0 0 0 0   0 1 0 0 0   0 0 1 0 0  0 0 0 0.9 0" />
-          <feMerge><feMergeNode in="g1"/><feMergeNode in="SourceGraphic"/></feMerge>
+          <feMerge>
+            <feMergeNode in="g1"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
         </filter>
-        <linearGradient id="fadeMask" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stop-color="#fff" stop-opacity="0.45"/>
-          <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+        <linearGradient id="fadeMask-fc" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.45"/>
+          <stop offset="1" stopColor="#fff" stopOpacity="0"/>
         </linearGradient>
-        <filter id="grain">
+        <filter id="grain-fc">
           <feTurbulence baseFrequency="0.9" numOctaves="1" stitchTiles="stitch" result="noise"/>
           <feColorMatrix type="saturate" values="0" in="noise" result="gn"/>
           <feBlend in="SourceGraphic" in2="gn" mode="overlay"/>
         </filter>
       </defs>
       <rect width="1200" height="1200" fill="#02020a"/>
-      <radialGradient id="v" cx="50%" cy="22%" r="60%">
-        <stop offset="0" stop-color="#0f2b3a" stop-opacity="0.45"/>
-        <stop offset="1" stop-color="#000" stop-opacity="0.95"/>
+      <radialGradient id="v-fc" cx="50%" cy="22%" r="60%">
+        <stop offset="0" stopColor="#0f2b3a" stopOpacity="0.45"/>
+        <stop offset="1" stopColor="#000" stopOpacity="0.95"/>
       </radialGradient>
-      <rect width="1200" height="1200" fill="url(#v)" />
+      <rect width="1200" height="1200" fill="url(#v-fc)" />
       <g transform="translate(600,420) scale(1)">
-        <ellipse rx="460" ry="160" fill="url(#gNeon2)" opacity="0.06" filter="url(#softGlow)" transform="translate(0,140)"/>
-        <g id="logo-shapes" transform="translate(-220,-70)">
+        <ellipse rx="460" ry="160" fill="url(#gNeon2-fc)" opacity="0.06" filter="url(#softGlow-fc)" transform="translate(0,140)"/>
+        <g id="logo-shapes-fc" transform="translate(-220,-70)">
           <g>
             <path d="M24 18 L160 18 L160 44 L84 44 L84 74 L160 74 L160 100 L24 100 z"
-                  fill="#0b0f19" stroke="rgba(0,0,0,0.45)" stroke-width="4" />
+                  fill="#0b0f19" stroke="rgba(0,0,0,0.45)" strokeWidth="4" />
             <path d="M28 22 L156 22 L156 42 L88 42 L88 70 L156 70 L156 96 L28 96 z"
-                  fill="url(#metal)" opacity="0.28"/>
+                  fill="url(#metal-fc)" opacity="0.28"/>
             <path d="M30 26 L152 26 L152 38 L92 38 L92 68 L152 68 L152 92 L30 92 z"
-                  stroke="url(#gNeon1)" stroke-width="6" fill="none" filter="url(#neonGlow)"/>
+                  stroke="url(#gNeon1-fc)" strokeWidth="6" fill="none" filter="url(#neonGlow-fc)"/>
             <path d="M34 30 L148 30 L148 36 L96 36 L96 64 L148 64 L148 88 L34 88 z"
-                  stroke="#ffffff22" stroke-width="1" fill="none" opacity="0.35"/>
+                  stroke="#ffffff22" strokeWidth="1" fill="none" opacity="0.35"/>
           </g>
           <g transform="translate(220, -6)">
             <path d="M10 2 L60 2 L160 120 L160 2 L200 2 L200 140 L150 140 L48 20 L48 140 L10 140 z"
-                  fill="#071021" stroke="rgba(0,0,0,0.45)" stroke-width="4"/>
+                  fill="#071021" stroke="rgba(0,0,0,0.45)" strokeWidth="4"/>
             <path d="M14 6 L56 6 L156 116 L156 6 L196 6 L196 136 L148 136 L52 20 L52 136 L14 136 z"
-                  fill="url(#metal)" opacity="0.22"/>
+                  fill="url(#metal-fc)" opacity="0.22"/>
             <path d="M20 12 L54 12 L150 112 L150 12 L190 12 L190 132 L144 132 L56 24 L56 132 L20 132 z"
-                  stroke="url(#gNeon1)" stroke-width="8" fill="none" filter="url(#neonGlow)"/>
+                  stroke="url(#gNeon1-fc)" strokeWidth="8" fill="none" filter="url(#neonGlow-fc)"/>
             <path d="M24 18 L50 18 L146 108 L146 18 L186 18 L186 128 L140 128 L60 34 L60 128 L24 128 z"
-                  stroke="#ffffff22" stroke-width="1" fill="none" opacity="0.35"/>
+                  stroke="#ffffff22" strokeWidth="1" fill="none" opacity="0.35"/>
           </g>
         </g>
         <g transform="translate(-220,-70)" opacity="0.95">
-          <path d="M34 32 L146 32" stroke="#ff2db8" stroke-width="6" stroke-linecap="round" opacity="0.95" filter="url(#softGlow)"/>
-          <path d="M86 46 L150 46" stroke="#00d0ff" stroke-width="6" stroke-linecap="round" opacity="0.9" filter="url(#softGlow)"/>
-          <path d="M40 82 L148 82" stroke="#7b2bff" stroke-width="5" stroke-linecap="round" opacity="0.7" />
+          <path d="M34 32 L146 32" stroke="#ff2db8" strokeWidth="6" strokeLinecap="round" opacity="0.95" filter="url(#softGlow-fc)"/>
+          <path d="M86 46 L150 46" stroke="#00d0ff" strokeWidth="6" strokeLinecap="round" opacity="0.9" filter="url(#softGlow-fc)"/>
+          <path d="M40 82 L148 82" stroke="#7b2bff" strokeWidth="5" strokeLinecap="round" opacity="0.7" />
         </g>
         <g transform="translate(-220,-70)" opacity="0.65">
-          <path d="M44 20 L58 20" stroke="#ffffffaa" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-          <path d="M102 26 L116 26" stroke="#ffffff66" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
-          <path d="M268 34 L282 34" stroke="#ffffff88" stroke-width="2" stroke-linecap="round"/>
+          <path d="M44 20 L58 20" stroke="#ffffffaa" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+          <path d="M102 26 L116 26" stroke="#ffffff66" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+          <path d="M268 34 L282 34" stroke="#ffffff88" strokeWidth="2" strokeLinecap="round"/>
         </g>
         <g transform="translate(-220,-70)">
           <path d="M18 8 L164 8 L164 108 L18 108 z M290 0 L420 0 L420 140 L290 140 z"
-                fill="none" stroke="url(#gNeon2)" stroke-width="4" opacity="0.06" filter="url(#softGlow)"/>
+                fill="none" stroke="url(#gNeon2-fc)" strokeWidth="4" opacity="0.06" filter="url(#softGlow-fc)"/>
         </g>
         <g transform="translate(-180,220)">
-          <text x="0" y="0" font-family="Poppins, Inter, Arial, sans-serif" font-weight="800"
-                font-size="82" fill="url(#gNeon1)" text-rendering="geometricPrecision"
-                style="letter-spacing:-2px; filter: url(#neonGlow);">
+          <text x="0" y="0" fontFamily="Poppins, Inter, Arial, sans-serif" fontWeight="800"
+                fontSize="82" fill="url(#gNeon1-fc)" textRendering="geometricPrecision"
+                style={{letterSpacing: '-2px', filter: 'url(#neonGlow-fc)'}}>
             funcaption
           </text>
-          <text x="6" y="46" font-family="Inter, Arial, sans-serif" font-weight="600"
-                font-size="18" fill="#9fb6d8" opacity="0.9" letter-spacing="1">
+          <text x="6" y="46" fontFamily="Inter, Arial, sans-serif" fontWeight="600"
+                fontSize="18" fill="#9fb6d8" opacity="0.9" letterSpacing="1">
             Home of real trendsetters
           </text>
         </g>
-        <g transform="translate(-240,360) scale(1, -1)" opacity="0.28" style="mix-blend-mode:screen;">
-          <use href="#logo-shapes" filter="url(#softGlow)" transform="scale(0.98,0.72) translate(8,60)"/>
-          <rect x="-260" y="-20" width="760" height="220" fill="url(#fadeMask)" opacity="0.65" />
+        <g transform="translate(-240,360) scale(1, -1)" opacity="0.28" style={{mixBlendMode: 'screen'}}>
+          <use href="#logo-shapes-fc" filter="url(#softGlow-fc)" transform="scale(0.98,0.72) translate(8,60)"/>
+          <rect x="-260" y="-20" width="760" height="220" fill="url(#fadeMask-fc)" opacity="0.65" />
         </g>
       </g>
-      <ellipse cx="600" cy="970" rx="420" ry="36" fill="url(#gNeon2)" opacity="0.04" />
-      <rect width="1200" height="1200" opacity="0.03" fill="#000" filter="url(#grain)"/>
+      <ellipse cx="600" cy="970" rx="420" ry="36" fill="url(#gNeon2-fc)" opacity="0.04" />
+      <rect width="1200" height="1200" opacity="0.03" fill="#000" filter="url(#grain-fc)"/>
     </svg>
   </div>
 );
