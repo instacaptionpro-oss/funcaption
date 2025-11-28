@@ -17,6 +17,22 @@ const moods = [
 ]
 
 const regions = {
+  genz: {
+    label: "GenZ",
+    variants: [
+      "Main character energy unlocked 🔥",
+      "This vibe? Pure GenZ magic ✨",
+      "Not a trend — I'm the trendsetter 💫"
+    ]
+  },
+  professional: {
+    label: "Professional",
+    variants: [
+      "Crafted with precision and purpose 🎯",
+      "Professional excellence meets creative vision 💼",
+      "Where expertise meets innovation 🚀"
+    ]
+  },
   gujarati: {
     label: "Gujarati",
     variants: [
@@ -162,27 +178,27 @@ export default async function handler(req, res) {
   const captions = []
 
   // CAPTION 1: Direct & Punchy (2 lines)
-  let cap1 = ${cleanSubject}.\n${moodObj.punch}
+  let cap1 = cleanSubject + '.\n' + moodObj.punch
   if (regionObj) {
-    cap1 += \n${regionObj.variants[0]}
+    cap1 += '\n' + regionObj.variants[0]
   }
-  cap1 += \n\n${moodObj.hashtags}
+  cap1 += '\n\n' + moodObj.hashtags
   captions.push({ caption: cap1, regionLabel: regionObj?.label || null })
 
   // CAPTION 2: Story Style (3 lines)
-  let cap2 = ${cleanSubject} — the kind that stays with you.\n\n${moodObj.punch}
+  let cap2 = cleanSubject + ' — the kind that stays with you.\n\n' + moodObj.punch
   if (regionObj) {
-    cap2 += \n${regionObj.variants[1]}
+    cap2 += '\n' + regionObj.variants[1]
   }
-  cap2 += \n\n${moodObj.hashtags}
+  cap2 += '\n\n' + moodObj.hashtags
   captions.push({ caption: cap2, regionLabel: regionObj?.label || null })
 
   // CAPTION 3: Reflective Style (3 lines)
-  let cap3 = ${moodObj.punch}\n\nThat's what ${cleanSubject} taught me.
+  let cap3 = moodObj.punch + '\n\nThat\'s what ' + cleanSubject + ' taught me.'
   if (regionObj) {
-    cap3 += \n${regionObj.variants[2]}
+    cap3 += '\n' + regionObj.variants[2]
   }
-  cap3 += \n\n${moodObj.hashtags}
+  cap3 += '\n\n' + moodObj.hashtags
   captions.push({ caption: cap3, regionLabel: regionObj?.label || null })
 
   // Add Instagram follow request message
