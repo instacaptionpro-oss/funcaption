@@ -28,7 +28,7 @@ Subject: ${subject}
 Mood: ${mood}
 Region: ${region}
 
-Format EXACTLY like this:
+Format EXACTLY like this JSON structure:
 
 {
   "variants": [
@@ -42,7 +42,7 @@ Format EXACTLY like this:
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
+        'Authorization': Bearer ${process.env.DEEPSEEK_API_KEY}
       },
       body: JSON.stringify({
         model: "deepseek-chat",
@@ -54,17 +54,32 @@ Format EXACTLY like this:
 
     if (response.ok) {
       const data = await response.json();
-      const aiResponse = JSON.parse(data.choices[0].message.content);
+      console.log('DeepSeek response:', data); // Debug log
       
-      // Add Instagram follow request to each caption
-      const instagramMessage = "\n\nHelp please make us a favour follow us on Instagram and click below\nhttps://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA==";
+      let content = data.choices[0].message.content;
       
-      const finalVariants = aiResponse.variants.map(variant => ({
-        caption: variant.caption + instagramMessage
-      }));
+      // Remove markdown code blocks if present
+      content = content.replace(/json/g, '').replace(//g, '').trim();
+      
+      try {
+        const aiResponse = JSON.parse(content);
+        
+        // Add Instagram follow request to each caption
+        const instagramMessage = "\n\nHelp please make us a favour follow us on Instagram and click below\nhttps://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA==";
+        
+        const finalVariants = aiResponse.variants.map(variant => ({
+          caption: variant.caption + instagramMessage
+        }));
 
-      return res.status(200).json({ variants: finalVariants });
+        return res.status(200).json({ variants: finalVariants });
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        console.error('Raw content:', content);
+        return res.status(500).json({ error: 'Failed to parse AI response' });
+      }
     } else {
+      const errorData = await response.text();
+      console.error('DeepSeek API error:', errorData);
       return res.status(response.status).json({ error: 'DeepSeek API error' });
     }
   } catch (error) {
