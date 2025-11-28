@@ -276,4 +276,3 @@ Format EXACTLY like this:
 
     return res.status(200).json({ variants: finalCaptions })
   }
-}
