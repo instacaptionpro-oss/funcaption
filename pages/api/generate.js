@@ -34,9 +34,9 @@ export default async function handler(req, res) {
       
       // Create 3 simple captions from the response
       const captions = [
-        { caption: ${subject}...\n${mood} energy.\n\n#${mood} #Instagram #Viral },
-        { caption: When ${subject} meets ${mood} vibes...\n\n#${mood} #Trending #Content },
-        { caption: ${mood} mode: ${subject}\n\n#${mood} #Style #SocialMedia }
+        { caption: `${subject}...\n${mood} energy.\n\n#${mood} #Instagram #Viral` },
+        { caption: `When ${subject} meets ${mood} vibes...\n\n#${mood} #Trending #Content` },
+        { caption: `${mood} mode: ${subject}\n\n#${mood} #Style #SocialMedia` }
       ];
       
       // Add Instagram follow request
