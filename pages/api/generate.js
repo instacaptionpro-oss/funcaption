@@ -139,9 +139,6 @@ const regions = {
   }
 }
 
-// Add Instagram footer constant
-const IG_FOOTER = "\n\n📷 Help please make us a favour follow us on Instagram @instaalgohacker - https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA=="
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -160,34 +157,42 @@ export default async function handler(req, res) {
 
   const regionObj = region && region !== 'none' ? regions[region] : null
   const cleanSubject = subject.trim()
+
+  // Create 3 distinct caption styles (2-3 lines each)
   const captions = []
 
-  // CAPTION 1: Direct
-  let cap1 = cleanSubject + '.\n' + moodObj.punch
+  // CAPTION 1: Direct & Punchy (2 lines)
+  let cap1 = ${cleanSubject}.\n${moodObj.punch}
   if (regionObj) {
-    cap1 += '\n' + regionObj.variants[0]
+    cap1 += \n${regionObj.variants[0]}
   }
-  cap1 += '\n\n' + moodObj.hashtags
-  cap1 += IG_FOOTER
+  cap1 += \n\n${moodObj.hashtags}
   captions.push({ caption: cap1, regionLabel: regionObj?.label || null })
 
-  // CAPTION 2: Story Style
-  let cap2 = cleanSubject + ' — the kind that stays with you.\n' + moodObj.punch
+  // CAPTION 2: Story Style (3 lines)
+  let cap2 = ${cleanSubject} — the kind that stays with you.\n\n${moodObj.punch}
   if (regionObj) {
-    cap2 += '\n' + regionObj.variants[1]
+    cap2 += \n${regionObj.variants[1]}
   }
-  cap2 += '\n\n' + moodObj.hashtags
-  cap2 += IG_FOOTER
+  cap2 += \n\n${moodObj.hashtags}
   captions.push({ caption: cap2, regionLabel: regionObj?.label || null })
 
-  // CAPTION 3: Bold/Reversed
-  let cap3 = moodObj.punch + "\nThat's what " + cleanSubject + ' taught me.'
+  // CAPTION 3: Reflective Style (3 lines)
+  let cap3 = ${moodObj.punch}\n\nThat's what ${cleanSubject} taught me.
   if (regionObj) {
-    cap3 += '\n' + regionObj.variants[2]
+    cap3 += \n${regionObj.variants[2]}
   }
-  cap3 += '\n\n' + moodObj.hashtags
-  cap3 += IG_FOOTER
+  cap3 += \n\n${moodObj.hashtags}
   captions.push({ caption: cap3, regionLabel: regionObj?.label || null })
 
-  return res.status(200).json({ variants: captions })
+  // Add Instagram follow request message
+  const instagramMessage = "\n\nHelp please make us a favour follow us on Instagram and click below\nhttps://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA=="
+
+  // Append Instagram message to all captions
+  const finalCaptions = captions.map(captionObj => ({
+    ...captionObj,
+    caption: captionObj.caption + instagramMessage
+  }))
+
+  return res.status(200).json({ variants: finalCaptions })
 }
