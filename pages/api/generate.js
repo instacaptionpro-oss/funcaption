@@ -59,7 +59,7 @@ Format EXACTLY like this JSON structure:
       let content = data.choices[0].message.content;
       
       // Remove markdown code blocks if present
-      content = content.replace(/json/g, '').replace(//g, '').trim();
+      content = content.replace(/```json/g, '').replace(/```/g, '').trim();
       
       try {
         const aiResponse = JSON.parse(content);
