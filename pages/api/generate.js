@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
   try {
     // Use a free AI API (no key required)
-    const prompt = Create 3 creative Instagram captions for: ${subject} with ${mood} mood${region !== 'none' ? ` and ${region} regional touch : ''}. Each caption should be 2-3 lines with relevant hashtags. Be creative and original.`;
+    const prompt = `Create 3 creative Instagram captions for: ${subject} with ${mood} mood${region !== 'none' ? ` and ${region} regional touch ` : ''}. Each caption should be 2-3 lines with relevant hashtags. Be creative and original.`;
 
     const response = await fetch('https://api-inference.huggingface.co/models/gpt2', {
       method: 'POST',
