@@ -114,6 +114,8 @@ const Logo = () => (
 
 const regions = [
   { id: "none", label: "No Region" },
+  { id: "genz", label: "GenZ" },
+  { id: "professional", label: "Professional" },
   { id: "gujarati", label: "Gujarati" },
   { id: "marathi", label: "Marathi" },
   { id: "punjabi", label: "Punjabi" },
