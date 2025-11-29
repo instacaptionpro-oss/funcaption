@@ -94,7 +94,7 @@ Caption should be:
 
 (Return ONLY 1 caption from HuggingFace.)`;
 
-      const response = await fetch(https://api-inference.huggingface.co/models/${process.env.HUGGINGFACE_MODEL}, {
+      const response = await fetch(`https://api-inference.huggingface.co/models/${process.env.HUGGINGFACE_MODEL}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
