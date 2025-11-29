@@ -62,10 +62,10 @@ export default async function handler(req, res) {
     if (style === 1) {
       caption = `${cleanSubject}.\n${moodObj.punch}`;
       if (regionObj) {
-        caption += \n${regionObj.variants[0]};
+        caption += `\n${regionObj.variants[0]}`;
       }
     } else {
-      caption = ${cleanSubject} hits differently.\n${moodObj.punch};
+      caption =`${cleanSubject} hits differently.\n${moodObj.punch}`;
       if (regionObj) {
         caption += \n${regionObj.variants[1]};
       }
