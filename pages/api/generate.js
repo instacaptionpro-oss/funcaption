@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
   // Cache key
   const cacheKey = `variants:${require('crypto').createHash('sha256')
-    .update(${subject}|${mood}|${region})
+    .update(`${subject}|${mood}|${region}`)
     .digest('hex')}`;
 
   // Check cache
