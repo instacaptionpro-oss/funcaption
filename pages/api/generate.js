@@ -60,7 +60,7 @@ export default async function handler(req, res) {
   const generateFallbackCaption = (style) => {
     let caption = '';
     if (style === 1) {
-      caption = ${cleanSubject}.\n${moodObj.punch};
+      caption = `${cleanSubject}.\n${moodObj.punch}`;
       if (regionObj) {
         caption += \n${regionObj.variants[0]};
       }
