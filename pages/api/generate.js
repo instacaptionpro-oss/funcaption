@@ -28,7 +28,7 @@ Rules:
     const hfRes = await fetch(HF_URL, {
       method: "POST",
       headers: {
-        "Authorization": Bearer ${process.env.HF_TOKEN},
+        "Authorization": `Bearer ${process.env.HF_TOKEN}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -52,8 +52,8 @@ Rules:
   }
 
   // fallback captions
-  const fallback1 = ${subject}\n${mood} energy hits different.\n\n#${mood} #trending;
-  const fallback2 = ${subject} — in the mood.\n\n#${mood}Life #vibes;
+  const fallback1 = `${subject}\n${mood} energy hits different.\n\n#${mood} #trending`;
+  const fallback2 = `${subject} — in the mood.\n\n#${mood}Life #vibes`;
 
   const finalOutput = [
     { caption: premiumCaption || fallback1, premium: true },
