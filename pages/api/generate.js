@@ -9,57 +9,76 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Subject and mood required" });
   }
 
+  const HF_API_KEY = process.env.HUGGINGFACE_API_KEY;
+  const MODEL = process.env.HUGGINGFACE_MODEL;
   const HF_URL = "https://router.huggingface.co/v1/chat/completions";
-
-  const prompt = `Write 1 premium Instagram caption.
-Subject: ${subject}
-Mood: ${mood}
-Region: ${region || "none"}
-Rules:
-- Make it stylish, modern, emotional
-- 2–3 lines
-- Include hashtags
-- Do NOT repeat user input
-- Caption only, no explanations`;
 
   let premiumCaption = null;
 
+  // PREMIUM CAPTION → HuggingFace
   try {
-    const hfRes = await fetch(HF_URL, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.HF_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: process.env.HF_MODEL,
-        messages: [
-          { role: "user", content: prompt }
-        ]
-      })
-    });
+    if (HF_API_KEY && MODEL) {
+      const prompt = `
+Generate 1 Instagram caption.
 
-    const data = await hfRes.json();
+Subject: ${subject}
+Mood: ${mood}
+Region: ${region}
 
-    if (hfRes.ok) {
-      premiumCaption =
-        data.choices?.[0]?.message?.content?.trim() || null;
-    } else {
-      console.log("HF Error:", data);
+Rules:
+- Make it emotional, deep, stylish.
+- 2–3 lines maximum.
+- Include relevant hashtags.
+- Do NOT repeat user inputs exactly.
+- Make it feel premium.
+      `;
+
+      const response = await fetch(HF_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${HF_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 150
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const text = data?.choices?.[0]?.message?.content || "";
+
+        if (text.length > 10) {
+          premiumCaption = text.trim();
+        }
+      } else {
+        console.log("HF non-ok response:", await response.text());
+      }
     }
   } catch (err) {
-    console.log("HF API failed:", err);
+    console.error("Premium caption failed", err);
   }
 
-  // fallback captions
-  const fallback1 = `${subject}\n${mood} energy hits different.\n\n#${mood} #trending`;
-  const fallback2 = `${subject} — in the mood.\n\n#${mood}Life #vibes`;
+  // FALLBACK CAPTIONS (2 normal captions)
+  const fallback1 = `${subject}.\n${mood} vibes hit different.\n\n#${mood} #viral #instagram`;
+  const fallback2 = `${subject} speaks louder than words.\n${mood} energy.\n\n#${mood} #trending #creators`;
 
-  const finalOutput = [
-    { caption: premiumCaption || fallback1, premium: true },
-    { caption: fallback1, premium: false },
-    { caption: fallback2, premium: false }
+  const variants = [
+    {
+      caption: premiumCaption || fallback1,
+      premium: true
+    },
+    {
+      caption: fallback1,
+      premium: false
+    },
+    {
+      caption: fallback2,
+      premium: false
+    }
   ];
 
-  return res.status(200).json({ variants: finalOutput });
+  return res.status(200).json({ variants });
 }
