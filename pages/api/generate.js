@@ -5,130 +5,124 @@ export default async function handler(req, res) {
   }
 
   const { subject, mood, region } = req.body || {};
+  if (!subject || !mood) return res.status(400).json({ error: 'Subject and mood required' });
 
-  if (!subject || !mood) {
-    return res.status(400).json({ error: 'Subject and mood required' }); 
-  }
+  const cleanSubject = String(subject).trim();
+  const moodKey = String(mood).trim();
 
-  const clean = (s = '') => String(s).trim();
-
-  const cleanSubject = clean(subject);
-  const cleanMood = clean(mood);
-  const cleanRegion = clean(region || 'none');
-
-  // Fallback content data
+  // --- Data (moods + regions) ---
   const moods = [
-    { id: "attitude", punch: "Iron heals what people break.", hashtags: "#Attitude #SilentGrind #Results" },
-    { id: "motivation", punch: "The grind is lonely but legends are born here.", hashtags: "#Motivation #Grind #Hustle" },
-    { id: "love", punch: "Some feelings rewrite the heart, silently.", hashtags: "#Love #DeepFeelings" },
-    { id: "breakup", punch: "I lost them, but I found myself — and that's the win.", hashtags: "#Breakup #SelfGrowth" },
-    { id: "gym", punch: "Iron heals what people break.", hashtags: "#Gym #FitnessMotivation" },
-    { id: "travel", punch: "Some roads fix parts of you you never speak about.", hashtags: "#Travel #Wanderlust" },
-    { id: "cute", punch: "Soft heart, sharp mind — rare combination.", hashtags: "#Cute #SoftVibes" },
-    { id: "savage", punch: "If I cared, you'd know. I don't.", hashtags: "#Savage #Unbothered" },
-    { id: "aesthetic", punch: "Some things look better when you stop chasing.", hashtags: "#Aesthetic #Mood" },
-    { id: "sad", punch: "I smile… but rarely at the same things now.", hashtags: "#Sad #RealTalk" },
-    { id: "happy", punch: "Little moments make big lives.", hashtags: "#Happy #Grateful" },
-    { id: "alone", punch: "Silence teaches louder than people.", hashtags: "#Alone #QuietStrength" },
-    { id: "boss", punch: "Money talks, but discipline screams.", hashtags: "#Boss #Discipline" },
-    { id: "genz", punch: "Chaotic but still iconic.", hashtags: "#GenZ #MainCharacter" },
-    { id: "calm", punch: "Peace looks good on me.", hashtags: "#Calm #InnerPeace" }
+    { id: "attitude", label: "Attitude", punch: "Iron heals what people break.", hashtags: "#Attitude #SilentGrind #Results" },
+    { id: "motivation", label: "Motivation", punch: "The grind is lonely but legends are born here.", hashtags: "#Motivation #Grind #Hustle" },
+    { id: "love", label: "Love", punch: "Some feelings rewrite the heart, silently.", hashtags: "#Love #DeepFeelings" },
+    { id: "breakup", label: "Breakup", punch: "I lost them, but I found myself — and that's the win.", hashtags: "#Breakup #SelfGrowth" },
+    { id: "gym", label: "Gym", punch: "Iron heals what people break.", hashtags: "#Gym #FitnessMotivation" },
+    { id: "travel", label: "Travel", punch: "Some roads fix parts of you you never speak about.", hashtags: "#Travel #Wanderlust" },
+    { id: "cute", label: "Cute", punch: "Soft heart, sharp mind — rare combination.", hashtags: "#Cute #PositiveVibes" },
+    { id: "savage", label: "Savage", punch: "If I cared, you'd know. I don't.", hashtags: "#Savage #Unbothered" },
+    { id: "aesthetic", label: "Aesthetic", punch: "Some things look better when you stop chasing.", hashtags: "#Aesthetic #Mood" },
+    { id: "sad", label: "Sad", punch: "I smile… but rarely at the same things now.", hashtags: "#Sad #RealTalk" },
+    { id: "happy", label: "Happy", punch: "Little moments make big lives.", hashtags: "#Happy #Grateful" },
+    { id: "alone", label: "Alone", punch: "Silence teaches louder than people.", hashtags: "#Alone #SelfReflection" },
+    { id: "boss", label: "Boss", punch: "Money talks, but discipline screams.", hashtags: "#Boss #Discipline" },
+    { id: "genz", label: "GenZ", punch: "Chaotic but still iconic.", hashtags: "#GenZ #MainCharacter" },
+    { id: "calm", label: "Calm", punch: "Peace looks good on me.", hashtags: "#Calm #InnerPeace" }
   ];
 
   const regions = {
-    gujarati: ["આ છે અમારા ગુજરાતી વાઇબ 🌟", "આ છે આપડી કાઠિયાવાડની મોજ 🔥", "ગુજરાતી લોહીમાં વાઇબ અલગ 💛"],
-    hindi: ["ये है हमारी देसी शान 🔥","देसी दिल, देसी वाइब 💛","ये स्टाइल सिर्फ हम देसी करते हैं."],
-    punjabi: ["ਏ ਸਾਡੀ ਪੰਜਾਬੀ ਵਾਈਬ ਹੈ 🔥","ਪੰਜਾਬੀਆਂ ਦੀ ਗੱਲ ਹੀ ਕੁਝ ਹੋਰ 💛","ਵਾਈਬ ਤਾ ਸਾਡੀ ਹੀ ਚਲਦੀ ਹੈ!"],
-    // add others as needed...
+    gujarati: { label: "Gujarati", variants: ["આ છે અમારા ગુજરાતી વાઇબ 🌟", "આ છે આપડી કાઠિયાવાડની મોજ 🔥", "ગુજરાતી લોહીમાં વાઇબ અલગ 💛"] },
+    marathi: { label: "Marathi", variants: ["ही आहे आमची मराठी स्टाईल 🔥", "मराठी मना ची वेगळीच ओळख 💛", "आम्ही मराठी — vibes वेगळ्याच!"] },
+    punjabi: { label: "Punjabi", variants: ["ਏ ਸਾਡੀ ਪੰਜਾਬੀ ਵਾਈਬ ਹੈ 🔥", "ਪੰਜਾਬੀਆਂ ਦੀ ਗੱਲ ਹੀ ਕੁਝ ਹੋਰ 💛", "ਵਾਈਬ ਤਾ ਸਾਡੀ ਹੀ ਚਲਦੀ ਹੈ!"] },
+    hindi: { label: "Hindi / Desi", variants: ["ये है हमारी देसी शान 🔥", "देसी दिल, देसी वाइब 💛", "ये स्टाइल सिर्फ हम देसी करते हैं."] },
+    // add other regions if you want...
   };
 
-  const instagramLink = process.env.SITE_INSTAGRAM || 'https://www.instagram.com/instaalgohacker';
+  const moodObj = moods.find(m => m.id === moodKey) || { label: moodKey, punch: '', hashtags: '' };
+  const regionObj = region && region !== 'none' ? (regions[region] || null) : null;
 
-  const findMood = moods.find(m => m.id === cleanMood) || moods[0];
-
-  // Helper: fallback caption generator (guaranteed)
-  const createFallback = (style = 1) => {
-    if (style === 1) {
-      let c = `${cleanSubject}.\n${findMood.punch}`;
-      if (cleanRegion !== 'none' && regions[cleanRegion]) c += `\n${regions[cleanRegion][0]}`;
-      c += `\n\n${findMood.hashtags}`;
+  // --- Generate fallback captions (fast, deterministic) ---
+  const makeFallback = (styleIndex) => {
+    if (styleIndex === 1) {
+      let c = `${cleanSubject}.\n${moodObj.punch || ''}`;
+      if (regionObj) c += `\n${regionObj.variants[0]}`;
+      c += `\n\n${moodObj.hashtags.trim()}`;
       return c;
     } else {
-      let c = `${cleanSubject} — the kind that stays with you.\n\n${findMood.punch}`;
-      if (cleanRegion !== 'none' && regions[cleanRegion]) c += `\n${regions[cleanRegion][1]}`;
-      c += `\n\n${findMood.hashtags}`;
+      let c = `${cleanSubject} hits differently.\n${moodObj.punch || ''}`;
+      if (regionObj) c += `\n${regionObj.variants[1] || ''}`;
+      c += `\n\n${moodObj.hashtags.trim()}`;
       return c;
     }
   };
 
-  // Try Hugging Face (premium) — use env vars if provided
+  const fallback1 = makeFallback(1);
+  const fallback2 = makeFallback(2);
+
+  // --- Try Hugging Face Router (premium caption) ---
   let premiumCaption = null;
-  const hfKey = process.env.HUGGINGFACE_API_KEY;
-  const hfModel = process.env.HUGGINGFACE_MODEL; // full model name or endpoint
-
-  if (hfKey && hfModel) {
+  if (process.env.HUGGINGFACE_API_KEY && process.env.HUGGINGFACE_MODEL) {
     try {
-      const prompt = `Write ONE high-quality Instagram caption (2-3 lines + hashtags). 
-Subject: ${cleanSubject}
-Mood: ${cleanMood}
-Region / vibe: ${cleanRegion === 'none' ? 'none' : cleanRegion}
-
-Tone: deep, emotional, stylish, optimized for engagement and shares.
-Return only the caption text (no extra meta).`;
-
-      const hfUrl = `https://router.huggingface.co/models/${hfModel}`;
-
-      const hfResp = await fetch(hfUrl, {
-        method: 'POST',
+      const hfResp = await fetch("https://router.huggingface.co/v1/chat/completions", {
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${hfKey}`,
-          'Content-Type': 'application/json'
+          "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          inputs: prompt,
-          parameters: { max_new_tokens: 160, temperature: 0.7 }
+          model: process.env.HUGGINGFACE_MODEL,
+          messages: [
+            {
+              role: "user",
+              content: `Write ONE Instagram caption (2–3 lines + hashtags). 
+Subject: ${cleanSubject}
+Mood: ${moodKey}
+Region: ${region || 'none'}
+Tone: deep, emotional, stylish. 
+Return ONLY the caption text, no explanation.`
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 140
         })
       });
 
-      // If HF returned OK, try to parse various response shapes
       if (hfResp.ok) {
-        const data = await hfResp.json();
-        // data may be [{generated_text: "..."}] or {generated_text: "..."} or plain text
-        const text =
-          (Array.isArray(data) && (data[0]?.generated_text || data[0]?.generated_text === '') ? data[0].generated_text : null)
-          || (data.generated_text)
-          || (typeof data === 'string' ? data : null)
-          || JSON.stringify(data);
+        const hfJson = await hfResp.json();
+        // try common shapes: choices[0].message.content or choices[0].text
+        const candidate =
+          hfJson?.choices?.[0]?.message?.content ||
+          hfJson?.choices?.[0]?.text ||
+          hfJson?.output_text ||
+          "";
 
-        const cleaned = String(text || '').trim();
-        if (cleaned.length > 12) {
-          // sometimes HF returns more; keep first 1-3 lines
-          const lines = cleaned.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-          premiumCaption = lines.slice(0, 4).join('\n');
+        if (candidate && candidate.trim().length > 8) {
+          premiumCaption = String(candidate).trim();
         }
       } else {
-        // helpful debug log for you (will appear in Render/Vercel logs)
-        const errText = await hfResp.text().catch(() => '');
-        console.warn('HF non-ok response:', hfResp.status, errText);
+        // log for debugging (Render logs)
+        const bodyText = await hfResp.text().catch(() => '');
+        console.log('HF non-ok', hfResp.status, bodyText);
       }
-    } catch (e) {
-      console.error('HuggingFace error:', e?.message || e);
+    } catch (err) {
+      console.log('HF request error', err?.message || err);
     }
   }
 
-  // If premiumCaption still null, use fallback (but we still label it Premium on front-end)
-  if (!premiumCaption) {
-    premiumCaption = createFallback(1);
+  // --- Prepare final variants array (premium first if exists) ---
+  const instagramMessage = "\n\nFollow us on Instagram: https://www.instagram.com/instaalgohacker";
+
+  const variants = [];
+
+  if (premiumCaption) {
+    variants.push({ caption: `${premiumCaption}${instagramMessage}`, regionLabel: regionObj?.label || null, premium: true });
+  } else {
+    // if no premium available, put fallback1 in premium slot (but premium:false)
+    variants.push({ caption: `${fallback1}${instagramMessage}`, regionLabel: regionObj?.label || null, premium: false });
   }
 
-  // Build variants: premium first, then two fallback captions
-  const instagramMessage = `\n\nFollow us on Instagram — ${instagramLink}`;
-
-  const variants = [
-    { caption: premiumCaption + instagramMessage, regionLabel: regions[cleanRegion]?.label || (cleanRegion === 'none' ? null : cleanRegion) || null },
-    { caption: createFallback(1) + instagramMessage, regionLabel: regions[cleanRegion]?.label || (cleanRegion === 'none' ? null : cleanRegion) || null },
-    { caption: createFallback(2) + instagramMessage, regionLabel: regions[cleanRegion]?.label || (cleanRegion === 'none' ? null : cleanRegion) || null }
-  ];
+  // always include two fallback captions (free)
+  variants.push({ caption: `${fallback1}${instagramMessage}`, regionLabel: regionObj?.label || null, premium: false });
+  variants.push({ caption: `${fallback2}${instagramMessage}`, regionLabel: regionObj?.label || null, premium: false });
 
   return res.status(200).json({ variants });
 }
