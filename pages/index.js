@@ -10,11 +10,107 @@ const InstagramIcon = () => (
 const Logo = () => (
   <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 10 }}>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" width="60" height="60" role="img" aria-label="FunCaption neon logo">
+      <defs>
+        <linearGradient id="gNeon1-fc" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stopColor="#5b29ff"/>
+          <stop offset="0.45" stopColor="#00d0ff"/>
+          <stop offset="1" stopColor="#ff2db8"/>
+        </linearGradient>
+        <linearGradient id="gNeon2-fc" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stopColor="#00d0ff"/>
+          <stop offset="1" stopColor="#7b2bff"/>
+        </linearGradient>
+        <linearGradient id="metal-fc" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="#cbd5ff" stopOpacity="0.35"/>
+          <stop offset="1" stopColor="#0b1220" stopOpacity="0.15"/>
+        </linearGradient>
+        <filter id="softGlow-fc" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="18" result="b1"/>
+          <feMerge>
+            <feMergeNode in="b1"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <filter id="neonGlow-fc" x="-200%" y="-200%" width="400%" height="400%">
+          <feGaussianBlur stdDeviation="22" result="g1"/>
+          <feColorMatrix in="g1" type="matrix" values="1 0 0 0 0   0 1 0 0 0   0 0 1 0 0  0 0 0 0.9 0" />
+          <feMerge>
+            <feMergeNode in="g1"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <linearGradient id="fadeMask-fc" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.45"/>
+          <stop offset="1" stopColor="#fff" stopOpacity="0"/>
+        </linearGradient>
+        <filter id="grain-fc">
+          <feTurbulence baseFrequency="0.9" numOctaves="1" stitchTiles="stitch" result="noise"/>
+          <feColorMatrix type="saturate" values="0" in="noise" result="gn"/>
+          <feBlend in="SourceGraphic" in2="gn" mode="overlay"/>
+        </filter>
+      </defs>
       <rect width="1200" height="1200" fill="#02020a"/>
-      <text x="6" y="46" fontFamily="Inter, Arial, sans-serif" fontWeight="600"
-            fontSize="18" fill="#9fb6d8" opacity="0.9" letterSpacing="1">
-        Home of real trendsetters
-      </text>
+      <radialGradient id="v-fc" cx="50%" cy="22%" r="60%">
+        <stop offset="0" stopColor="#0f2b3a" stopOpacity="0.45"/>
+        <stop offset="1" stopColor="#000" stopOpacity="0.95"/>
+      </radialGradient>
+      <rect width="1200" height="1200" fill="url(#v-fc)" />
+      <g transform="translate(600,420) scale(1)">
+        <ellipse rx="460" ry="160" fill="url(#gNeon2-fc)" opacity="0.06" filter="url(#softGlow-fc)" transform="translate(0,140)"/>
+        <g id="logo-shapes-fc" transform="translate(-220,-70)">
+          <g>
+            <path d="M24 18 L160 18 L160 44 L84 44 L84 74 L160 74 L160 100 L24 100 z"
+                  fill="#0b0f19" stroke="rgba(0,0,0,0.45)" strokeWidth="4" />
+            <path d="M28 22 L156 22 L156 42 L88 42 L88 70 L156 70 L156 96 L28 96 z"
+                  fill="url(#metal-fc)" opacity="0.28"/>
+            <path d="M30 26 L152 26 L152 38 L92 38 L92 68 L152 68 L152 92 L30 92 z"
+                  stroke="url(#gNeon1-fc)" strokeWidth="6" fill="none" filter="url(#neonGlow-fc)"/>
+            <path d="M34 30 L148 30 L148 36 L96 36 L96 64 L148 64 L148 88 L34 88 z"
+                  stroke="#ffffff22" strokeWidth="1" fill="none" opacity="0.35"/>
+          </g>
+          <g transform="translate(220, -6)">
+            <path d="M10 2 L60 2 L160 120 L160 2 L200 2 L200 140 L150 140 L48 20 L48 140 L10 140 z"
+                  fill="#071021" stroke="rgba(0,0,0,0.45)" strokeWidth="4"/>
+            <path d="M14 6 L56 6 L156 116 L156 6 L196 6 L196 136 L148 136 L52 20 L52 136 L14 136 z"
+                  fill="url(#metal-fc)" opacity="0.22"/>
+            <path d="M20 12 L54 12 L150 112 L150 12 L190 12 L190 132 L144 132 L56 24 L56 132 L20 132 z"
+                  stroke="url(#gNeon1-fc)" strokeWidth="8" fill="none" filter="url(#neonGlow-fc)"/>
+            <path d="M24 18 L50 18 L146 108 L146 18 L186 18 L186 128 L140 128 L60 34 L60 128 L24 128 z"
+                  stroke="#ffffff22" strokeWidth="1" fill="none" opacity="0.35"/>
+          </g>
+        </g>
+        <g transform="translate(-220,-70)" opacity="0.95">
+          <path d="M34 32 L146 32" stroke="#ff2db8" strokeWidth="6" strokeLinecap="round" opacity="0.95" filter="url(#softGlow-fc)"/>
+          <path d="M86 46 L150 46" stroke="#00d0ff" strokeWidth="6" strokeLinecap="round" opacity="0.9" filter="url(#softGlow-fc)"/>
+          <path d="M40 82 L148 82" stroke="#7b2bff" strokeWidth="5" strokeLinecap="round" opacity="0.7" />
+        </g>
+        <g transform="translate(-220,-70)" opacity="0.65">
+          <path d="M44 20 L58 20" stroke="#ffffffaa" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+          <path d="M102 26 L116 26" stroke="#ffffff66" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+          <path d="M268 34 L282 34" stroke="#ffffff88" strokeWidth="2" strokeLinecap="round"/>
+        </g>
+        <g transform="translate(-220,-70)">
+          <path d="M18 8 L164 8 L164 108 L18 108 z M290 0 L420 0 L420 140 L290 140 z"
+                fill="none" stroke="url(#gNeon2-fc)" strokeWidth="4" opacity="0.06" filter="url(#softGlow-fc)"/>
+        </g>
+        <g transform="translate(-180,220)">
+          <text x="0" y="0" fontFamily="Poppins, Inter, Arial, sans-serif" fontWeight="800"
+                fontSize="82" fill="url(#gNeon1-fc)" textRendering="geometricPrecision"
+                style={{letterSpacing: '-2px', filter: 'url(#neonGlow-fc)'}}>
+            funcaption
+          </text>
+          <text x="6" y="46" fontFamily="Inter, Arial, sans-serif" fontWeight="600"
+                fontSize="18" fill="#9fb6d8" opacity="0.9" letterSpacing="1">
+            Home of real trendsetters
+          </text>
+        </g>
+        <g transform="translate(-240,360) scale(1, -1)" opacity="0.28" style={{mixBlendMode: 'screen'}}>
+          <use href="#logo-shapes-fc" filter="url(#softGlow-fc)" transform="scale(0.98,0.72) translate(8,60)"/>
+          <rect x="-260" y="-20" width="760" height="220" fill="url(#fadeMask-fc)" opacity="0.65" />
+        </g>
+      </g>
+      <ellipse cx="600" cy="970" rx="420" ry="36" fill="url(#gNeon2-fc)" opacity="0.04" />
+      <rect width="1200" height="1200" opacity="0.03" fill="#000" filter="url(#grain-fc)"/>
     </svg>
   </div>
 );
@@ -64,6 +160,7 @@ export default function Home() {
       if (response.ok) {
         setVariants(data.variants || [])
       } else {
+        // if not ok, still try to show something useful
         setVariants(data.variants || [])
       }
     } catch (err) {
@@ -74,45 +171,14 @@ export default function Home() {
   }
 
   const copyCaption = (text, index) => {
-    navigator.clipboard.writeText(text)
-    setCopiedIndex(index)
-    setTimeout(() => setCopiedIndex(null), 2000)
+    try {
+      navigator.clipboard.writeText(text)
+      setCopiedIndex(index)
+      setTimeout(() => setCopiedIndex(null), 2000)
+    } catch (e) {
+      console.error('Copy failed', e)
+    }
   }
-
-  const premiumBoxStyle = {
-    background: 'linear-gradient(180deg, rgba(9,10,21,0.6), rgba(8,9,18,0.8))',
-    padding: '2.25rem',
-    borderRadius: '1rem',
-    border: '3px solid',
-    borderImage: 'linear-gradient(135deg,#FFD700,#FF6A00) 1',
-    boxShadow: '0 15px 40px rgba(138,43,226,0.18), inset 0 0 40px rgba(255,215,0,0.06)',
-    position: 'relative'
-  };
-
-  const normalBoxStyle = {
-    background: 'rgba(0, 0, 0, 0.6)',
-    padding: '2rem',
-    borderRadius: '1rem',
-    border: '2px solid rgba(0, 255, 255, 0.3)',
-    boxShadow: '0 0 20px rgba(0, 255, 255, 0.2)'
-  };
-
-  const premiumBadge = (
-    <div style={{
-      position: 'absolute',
-      top: '-14px',
-      right: '-14px',
-      background: 'linear-gradient(135deg,#FFD700,#FF6A00)',
-      color: '#0b0b0b',
-      padding: '0.45rem 0.9rem',
-      borderRadius: '999px',
-      fontWeight: '800',
-      fontSize: '0.8rem',
-      boxShadow: '0 8px 24px rgba(255,106,0,0.18)'
-    }}>
-      PREMIUM
-    </div>
-  );
 
   return (
     <>
@@ -130,7 +196,7 @@ export default function Home() {
       }}>
         <Logo />
         
-        {/* HERO SECTION */}
+        {/* SECTION 1: HERO / STORY */}
         <section style={{
           background: 'linear-gradient(135deg, #0a0e27 0%, #16213e 100%)',
           padding: '4rem 1.5rem',
@@ -138,6 +204,7 @@ export default function Home() {
           position: 'relative'
         }}>
           <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center', paddingTop: '60px' }}>
+            {/* Logo + Tagline */}
             <div style={{ marginBottom: '3rem' }}>
               <div style={{
                 fontSize: '2.5rem',
@@ -158,6 +225,7 @@ export default function Home() {
                 A Free Caption Generator
               </div>
               
+              {/* Instagram Link with Icon */}
               <div style={{ marginTop: '1rem' }}>
                 <a 
                   href="https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA==" 
@@ -184,6 +252,7 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Aggressive questions */}
             <div style={{ marginBottom: '3rem', lineHeight: '2' }}>
               <p style={{ fontSize: '1.3rem', color: '#a0a0a0', marginBottom: '1rem' }}>
                 Do you really think you work hard for your content?
@@ -196,6 +265,7 @@ export default function Home() {
               </p>
             </div>
 
+            {/* Answer */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 255, 255, 0.2))',
               padding: '2.5rem',
@@ -212,12 +282,14 @@ export default function Home() {
                 lineHeight: '1.6'
               }}>
                 Yes — we think you are. That's why you and us are here.
+                <br />
+                Because the world makes us feel the same way.
               </p>
-
+              
               <p style={{ fontSize: '1.1rem', color: '#c0c0c0', marginBottom: '1rem' }}>
                 By using this, people will NOT magically start to see you.
               </p>
-
+              
               <p style={{ 
                 fontSize: '2rem', 
                 fontWeight: '900', 
@@ -228,7 +300,7 @@ export default function Home() {
               }}>
                 But Instagram's algorithm WILL start working for you.
               </p>
-
+              
               <p style={{ fontSize: '0.95rem', color: '#ffd700', fontStyle: 'italic' }}>
                 Share this with your regional creators — let all brothers rise together.
               </p>
@@ -236,7 +308,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* GENERATOR */}
+        {/* SECTION 2: GENERATOR */}
         <section style={{
           background: 'linear-gradient(135deg, #16213e 0%, #0f3460 100%)',
           padding: '4rem 1.5rem'
@@ -254,6 +326,7 @@ export default function Home() {
               Generate captions to hack Instagram's algorithm
             </h2>
 
+            {/* Generator Form */}
             <div style={{
               background: 'rgba(0, 0, 0, 0.4)',
               padding: '2.5rem',
@@ -261,12 +334,8 @@ export default function Home() {
               border: '2px solid rgba(138, 43, 226, 0.4)',
               boxShadow: '0 0 60px rgba(138, 43, 226, 0.3)'
             }}>
-              <form 
-                onSubmit={handleGenerate} 
-                style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}
-              >
-
-                {/* SUBJECT */}
+              <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                {/* Subject */}
                 <div>
                   <label style={{
                     display: 'block',
@@ -298,7 +367,7 @@ export default function Home() {
                   />
                 </div>
 
-                {/* MOOD */}
+                {/* Mood - ENHANCED VERSION */}
                 <div>
                   <label style={{
                     display: 'block',
@@ -350,7 +419,7 @@ export default function Home() {
                   </select>
                 </div>
 
-                {/* REGION */}
+                {/* Regional Vibe */}
                 <div>
                   <label style={{
                     display: 'block',
@@ -386,7 +455,7 @@ export default function Home() {
                   </select>
                 </div>
 
-                {/* SUBMIT BUTTON */}
+                {/* Generate Button */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -412,133 +481,216 @@ export default function Home() {
                 </button>
               </form>
 
-              {/* RESULTS */}
+              {/* Results */}
               {variants.length > 0 && (
                 <div style={{ marginTop: '3rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {variants.map((v, i) => {
-
-                    const processedCaption = v.caption.replace(
+                    // Process the caption to extract and replace the Instagram link
+                    const processedCaption = (v.caption || '').replace(
                       /\n\nHelp please make us a favour follow us on Instagram.*$/s,
                       ''
                     );
+                    
+                    const instagramLink = (v.caption && v.caption.match(/https:\/\/www\.instagram\.com\/[^\s]+/)?.[0]) || 'https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA==';
 
-                    const instagramLink = v.caption.match(/https:\/\/www\.instagram\.com\/[^\s]+/)
-                      ?.[0] || 'https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA==';
+                    const isPremium = i === 0;
 
-                    const boxStyle = i === 0 ? premiumBoxStyle : normalBoxStyle;
-
-                    const copyButtonStyle = {
-                      width: '100%',
-                      padding: '1rem',
-                      background: copiedIndex === i
-                        ? 'linear-gradient(135deg, #00ff00, #00aa00)'
-                        : (i === 0 
-                          ? 'linear-gradient(135deg, #FFD700, #FF6A00)' 
-                          : 'linear-gradient(135deg, #8a2be2, #00ffff)'
-                        ),
-                      color: i === 0 ? '#09101a' : 'white',
-                      border: 'none',
-                      borderRadius: '0.5rem',
-                      fontSize: i === 0 ? '1rem' : '0.95rem',
-                      fontWeight: '800',
-                      cursor: 'pointer',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                      boxShadow: '0 0 20px rgba(138, 43, 226, 0.4)',
-                      transition: 'all 0.3s'
-                    };
-
-                    return (
-                      <div key={i} style={boxStyle}>
-                        {i === 0 && premiumBadge}
-
-                        {/* FIXED BACKTICKS BELOW */}
-                        <div style={{
-                          fontSize: '0.75rem',
-                          color: '#00ffff',
-                          marginBottom: '1rem',
-                          fontWeight: '700',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.1em'
-                        }}>
-                          {i === 0 ? '💎 Premium Caption' : `📝 Caption Style ${i + 1}`}
-                        </div>
-
-                        <p style={{
-                          fontSize: '1rem',
-                          lineHeight: '1.8',
-                          color: '#e0e0e0',
-                          marginBottom: '1.5rem',
-                          whiteSpace: 'pre-line'
-                        }}>
-                          {processedCaption}
-                        </p>
-
-                        {v.regionLabel && (
+                    if (isPremium) {
+                      // PREMIUM BOX: neon glass look
+                      return (
+                        <div key={i} style={{ position: 'relative' }}>
+                          {/* Neon blurred border */}
                           <div style={{
-                            display: 'inline-block',
-                            padding: '0.4rem 1rem',
-                            background: i === 0 ? 'rgba(255,215,0,0.12)' : 'rgba(138, 43, 226, 0.3)',
-                            border: i === 0 
-                              ? '1px solid rgba(255,215,0,0.28)' 
-                              : '1px solid rgba(138, 43, 226, 0.6)',
-                            borderRadius: '2rem',
-                            fontSize: '0.75rem',
-                            color: i === 0 ? '#FFD700' : '#00ffff',
-                            marginBottom: '1rem',
-                            fontWeight: '700'
-                          }}>
-                            🌍 {v.regionLabel}
-                          </div>
-                        )}
+                            position: 'absolute',
+                            inset: 0,
+                            borderRadius: '1.2rem',
+                            padding: '2px',
+                            background: 'linear-gradient(135deg, rgba(0,255,255,0.15), rgba(138,43,226,0.18), rgba(255,45,184,0.15))',
+                            filter: 'blur(8px)',
+                            zIndex: 0
+                          }} />
 
-                        <div style={{
-                          background: i === 0 ? 'rgba(255,215,0,0.08)' : 'rgba(138, 43, 226, 0.2)',
-                          padding: '1rem',
-                          borderRadius: '0.5rem',
-                          marginBottom: '1rem',
-                          textAlign: 'center'
-                        }}>
-                          <p style={{ 
-                            margin: '0 0 0.5rem 0', 
-                            fontSize: '0.9rem',
-                            color: i === 0 ? '#FFD700' : '#00ffff',
-                            fontWeight: 700
+                          <div style={{
+                            background: 'rgba(10, 20, 35, 0.45)',
+                            padding: '2rem',
+                            borderRadius: '1.2rem',
+                            border: '1px solid rgba(255,255,255,0.04)',
+                            backdropFilter: 'blur(18px)',
+                            WebkitBackdropFilter: 'blur(18px)',
+                            overflow: 'hidden',
+                            position: 'relative',
+                            zIndex: 1,
+                            boxShadow: '0 10px 40px rgba(10, 15, 30, 0.6), 0 0 40px rgba(0, 210, 255, 0.06)'
                           }}>
-                            Help please make us a favour follow us on Instagram
-                          </p>
-                          <a 
-                            href={instagramLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '0.5rem',
-                              background: i === 0 
-                                ? 'linear-gradient(135deg,#FFD700,#FF6A00)' 
-                                : 'linear-gradient(135deg,#8a2be2,#00ffff)',
-                              color: i === 0 ? '#09101a' : 'white',
-                              textDecoration: 'none',
-                              padding: '0.5rem 1rem',
-                              borderRadius: '1.5rem',
+                            {/* PREMIUM ribbon */}
+                            <div style={{
+                              position: 'absolute',
+                              top: '-12px',
+                              left: '20px',
+                              padding: '0.28rem 0.8rem',
+                              borderRadius: '0.5rem',
+                              background: 'linear-gradient(135deg, rgba(0,255,255,0.95), rgba(138,43,226,0.95))',
+                              color: '#000814',
+                              fontSize: '0.75rem',
                               fontWeight: '800',
-                              fontSize: '0.9rem'
+                              letterSpacing: '0.05em',
+                              textShadow: '0 0 6px rgba(0,0,0,0.35)'
+                            }}>
+                              PREMIUM
+                            </div>
+
+                            <p style={{
+                              fontSize: '1rem',
+                              color: '#f6f9ff',
+                              lineHeight: 1.8,
+                              whiteSpace: 'pre-line',
+                              marginBottom: '1.25rem',
+                              textShadow: '0 0 8px rgba(0,255,255,0.08)'
+                            }}>
+                              {processedCaption}
+                            </p>
+
+                            {v.regionLabel && (
+                              <div style={{
+                                display: 'inline-block',
+                                padding: '0.4rem 0.9rem',
+                                background: 'linear-gradient(90deg, rgba(138,43,226,0.12), rgba(0,255,255,0.06))',
+                                border: '1px solid rgba(138,43,226,0.18)',
+                                borderRadius: '999px',
+                                fontSize: '0.75rem',
+                                color: '#00ffff',
+                                marginBottom: '1rem',
+                                fontWeight: '700'
+                              }}>
+                                🌍 {v.regionLabel}
+                              </div>
+                            )}
+
+                            {/* Instagram CTA */}
+                            <div style={{
+                              background: 'rgba(255,255,255,0.02)',
+                              padding: '0.9rem',
+                              borderRadius: '0.6rem',
+                              margin: '1rem 0',
+                              display: 'flex',
+                              justifyContent: 'center',
+                              gap: '0.6rem',
+                              alignItems: 'center'
+                            }}>
+                              <a
+                                href={instagramLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.6rem',
+                                  background: 'linear-gradient(135deg, #8a2be2, #00ffff)',
+                                  color: 'white',
+                                  textDecoration: 'none',
+                                  padding: '0.45rem 0.9rem',
+                                  borderRadius: '1rem',
+                                  fontWeight: '700',
+                                  boxShadow: '0 8px 24px rgba(138,43,226,0.18)'
+                                }}
+                              >
+                                <InstagramIcon /> Click to follow
+                              </a>
+                            </div>
+
+                            <button
+                              onClick={() => copyCaption(v.caption, i)}
+                              style={{
+                                width: '100%',
+                                padding: '1rem',
+                                background: copiedIndex === i
+                                  ? 'linear-gradient(135deg, #00ff88, #00aa66)'
+                                  : 'linear-gradient(135deg, #8a2be2, #00ffff)',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '0.6rem',
+                                fontSize: '0.95rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+                                transition: 'all 0.25s'
+                              }}
+                            >
+                              {copiedIndex === i ? '✓ COPIED!' : '📋 COPY PREMIUM CAPTION'}
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    } else {
+                      // FREE BOX: existing simpler style
+                      return (
+                        <div key={i} style={{
+                          background: 'rgba(0, 0, 0, 0.6)',
+                          padding: '2rem',
+                          borderRadius: '1rem',
+                          border: '2px solid rgba(0, 255, 255, 0.12)',
+                          boxShadow: '0 0 20px rgba(0, 255, 255, 0.08)'
+                        }}>
+                          <div style={{
+                            fontSize: '0.75rem',
+                            color: '#00ffff',
+                            marginBottom: '1rem',
+                            fontWeight: '700',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.1em'
+                          }}>
+                            📝 Caption {i + 1}
+                          </div>
+                          
+                          <p style={{
+                            fontSize: '1rem',
+                            lineHeight: '1.8',
+                            color: '#e0e0e0',
+                            marginBottom: '1rem',
+                            whiteSpace: 'pre-line'
+                          }}>
+                            {processedCaption}
+                          </p>
+
+                          {v.regionLabel && (
+                            <div style={{
+                              display: 'inline-block',
+                              padding: '0.4rem 1rem',
+                              background: 'rgba(138, 43, 226, 0.12)',
+                              border: '1px solid rgba(138, 43, 226, 0.18)',
+                              borderRadius: '2rem',
+                              fontSize: '0.75rem',
+                              color: '#00ffff',
+                              marginBottom: '1rem',
+                              fontWeight: '700'
+                            }}>
+                              🌍 {v.regionLabel}
+                            </div>
+                          )}
+
+                          <button
+                            onClick={() => copyCaption(v.caption, i)}
+                            style={{
+                              width: '100%',
+                              padding: '1rem',
+                              background: copiedIndex === i
+                                ? 'linear-gradient(135deg, #00ff88, #00aa66)'
+                                : 'linear-gradient(135deg, #8a2be2, #00ffff)',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '0.5rem',
+                              fontSize: '0.95rem',
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                              boxShadow: '0 0 20px rgba(138, 43, 226, 0.2)',
+                              transition: 'all 0.3s'
                             }}
                           >
-                            <InstagramIcon />
-                            Click Below
-                          </a>
+                            {copiedIndex === i ? '✓ COPIED!' : '📋 COPY CAPTION'}
+                          </button>
                         </div>
-
-                        <button
-                          onClick={() => copyCaption(v.caption, i)}
-                          style={copyButtonStyle}
-                        >
-                          {copiedIndex === i ? '✓ COPIED!' : '📋 COPY CAPTION'}
-                        </button>
-                      </div>
-                    );
+                      )
+                    }
                   })}
                 </div>
               )}
@@ -546,7 +698,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FOOTER */}
+        {/* Footer with Instagram Link */}
         <footer style={{
           background: '#0a0e27',
           borderTop: '1px solid rgba(0, 255, 255, 0.2)',
