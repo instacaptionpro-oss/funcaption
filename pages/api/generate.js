@@ -76,7 +76,7 @@ Region / vibe: ${cleanRegion === 'none' ? 'none' : cleanRegion}
 Tone: deep, emotional, stylish, optimized for engagement and shares.
 Return only the caption text (no extra meta).`;
 
-      const hfUrl = `https://api-inference.huggingface.co/models/${hfModel}`;
+      const hfUrl = `https://router.huggingface.co/models/${hfModel}`;
 
       const hfResp = await fetch(hfUrl, {
         method: 'POST',
