@@ -10,107 +10,11 @@ const InstagramIcon = () => (
 const Logo = () => (
   <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 10 }}>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" width="60" height="60" role="img" aria-label="FunCaption neon logo">
-      <defs>
-        <linearGradient id="gNeon1-fc" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stopColor="#5b29ff"/>
-          <stop offset="0.45" stopColor="#00d0ff"/>
-          <stop offset="1" stopColor="#ff2db8"/>
-        </linearGradient>
-        <linearGradient id="gNeon2-fc" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stopColor="#00d0ff"/>
-          <stop offset="1" stopColor="#7b2bff"/>
-        </linearGradient>
-        <linearGradient id="metal-fc" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stopColor="#cbd5ff" stopOpacity="0.35"/>
-          <stop offset="1" stopColor="#0b1220" stopOpacity="0.15"/>
-        </linearGradient>
-        <filter id="softGlow-fc" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur stdDeviation="18" result="b1"/>
-          <feMerge>
-            <feMergeNode in="b1"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-        <filter id="neonGlow-fc" x="-200%" y="-200%" width="400%" height="400%">
-          <feGaussianBlur stdDeviation="22" result="g1"/>
-          <feColorMatrix in="g1" type="matrix" values="1 0 0 0 0   0 1 0 0 0   0 0 1 0 0  0 0 0 0.9 0" />
-          <feMerge>
-            <feMergeNode in="g1"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-        <linearGradient id="fadeMask-fc" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stopColor="#fff" stopOpacity="0.45"/>
-          <stop offset="1" stopColor="#fff" stopOpacity="0"/>
-        </linearGradient>
-        <filter id="grain-fc">
-          <feTurbulence baseFrequency="0.9" numOctaves="1" stitchTiles="stitch" result="noise"/>
-          <feColorMatrix type="saturate" values="0" in="noise" result="gn"/>
-          <feBlend in="SourceGraphic" in2="gn" mode="overlay"/>
-        </filter>
-      </defs>
       <rect width="1200" height="1200" fill="#02020a"/>
-      <radialGradient id="v-fc" cx="50%" cy="22%" r="60%">
-        <stop offset="0" stopColor="#0f2b3a" stopOpacity="0.45"/>
-        <stop offset="1" stopColor="#000" stopOpacity="0.95"/>
-      </radialGradient>
-      <rect width="1200" height="1200" fill="url(#v-fc)" />
-      <g transform="translate(600,420) scale(1)">
-        <ellipse rx="460" ry="160" fill="url(#gNeon2-fc)" opacity="0.06" filter="url(#softGlow-fc)" transform="translate(0,140)"/>
-        <g id="logo-shapes-fc" transform="translate(-220,-70)">
-          <g>
-            <path d="M24 18 L160 18 L160 44 L84 44 L84 74 L160 74 L160 100 L24 100 z"
-                  fill="#0b0f19" stroke="rgba(0,0,0,0.45)" strokeWidth="4" />
-            <path d="M28 22 L156 22 L156 42 L88 42 L88 70 L156 70 L156 96 L28 96 z"
-                  fill="url(#metal-fc)" opacity="0.28"/>
-            <path d="M30 26 L152 26 L152 38 L92 38 L92 68 L152 68 L152 92 L30 92 z"
-                  stroke="url(#gNeon1-fc)" strokeWidth="6" fill="none" filter="url(#neonGlow-fc)"/>
-            <path d="M34 30 L148 30 L148 36 L96 36 L96 64 L148 64 L148 88 L34 88 z"
-                  stroke="#ffffff22" strokeWidth="1" fill="none" opacity="0.35"/>
-          </g>
-          <g transform="translate(220, -6)">
-            <path d="M10 2 L60 2 L160 120 L160 2 L200 2 L200 140 L150 140 L48 20 L48 140 L10 140 z"
-                  fill="#071021" stroke="rgba(0,0,0,0.45)" strokeWidth="4"/>
-            <path d="M14 6 L56 6 L156 116 L156 6 L196 6 L196 136 L148 136 L52 20 L52 136 L14 136 z"
-                  fill="url(#metal-fc)" opacity="0.22"/>
-            <path d="M20 12 L54 12 L150 112 L150 12 L190 12 L190 132 L144 132 L56 24 L56 132 L20 132 z"
-                  stroke="url(#gNeon1-fc)" strokeWidth="8" fill="none" filter="url(#neonGlow-fc)"/>
-            <path d="M24 18 L50 18 L146 108 L146 18 L186 18 L186 128 L140 128 L60 34 L60 128 L24 128 z"
-                  stroke="#ffffff22" strokeWidth="1" fill="none" opacity="0.35"/>
-          </g>
-        </g>
-        <g transform="translate(-220,-70)" opacity="0.95">
-          <path d="M34 32 L146 32" stroke="#ff2db8" strokeWidth="6" strokeLinecap="round" opacity="0.95" filter="url(#softGlow-fc)"/>
-          <path d="M86 46 L150 46" stroke="#00d0ff" strokeWidth="6" strokeLinecap="round" opacity="0.9" filter="url(#softGlow-fc)"/>
-          <path d="M40 82 L148 82" stroke="#7b2bff" strokeWidth="5" strokeLinecap="round" opacity="0.7" />
-        </g>
-        <g transform="translate(-220,-70)" opacity="0.65">
-          <path d="M44 20 L58 20" stroke="#ffffffaa" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
-          <path d="M102 26 L116 26" stroke="#ffffff66" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
-          <path d="M268 34 L282 34" stroke="#ffffff88" strokeWidth="2" strokeLinecap="round"/>
-        </g>
-        <g transform="translate(-220,-70)">
-          <path d="M18 8 L164 8 L164 108 L18 108 z M290 0 L420 0 L420 140 L290 140 z"
-                fill="none" stroke="url(#gNeon2-fc)" strokeWidth="4" opacity="0.06" filter="url(#softGlow-fc)"/>
-        </g>
-        <g transform="translate(-180,220)">
-          <text x="0" y="0" fontFamily="Poppins, Inter, Arial, sans-serif" fontWeight="800"
-                fontSize="82" fill="url(#gNeon1-fc)" textRendering="geometricPrecision"
-                style={{letterSpacing: '-2px', filter: 'url(#neonGlow-fc)'}}>
-            funcaption
-          </text>
-          <text x="6" y="46" fontFamily="Inter, Arial, sans-serif" fontWeight="600"
-                fontSize="18" fill="#9fb6d8" opacity="0.9" letterSpacing="1">
-            Home of real trendsetters
-          </text>
-        </g>
-        <g transform="translate(-240,360) scale(1, -1)" opacity="0.28" style={{mixBlendMode: 'screen'}}>
-          <use href="#logo-shapes-fc" filter="url(#softGlow-fc)" transform="scale(0.98,0.72) translate(8,60)"/>
-          <rect x="-260" y="-20" width="760" height="220" fill="url(#fadeMask-fc)" opacity="0.65" />
-        </g>
-      </g>
-      <ellipse cx="600" cy="970" rx="420" ry="36" fill="url(#gNeon2-fc)" opacity="0.04" />
-      <rect width="1200" height="1200" opacity="0.03" fill="#000" filter="url(#grain-fc)"/>
+      <text x="6" y="46" fontFamily="Inter, Arial, sans-serif" fontWeight="600"
+            fontSize="18" fill="#9fb6d8" opacity="0.9" letterSpacing="1">
+        Home of real trendsetters
+      </text>
     </svg>
   </div>
 );
@@ -159,6 +63,8 @@ export default function Home() {
       const data = await response.json()
       if (response.ok) {
         setVariants(data.variants || [])
+      } else {
+        setVariants(data.variants || [])
       }
     } catch (err) {
       console.error(err)
@@ -172,6 +78,41 @@ export default function Home() {
     setCopiedIndex(index)
     setTimeout(() => setCopiedIndex(null), 2000)
   }
+
+  const premiumBoxStyle = {
+    background: 'linear-gradient(180deg, rgba(9,10,21,0.6), rgba(8,9,18,0.8))',
+    padding: '2.25rem',
+    borderRadius: '1rem',
+    border: '3px solid',
+    borderImage: 'linear-gradient(135deg,#FFD700,#FF6A00) 1',
+    boxShadow: '0 15px 40px rgba(138,43,226,0.18), inset 0 0 40px rgba(255,215,0,0.06)',
+    position: 'relative'
+  };
+
+  const normalBoxStyle = {
+    background: 'rgba(0, 0, 0, 0.6)',
+    padding: '2rem',
+    borderRadius: '1rem',
+    border: '2px solid rgba(0, 255, 255, 0.3)',
+    boxShadow: '0 0 20px rgba(0, 255, 255, 0.2)'
+  };
+
+  const premiumBadge = (
+    <div style={{
+      position: 'absolute',
+      top: '-14px',
+      right: '-14px',
+      background: 'linear-gradient(135deg,#FFD700,#FF6A00)',
+      color: '#0b0b0b',
+      padding: '0.45rem 0.9rem',
+      borderRadius: '999px',
+      fontWeight: '800',
+      fontSize: '0.8rem',
+      boxShadow: '0 8px 24px rgba(255,106,0,0.18)'
+    }}>
+      PREMIUM
+    </div>
+  );
 
   return (
     <>
@@ -189,7 +130,7 @@ export default function Home() {
       }}>
         <Logo />
         
-        {/* SECTION 1: HERO / STORY */}
+        {/* HERO SECTION */}
         <section style={{
           background: 'linear-gradient(135deg, #0a0e27 0%, #16213e 100%)',
           padding: '4rem 1.5rem',
@@ -197,7 +138,6 @@ export default function Home() {
           position: 'relative'
         }}>
           <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center', paddingTop: '60px' }}>
-            {/* Logo + Tagline */}
             <div style={{ marginBottom: '3rem' }}>
               <div style={{
                 fontSize: '2.5rem',
@@ -218,7 +158,6 @@ export default function Home() {
                 A Free Caption Generator
               </div>
               
-              {/* Instagram Link with Icon */}
               <div style={{ marginTop: '1rem' }}>
                 <a 
                   href="https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA==" 
@@ -245,7 +184,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Aggressive questions */}
             <div style={{ marginBottom: '3rem', lineHeight: '2' }}>
               <p style={{ fontSize: '1.3rem', color: '#a0a0a0', marginBottom: '1rem' }}>
                 Do you really think you work hard for your content?
@@ -258,7 +196,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Answer */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 255, 255, 0.2))',
               padding: '2.5rem',
@@ -275,14 +212,12 @@ export default function Home() {
                 lineHeight: '1.6'
               }}>
                 Yes — we think you are. That's why you and us are here.
-                <br />
-                Because the world makes us feel the same way.
               </p>
-              
+
               <p style={{ fontSize: '1.1rem', color: '#c0c0c0', marginBottom: '1rem' }}>
                 By using this, people will NOT magically start to see you.
               </p>
-              
+
               <p style={{ 
                 fontSize: '2rem', 
                 fontWeight: '900', 
@@ -293,7 +228,7 @@ export default function Home() {
               }}>
                 But Instagram's algorithm WILL start working for you.
               </p>
-              
+
               <p style={{ fontSize: '0.95rem', color: '#ffd700', fontStyle: 'italic' }}>
                 Share this with your regional creators — let all brothers rise together.
               </p>
@@ -301,7 +236,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* SECTION 2: GENERATOR */}
+        {/* GENERATOR */}
         <section style={{
           background: 'linear-gradient(135deg, #16213e 0%, #0f3460 100%)',
           padding: '4rem 1.5rem'
@@ -319,7 +254,6 @@ export default function Home() {
               Generate captions to hack Instagram's algorithm
             </h2>
 
-            {/* Generator Form */}
             <div style={{
               background: 'rgba(0, 0, 0, 0.4)',
               padding: '2.5rem',
@@ -327,8 +261,12 @@ export default function Home() {
               border: '2px solid rgba(138, 43, 226, 0.4)',
               boxShadow: '0 0 60px rgba(138, 43, 226, 0.3)'
             }}>
-              <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                {/* Subject */}
+              <form 
+                onSubmit={handleGenerate} 
+                style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}
+              >
+
+                {/* SUBJECT */}
                 <div>
                   <label style={{
                     display: 'block',
@@ -360,7 +298,7 @@ export default function Home() {
                   />
                 </div>
 
-                {/* Mood - ENHANCED VERSION */}
+                {/* MOOD */}
                 <div>
                   <label style={{
                     display: 'block',
@@ -412,7 +350,7 @@ export default function Home() {
                   </select>
                 </div>
 
-                {/* Regional Vibe */}
+                {/* REGION */}
                 <div>
                   <label style={{
                     display: 'block',
@@ -448,7 +386,7 @@ export default function Home() {
                   </select>
                 </div>
 
-                {/* Generate Button */}
+                {/* SUBMIT BUTTON */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -474,26 +412,47 @@ export default function Home() {
                 </button>
               </form>
 
-              {/* Results */}
+              {/* RESULTS */}
               {variants.length > 0 && (
                 <div style={{ marginTop: '3rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {variants.map((v, i) => {
-                    // Process the caption to extract and replace the Instagram link
+
                     const processedCaption = v.caption.replace(
                       /\n\nHelp please make us a favour follow us on Instagram.*$/s,
                       ''
                     );
-                    
-                    const instagramLink = v.caption.match(/https:\/\/www\.instagram\.com\/[^\s]+/)?.[0] || 'https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA==';
+
+                    const instagramLink = v.caption.match(/https:\/\/www\.instagram\.com\/[^\s]+/)
+                      ?.[0] || 'https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA==';
+
+                    const boxStyle = i === 0 ? premiumBoxStyle : normalBoxStyle;
+
+                    const copyButtonStyle = {
+                      width: '100%',
+                      padding: '1rem',
+                      background: copiedIndex === i
+                        ? 'linear-gradient(135deg, #00ff00, #00aa00)'
+                        : (i === 0 
+                          ? 'linear-gradient(135deg, #FFD700, #FF6A00)' 
+                          : 'linear-gradient(135deg, #8a2be2, #00ffff)'
+                        ),
+                      color: i === 0 ? '#09101a' : 'white',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      fontSize: i === 0 ? '1rem' : '0.95rem',
+                      fontWeight: '800',
+                      cursor: 'pointer',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      boxShadow: '0 0 20px rgba(138, 43, 226, 0.4)',
+                      transition: 'all 0.3s'
+                    };
 
                     return (
-                      <div key={i} style={{
-                        background: 'rgba(0, 0, 0, 0.6)',
-                        padding: '2rem',
-                        borderRadius: '1rem',
-                        border: '2px solid rgba(0, 255, 255, 0.3)',
-                        boxShadow: '0 0 20px rgba(0, 255, 255, 0.2)'
-                      }}>
+                      <div key={i} style={boxStyle}>
+                        {i === 0 && premiumBadge}
+
+                        {/* FIXED BACKTICKS BELOW */}
                         <div style={{
                           fontSize: '0.75rem',
                           color: '#00ffff',
@@ -502,9 +461,9 @@ export default function Home() {
                           textTransform: 'uppercase',
                           letterSpacing: '0.1em'
                         }}>
-                          📝 Caption Style {i + 1}
+                          {i === 0 ? '💎 Premium Caption' : `📝 Caption Style ${i + 1}`}
                         </div>
-                        
+
                         <p style={{
                           fontSize: '1rem',
                           lineHeight: '1.8',
@@ -519,11 +478,13 @@ export default function Home() {
                           <div style={{
                             display: 'inline-block',
                             padding: '0.4rem 1rem',
-                            background: 'rgba(138, 43, 226, 0.3)',
-                            border: '1px solid rgba(138, 43, 226, 0.6)',
+                            background: i === 0 ? 'rgba(255,215,0,0.12)' : 'rgba(138, 43, 226, 0.3)',
+                            border: i === 0 
+                              ? '1px solid rgba(255,215,0,0.28)' 
+                              : '1px solid rgba(138, 43, 226, 0.6)',
                             borderRadius: '2rem',
                             fontSize: '0.75rem',
-                            color: '#00ffff',
+                            color: i === 0 ? '#FFD700' : '#00ffff',
                             marginBottom: '1rem',
                             fontWeight: '700'
                           }}>
@@ -531,9 +492,8 @@ export default function Home() {
                           </div>
                         )}
 
-                        {/* Instagram follow request */}
                         <div style={{
-                          background: 'rgba(138, 43, 226, 0.2)',
+                          background: i === 0 ? 'rgba(255,215,0,0.08)' : 'rgba(138, 43, 226, 0.2)',
                           padding: '1rem',
                           borderRadius: '0.5rem',
                           marginBottom: '1rem',
@@ -542,7 +502,8 @@ export default function Home() {
                           <p style={{ 
                             margin: '0 0 0.5rem 0', 
                             fontSize: '0.9rem',
-                            color: '#00ffff'
+                            color: i === 0 ? '#FFD700' : '#00ffff',
+                            fontWeight: 700
                           }}>
                             Help please make us a favour follow us on Instagram
                           </p>
@@ -554,12 +515,14 @@ export default function Home() {
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '0.5rem',
-                              background: 'linear-gradient(135deg, #8a2be2, #00ffff)',
-                              color: 'white',
+                              background: i === 0 
+                                ? 'linear-gradient(135deg,#FFD700,#FF6A00)' 
+                                : 'linear-gradient(135deg,#8a2be2,#00ffff)',
+                              color: i === 0 ? '#09101a' : 'white',
                               textDecoration: 'none',
                               padding: '0.5rem 1rem',
                               borderRadius: '1.5rem',
-                              fontWeight: '700',
+                              fontWeight: '800',
                               fontSize: '0.9rem'
                             }}
                           >
@@ -570,23 +533,7 @@ export default function Home() {
 
                         <button
                           onClick={() => copyCaption(v.caption, i)}
-                          style={{
-                            width: '100%',
-                            padding: '1rem',
-                            background: copiedIndex === i
-                              ? 'linear-gradient(135deg, #00ff00, #00aa00)'
-                              : 'linear-gradient(135deg, #8a2be2, #00ffff)',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '0.5rem',
-                            fontSize: '0.95rem',
-                            fontWeight: '700',
-                            cursor: 'pointer',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
-                            boxShadow: '0 0 20px rgba(138, 43, 226, 0.4)',
-                            transition: 'all 0.3s'
-                          }}
+                          style={copyButtonStyle}
                         >
                           {copiedIndex === i ? '✓ COPIED!' : '📋 COPY CAPTION'}
                         </button>
@@ -599,7 +546,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Footer with Instagram Link */}
+        {/* FOOTER */}
         <footer style={{
           background: '#0a0e27',
           borderTop: '1px solid rgba(0, 255, 255, 0.2)',
