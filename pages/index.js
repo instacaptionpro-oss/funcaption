@@ -159,7 +159,7 @@ export default function Home() {
                   background: '#0f0f0f',
                   padding: '1rem',
                   borderRadius: '0.5rem',
-                  border: '1px solid '#3a3a3a',
+                  border: '1px solid #3a3a3a',
                   color: '#fff',
                   fontSize: '1rem'
                 }}
