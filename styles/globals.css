@@ -1,206 +1,190 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Keep your existing styles and ADD these new ones */
 
-/* Custom Styles */
-
-:root {
-  --primary: #14B8A6;
-  --secondary: #0EA5E9;
-  --accent: #8B5CF6;
-  --gold: #F59E0B;
-}
-
-* {
+/* Global body background */
+body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  background: #0a0a0f; /* Dark navy/almost black */
+  color: #ffffff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #ffffff;
-  color: #1f2937;
+/* Futuristic neon grid background */
+.neon-grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+/* Static dark gradient base with radial glow */
+.neon-grid-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.15), transparent 70%),
+    radial-gradient(circle at 20% 80%, rgba(138, 43, 226, 0.1), transparent 60%),
+    radial-gradient(circle at 80% 20%, rgba(255, 45, 184, 0.08), transparent 60%),
+    #0a0a0f;
 }
 
-/* Custom utilities */
-.container {
-  max-width: 1200px;
+/* Animated neon grid with 3D perspective */
+.neon-grid-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 255, 255, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.2) 1px, transparent 1px);
+  background-size: 80px 80px;
+  transform: perspective(800px) rotateX(60deg) translateY(15%);
+  transform-origin: center;
+  opacity: 0.6;
+  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.5));
+  animation: neonGridDrift 20s linear infinite;
 }
 
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+/* Glowing orbit circles */
+.neon-orbit {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.orbit-1 {
+  width: 400px;
+  height: 400px;
+  background: #00ffff;
+  top: -100px;
+  left: -100px;
+  animation: orbitPulse 15s ease-in-out infinite alternate;
+}
+
+.orbit-2 {
+  width: 300px;
+  height: 300px;
+  background: #8a2be2;
+  bottom: -80px;
+  right: 100px;
+  animation: orbitFloat 18s ease-in-out infinite alternate;
+}
+
+.orbit-3 {
+  width: 250px;
+  height: 250px;
+  background: #ff2db8;
+  top: 50%;
+  right: -50px;
+  animation: orbitRotate 12s ease-in-out infinite alternate;
+}
+
+/* Glass card styling */
+.glass-card {
+  background: rgba(15, 15, 30, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(0, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(0, 255, 255, 0.5);
+  box-shadow: 
+    0 12px 48px rgba(0, 255, 255, 0.2),
+    inset 0 1px 0 rgba(0, 255, 255, 0.2);
+}
+
+/* Neon heading text */
+.neon-heading {
+  background: linear-gradient(90deg, #00ffff, #8a2be2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
 }
 
-/* Button hover effects */
-button, .btn {
-  transition: all 0.3s ease;
+/* Neon subtext */
+.neon-subtext {
+  color: #a0a0c0;
+  letter-spacing: 0.5px;
+  line-height: 1.6;
+  font-size: 1.1rem;
 }
 
-button:hover, .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Card effects */
-.card-hover {
-  transition: all 0.3s ease;
-}
-
-.card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-}
-
-/* Loading spinner */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+/* Animations */
+@keyframes neonGridDrift {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+  100% {
+    background-position: 160px 160px, 160px 160px;
   }
 }
 
-.spinner {
-  border: 3px solid #f3f4f6;
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 0.8s linear infinite;
-}
-
-/* Pulse animation for popular plan */
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
+@keyframes orbitPulse {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.2;
   }
-  50% {
-    opacity: 0.8;
+  100% {
+    transform: translate(40px, 20px) scale(1.2);
+    opacity: 0.4;
   }
 }
 
-.pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+@keyframes orbitFloat {
+  0% {
+    transform: translate(0, 0) scale(1.1);
+  }
+  100% {
+    transform: translate(-30px, -20px) scale(0.9);
+  }
 }
 
-/* Limitation box gradient */
-.limitation-box {
-  background: linear-gradient(135deg, #0EA5E9, #14B8A6);
-  border-radius: 16px;
-  padding: 24px;
-  color: white;
-  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.2);
+@keyframes orbitRotate {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(-20px, 30px) rotate(180deg);
+  }
 }
 
-/* Caption card styling */
-.caption-card {
-  background: white;
-  border-left: 4px solid var(--primary);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-}
-
-.caption-card:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-  transform: translateX(4px);
-}
-
-/* Focus states */
-input:focus, 
-textarea:focus, 
-select:focus {
-  outline: none;
-  ring: 2px;
-  ring-color: var(--primary);
-  border-color: var(--primary);
-}
-
-/* Disabled state */
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-/* Mobile responsive */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .container {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  
-  h1 {
+  .neon-heading {
     font-size: 2rem;
   }
   
-  h2 {
-    font-size: 1.5rem;
+  .glass-card {
+    padding: 1.5rem;
   }
-}
-
-/* Scroll to top button */
-.scroll-to-top {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: var(--primary);
-  color: white;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-}
-
-.scroll-to-top:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-}
-
-/* Toast notification */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #10b981;
-  color: white;
-  padding: 16px 24px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateX(-50%) translateY(100px);
-    opacity: 0;
+  
+  .neon-grid-bg::after {
+    background-size: 40px 40px;
   }
-  to {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
+  
+  @keyframes neonGridDrift {
+    0% {
+      background-position: 0 0, 0 0;
+    }
+    100% {
+      background-position: 80px 80px, 80px 80px;
+    }
   }
-}
-
-/* Confetti animation placeholder */
-.confetti {
-  /* Add confetti library CSS here if needed */
 }
