@@ -1,14 +1,11 @@
-/* Keep your existing styles and ADD these new ones */
-
-/* Global body background */
+/* Global dark theme */
 body {
   margin: 0;
   padding: 0;
-  background: #0a0a0f; /* Dark navy/almost black */
+  background: #0a0a0f;
   color: #ffffff;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   min-height: 100vh;
-  position: relative;
   overflow-x: hidden;
 }
 
@@ -18,6 +15,7 @@ body {
   inset: 0;
   z-index: -1;
   overflow: hidden;
+  background: #0a0a0f; /* This ensures black background */
 }
 
 /* Static dark gradient base with radial glow */
@@ -96,6 +94,8 @@ body {
     0 8px 32px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(0, 255, 255, 0.1);
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .glass-card:hover {
@@ -103,6 +103,7 @@ body {
   box-shadow: 
     0 12px 48px rgba(0, 255, 255, 0.2),
     inset 0 1px 0 rgba(0, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 /* Neon heading text */
@@ -116,14 +117,50 @@ body {
   letter-spacing: -0.5px;
   margin-bottom: 1rem;
   text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  font-family: 'Orbitron', monospace;
 }
 
-/* Neon subtext */
-.neon-subtext {
-  color: #a0a0c0;
-  letter-spacing: 0.5px;
-  line-height: 1.6;
-  font-size: 1.1rem;
+/* Premium card styling */
+.premium-card {
+  position: relative;
+  background: rgba(15, 15, 30, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 2px solid rgba(0, 255, 255, 0.4);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 
+    0 0 60px rgba(0, 255, 255, 0.3),
+    0 0 120px rgba(138, 43, 226, 0.2),
+    inset 0 0 30px rgba(0, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+/* Enhanced button styles */
+.neon-button-enhanced {
+  position: relative;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(168, 85, 247, 0.2));
+  border: 2px solid rgba(34, 211, 238, 0.6);
+  box-shadow: 
+    0 0 30px rgba(34, 211, 238, 0.4),
+    inset 0 0 20px rgba(34, 211, 238, 0.1);
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  padding: 1.4rem;
+  color: #e0f2fe;
+  font-weight: 900;
+  font-family: 'Orbitron', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+}
+
+.neon-button-enhanced:hover:not(:disabled) {
+  border-color: rgba(34, 211, 238, 1);
+  box-shadow: 
+    0 0 50px rgba(34, 211, 238, 0.8),
+    inset 0 0 30px rgba(34, 211, 238, 0.2);
+  transform: translateY(-2px);
 }
 
 /* Animations */
@@ -171,7 +208,7 @@ body {
     font-size: 2rem;
   }
   
-  .glass-card {
+  .glass-card, .premium-card {
     padding: 1.5rem;
   }
   
