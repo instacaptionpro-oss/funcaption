@@ -1,3 +1,24 @@
+import fs from "fs";
+import path from "path";
+
+const analyticsPath = path.join(process.cwd(), "data", "analytics.json");
+
+function updateAnalytics() {
+  try {
+    const raw = fs.readFileSync(analyticsPath, "utf8");
+    const data = JSON.parse(raw);
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    data.total_requests += 1;
+    data.by_day[today] = (data.by_day[today] || 0) + 1;
+
+    fs.writeFileSync(analyticsPath, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error("Analytics update failed:", err);
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -206,6 +227,9 @@ Rules:
       regionLabel: region && region !== "none" ? region : null
     }
   ];
+
+  // Update analytics
+  updateAnalytics();
 
   return res.status(200).json({ variants });
 }
