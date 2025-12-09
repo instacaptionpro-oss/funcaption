@@ -19,8 +19,8 @@ const InstagramIcon = () => (
 )
 
 const Logo = () => (
-  <div style={{ position: 'absolute', top: '15px', left: '15px', zIndex: 10 }}>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" width="45" height="45" role="img" aria-label="FunCaption neon logo">
+  <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 10 }}>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" width="60" height="60" role="img" aria-label="FunCaption neon logo">
       <defs>
         <linearGradient id="gNeon1-fc" x1="0" x2="1" y1="0" y2="1">
           <stop offset="0" stopColor="#22d3ee"/>
@@ -177,6 +177,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [variants, setVariants] = useState([])
   const [copiedIndex, setCopiedIndex] = useState(null)
+  const [isGenerating, setIsGenerating] = useState(false)
 
   // Create Siri-style activation threads
   useEffect(() => {
@@ -189,8 +190,8 @@ export default function Home() {
       
       const colors = ['#00c8ff', '#8a2be2', '#ff2db8'];
       
-      // Create 20 threads for mobile (less intensive)
-      for (let i = 0; i < 20; i++) {
+      // Create 30 threads
+      for (let i = 0; i < 30; i++) {
         const thread = document.createElement('div');
         thread.className = 'thread';
         
@@ -198,7 +199,7 @@ export default function Home() {
         const color = colors[Math.floor(Math.random() * colors.length)];
         const startX = Math.random() * 100;
         const startY = Math.random() * 100;
-        const length = 15 + Math.random() * 60;
+        const length = 20 + Math.random() * 80;
         const angle = Math.random() * 360;
         const duration = 2 + Math.random() * 3;
         const delay = Math.random() * 5;
@@ -210,7 +211,7 @@ export default function Home() {
         thread.style.width = `${length}px`;
         thread.style.transform = `rotate(${angle}deg)`;
         thread.style.animation = `threadActivate ${duration}s linear ${delay}s infinite`;
-        thread.style.boxShadow = `0 0 8px ${color}`;
+        thread.style.boxShadow = `0 0 10px ${color}`;
         
         container.appendChild(thread);
       }
@@ -235,8 +236,44 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // Create realm-shifting particles and data streams
+  useEffect(() => {
+    if (isGenerating) {
+      // Create particles
+      const particlesContainer = document.getElementById('particlesContainer');
+      const dataStream = document.getElementById('dataStream');
+      
+      if (particlesContainer && dataStream) {
+        particlesContainer.innerHTML = '';
+        dataStream.innerHTML = '';
+        
+        // Create particles
+        for (let i = 0; i < 50; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.style.left = `${Math.random() * 100}%`;
+          particle.style.top = `${Math.random() * 100}%`;
+          particle.style.setProperty('--tx', `${(Math.random() - 0.5) * 200}px`);
+          particle.style.setProperty('--ty', `${(Math.random() - 0.5) * 200}px`);
+          particle.style.animationDelay = `${Math.random() * 5}s`;
+          particlesContainer.appendChild(particle);
+        }
+        
+        // Create data streams
+        for (let i = 0; i < 20; i++) {
+          const stream = document.createElement('div');
+          stream.className = 'stream-column';
+          stream.style.left = `${i * 5}%`;
+          stream.style.animationDelay = `${Math.random() * 8}s`;
+          dataStream.appendChild(stream);
+        }
+      }
+    }
+  }, [isGenerating]);
+
   const handleGenerate = async (e) => {
     e.preventDefault()
+    setIsGenerating(true)
     setLoading(true)
     setVariants([])
 
@@ -263,6 +300,7 @@ export default function Home() {
       console.error(err)
     } finally {
       setLoading(false)
+      setIsGenerating(false)
     }
   }
 
@@ -285,17 +323,13 @@ export default function Home() {
         <title>FunCaption - Free Caption Generator</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta name="description" content="Generate viral Instagram captions with regional Indian flavors" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-title" content="FunCaption" />
-        <meta name="theme-color" content="#22d3ee" />
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </Head>
 
       <div style={{ 
         minHeight: '100vh', 
         position: 'relative',
-        overflow: 'hidden',
-        paddingBottom: '80px' // Space for floating button
+        overflow: 'hidden'
       }}>
         {/* Background Elements */}
         <NeonBackground />
@@ -303,15 +337,22 @@ export default function Home() {
         {/* Siri-style Activation Threads */}
         <div className="activation-thread" id="activationThread"></div>
         
-        {/* Sonic Neon Lights - Reduced for mobile */}
+        {/* Sonic Neon Lights */}
         <div className="sonic-light-path sonic-light-1"></div>
         <div className="sonic-light-path sonic-light-2"></div>
+        <div className="sonic-light-path sonic-light-3"></div>
+        <div className="sonic-light-path sonic-light-4"></div>
 
-        {/* Floating Elements - Reduced for mobile performance */}
+        {/* More Floating 3D Elements */}
         <div className="floating-element-group">
-          <div className="floating-cube-large" style={{ top: '15%', left: '5%', width: '60px', height: '60px' }}></div>
-          <div className="floating-sphere-large" style={{ top: '65%', right: '10%', width: '50px', height: '50px' }}></div>
-          <div className="floating-triangle-large" style={{ top: '35%', left: '85%', borderLeft: '20px solid transparent', borderRight: '20px solid transparent', borderBottom: '35px solid rgba(255, 45, 184, 0.5)' }}></div>
+          <div className="floating-cube-large" style={{ top: '15%', left: '5%' }}></div>
+          <div className="floating-sphere-large" style={{ top: '65%', right: '10%' }}></div>
+          <div className="floating-triangle-large" style={{ top: '35%', left: '85%' }}></div>
+          <div className="floating-hexagon" style={{ top: '75%', left: '15%' }}></div>
+          <div className="floating-pyramid" style={{ top: '25%', right: '20%' }}></div>
+          <div className="floating-cube-large" style={{ top: '5%', right: '25%', width: '60px', height: '60px' }}></div>
+          <div className="floating-sphere-large" style={{ top: '85%', left: '30%', width: '45px', height: '45px' }}></div>
+          <div className="floating-hexagon" style={{ top: '50%', right: '5%', width: '40px', height: '46px' }}></div>
         </div>
 
         {/* Content Container */}
@@ -320,46 +361,46 @@ export default function Home() {
           
           {/* SECTION 1: HERO / STORY - Updated with glass card */}
           <section style={{
-            padding: '3rem 1rem 2rem',
+            padding: '4rem 1.5rem 3rem',
             position: 'relative'
           }}>
             <div className="hero-background"></div>
             <div style={{ 
-              maxWidth: '100%',
+              maxWidth: '900px', 
               margin: '0 auto', 
-              paddingTop: '50px', 
+              paddingTop: '60px', 
               position: 'relative', 
               zIndex: 1 
             }}>
               {/* Brand + Tagline in glass card */}
-              <div className="glass-card" style={{ marginBottom: '2rem', textAlign: 'center', padding: '1.5rem' }}>
+              <div className="glass-card" style={{ marginBottom: '3rem', textAlign: 'center' }}>
                 <div style={{
-                  fontSize: '2.5rem',
+                  fontSize: '3.2rem',
                   fontWeight: '900',
-                  marginBottom: '0.3rem',
+                  marginBottom: '0.4rem',
                   background: 'linear-gradient(135deg, #22d3ee, #a855f7, #ec4899)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
-                  textShadow: '0 0 30px rgba(34, 211, 238, 0.6)',
+                  textShadow: '0 0 40px rgba(34, 211, 238, 0.6)',
                   fontFamily: 'Orbitron, monospace, sans-serif',
-                  letterSpacing: '0.03em'
+                  letterSpacing: '0.05em'
                 }}>
                   FunCaption
                 </div>
                 <div style={{
-                  fontSize: '0.9rem',
+                  fontSize: '1.05rem',
                   color: '#38bdf8',
                   fontWeight: '600',
-                  letterSpacing: '0.15em',
+                  letterSpacing: '0.2em',
                   textTransform: 'uppercase',
-                  textShadow: '0 0 8px rgba(34, 211, 238, 0.5)'
+                  textShadow: '0 0 10px rgba(34, 211, 238, 0.5)'
                 }}>
                   Engineered attention for Indian creators
                 </div>
                 
                 {/* Instagram Link with Icon */}
-                <div style={{ marginTop: '1.2rem' }}>
+                <div style={{ marginTop: '1.5rem' }}>
                   <a 
                     href="https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA==" 
                     target="_blank" 
@@ -368,56 +409,56 @@ export default function Home() {
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '0.5rem',
+                      gap: '0.6rem',
                       textDecoration: 'none',
-                      fontSize: '0.85rem',
-                      padding: '0.6rem 1.2rem',
+                      fontSize: '0.95rem',
+                      padding: '0.7rem 1.4rem',
                       borderRadius: '999px'
                     }}
                   >
                     <InstagramIcon />
-                    Follow us
+                    Follow us on Instagram
                   </a>
                 </div>
               </div>
 
               {/* Aggressive questions */}
-              <div style={{ marginBottom: '2rem', lineHeight: '1.8' }}>
+              <div style={{ marginBottom: '3rem', lineHeight: '2.2' }}>
                 <p style={{ 
-                  fontSize: '1.1rem', 
+                  fontSize: '1.3rem', 
                   color: '#94a3b8', 
-                  marginBottom: '0.6rem',
-                  textShadow: '0 0 8px rgba(148, 163, 184, 0.3)'
+                  marginBottom: '0.8rem',
+                  textShadow: '0 0 10px rgba(148, 163, 184, 0.3)'
                 }}>
                   Do you really think you work hard for your content?
                 </p>
                 <p style={{ 
-                  fontSize: '1.1rem', 
+                  fontSize: '1.3rem', 
                   color: '#94a3b8', 
-                  marginBottom: '0.6rem',
-                  textShadow: '0 0 8px rgba(148, 163, 184, 0.3)'
+                  marginBottom: '0.8rem',
+                  textShadow: '0 0 10px rgba(148, 163, 184, 0.3)'
                 }}>
                   Do you really think people see your content when you post it?
                 </p>
                 <p style={{ 
-                  fontSize: '1.1rem', 
+                  fontSize: '1.3rem', 
                   color: '#94a3b8', 
-                  marginBottom: '1.5rem',
-                  textShadow: '0 0 8px rgba(148, 163, 184, 0.3)'
+                  marginBottom: '1.8rem',
+                  textShadow: '0 0 10px rgba(148, 163, 184, 0.3)'
                 }}>
                   Do you think you are even capable for this game?
                 </p>
               </div>
 
               {/* Answer in premium card */}
-              <div className="premium-card" style={{ padding: '1.8rem' }}>
+              <div className="premium-card">
                 <p style={{ 
-                  fontSize: '1.3rem', 
+                  fontSize: '1.6rem', 
                   fontWeight: '700', 
                   color: '#e0f2fe',
-                  marginBottom: '1.3rem',
-                  lineHeight: '1.6',
-                  textShadow: '0 0 12px rgba(34, 211, 238, 0.4)'
+                  marginBottom: '1.6rem',
+                  lineHeight: '1.7',
+                  textShadow: '0 0 15px rgba(34, 211, 238, 0.4)'
                 }}>
                   Yes — we think you are. That is why you and us are here.
                   <br />
@@ -425,33 +466,33 @@ export default function Home() {
                 </p>
                 
                 <p style={{ 
-                  fontSize: '1rem', 
+                  fontSize: '1.1rem', 
                   color: '#bae6fd', 
-                  marginBottom: '1rem',
-                  textShadow: '0 0 8px rgba(186, 230, 253, 0.3)'
+                  marginBottom: '1.2rem',
+                  textShadow: '0 0 10px rgba(186, 230, 253, 0.3)'
                 }}>
                   By using this, people will NOT magically start to see you.
                 </p>
                 
                 <p style={{ 
-                  fontSize: '1.6rem', 
+                  fontSize: '2rem', 
                   fontWeight: '900', 
                   background: 'linear-gradient(135deg, #22c55e, #22d3ee, #a855f7)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
-                  marginBottom: '0.8rem',
-                  textShadow: '0 0 25px rgba(34, 211, 238, 0.6)',
+                  marginBottom: '1rem',
+                  textShadow: '0 0 30px rgba(34, 211, 238, 0.6)',
                   fontFamily: 'Orbitron, monospace, sans-serif'
                 }}>
                   But Instagram algorithm WILL start working for you.
                 </p>
                 
                 <p style={{ 
-                  fontSize: '0.9rem', 
+                  fontSize: '1rem', 
                   color: '#fde047', 
                   fontStyle: 'italic',
-                  textShadow: '0 0 12px rgba(253, 224, 71, 0.4)'
+                  textShadow: '0 0 15px rgba(253, 224, 71, 0.4)'
                 }}>
                   Share this with your regional creators — let all brothers rise together.
                 </p>
@@ -464,32 +505,32 @@ export default function Home() {
 
           {/* SECTION 2: GENERATOR - Updated with glass card */}
           <section style={{
-            padding: '3rem 1rem 4rem',
+            padding: '4rem 1.5rem 5rem',
             position: 'relative'
           }}>
-            <div style={{ maxWidth: '100%', margin: '0 auto' }}>
-              <h2 className="neon-heading" style={{ textAlign: 'center', marginBottom: '2.5rem', fontSize: '2rem' }}>
+            <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+              <h2 className="neon-heading" style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
                 Generate captions to hack Instagram algorithm
               </h2>
 
               {/* Generator Form in glass card */}
-              <div className="glass-card" style={{ padding: '1.5rem' }}>
+              <div className="glass-card">
                 <form onSubmit={handleGenerate} style={{ 
                   display: 'flex', 
                   flexDirection: 'column', 
-                  gap: '1.5rem'
+                  gap: '2rem'
                 }}>
                   {/* Subject */}
                   <div>
                     <label style={{
                       display: 'block',
-                      fontSize: '0.8rem',
+                      fontSize: '0.85rem',
                       fontWeight: '700',
                       color: '#38bdf8',
-                      marginBottom: '0.5rem',
+                      marginBottom: '0.7rem',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.12em',
-                      textShadow: '0 0 8px rgba(56, 189, 248, 0.5)'
+                      letterSpacing: '0.15em',
+                      textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
                     }}>
                       ⚡ Subject
                     </label>
@@ -497,17 +538,17 @@ export default function Home() {
                       type="text"
                       value={subject}
                       onChange={(e) => setSubject(e.target.value)}
-                      placeholder="E.g., Gym session, Sunset view..."
+                      placeholder="Example: Leg day in a small-town gym, night rooftop chai scene, breakup reel, etc."
                       style={{
                         width: '100%',
-                        padding: '0.8rem 1rem',
-                        borderRadius: '0.7rem',
+                        padding: '1rem 1.2rem',
+                        borderRadius: '0.8rem',
                         color: '#e0f2fe',
-                        fontSize: '0.95rem',
-                        fontFamily: 'system-ui',
+                        fontSize: '1rem',
+                        fontFamily: 'monospace',
                         background: 'rgba(6, 182, 212, 0.05)',
                         border: '1px solid rgba(34, 211, 238, 0.3)',
-                        backdropFilter: 'blur(8px)'
+                        backdropFilter: 'blur(10px)'
                       }}
                       required
                     />
@@ -517,147 +558,142 @@ export default function Home() {
                   <div>
                     <label style={{
                       display: 'block',
-                      fontSize: '0.8rem',
+                      fontSize: '0.85rem',
                       fontWeight: '700',
                       color: '#38bdf8',
-                      marginBottom: '0.5rem',
+                      marginBottom: '0.7rem',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.12em',
-                      textShadow: '0 0 8px rgba(56, 189, 248, 0.5)'
+                      letterSpacing: '0.15em',
+                      textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
                     }}>
                       📹 More about your reel (optional)
                     </label>
                     <textarea
                       value={details}
                       onChange={(e) => setDetails(e.target.value)}
-                      placeholder="Camera angle, emotions, location..."
-                      rows={2}
+                      placeholder="What is happening in the reel? Camera angle, emotions, twist, location, who is in the frame... (this helps generate sharper captions)"
+                      rows={3}
                       style={{
                         width: '100%',
-                        padding: '0.8rem 1rem',
-                        borderRadius: '0.7rem',
+                        padding: '1rem 1.2rem',
+                        borderRadius: '0.8rem',
                         color: '#e0f2fe',
-                        fontSize: '0.95rem',
-                        fontFamily: 'system-ui',
+                        fontSize: '0.98rem',
+                        fontFamily: 'monospace',
                         resize: 'vertical',
                         background: 'rgba(6, 182, 212, 0.05)',
                         border: '1px solid rgba(34, 211, 238, 0.3)',
-                        backdropFilter: 'blur(8px)'
+                        backdropFilter: 'blur(10px)'
                       }}
                     />
                   </div>
 
-                  {/* Mood and Region - Side by side on larger screens, stacked on mobile */}
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '1rem'
-                  }}>
-                    <div>
-                      <label style={{
-                        display: 'block',
-                        fontSize: '0.8rem',
-                        fontWeight: '700',
-                        color: '#38bdf8',
-                        marginBottom: '0.5rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.12em',
-                        textShadow: '0 0 8px rgba(56, 189, 248, 0.5)'
-                      }}>
-                        🎭 Mood
-                      </label>
-                      <select
-                        value={mood}
-                        onChange={(e) => setMood(e.target.value)}
-                        style={{
-                          width: '100%',
-                          padding: '0.8rem 1rem',
-                          borderRadius: '0.7rem',
-                          color: '#e0f2fe',
-                          fontSize: '0.95rem',
-                          fontFamily: 'system-ui',
-                          cursor: 'pointer',
-                          background: 'rgba(6, 182, 212, 0.05)',
-                          border: '1px solid rgba(34, 211, 238, 0.3)',
-                          backdropFilter: 'blur(8px)'
-                        }}
-                      >
-                        {moods.map((m) => (
-                          <option key={m.id} value={m.id} style={{ background: '#001d3d', color: '#e0f2fe' }}>
-                            {m.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  {/* Mood */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '0.85rem',
+                      fontWeight: '700',
+                      color: '#38bdf8',
+                      marginBottom: '0.7rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.15em',
+                      textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
+                    }}>
+                      🎭 Mood
+                    </label>
+                    <select
+                      value={mood}
+                      onChange={(e) => setMood(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '1rem 1.2rem',
+                        borderRadius: '0.8rem',
+                        color: '#e0f2fe',
+                        fontSize: '1rem',
+                        fontFamily: 'monospace',
+                        cursor: 'pointer',
+                        background: 'rgba(6, 182, 212, 0.05)',
+                        border: '1px solid rgba(34, 211, 238, 0.3)',
+                        backdropFilter: 'blur(10px)'
+                      }}
+                    >
+                      {moods.map((m) => (
+                        <option key={m.id} value={m.id} style={{ background: '#001d3d', color: '#e0f2fe' }}>
+                          {m.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                    <div>
-                      <label style={{
-                        display: 'block',
-                        fontSize: '0.8rem',
-                        fontWeight: '700',
-                        color: '#38bdf8',
-                        marginBottom: '0.5rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.12em',
-                        textShadow: '0 0 8px rgba(56, 189, 248, 0.5)'
-                      }}>
-                        🌍 Region
-                      </label>
-                      <select
-                        value={region}
-                        onChange={(e) => setRegion(e.target.value)}
-                        style={{
-                          width: '100%',
-                          padding: '0.8rem 1rem',
-                          borderRadius: '0.7rem',
-                          color: '#e0f2fe',
-                          fontSize: '0.95rem',
-                          fontFamily: 'system-ui',
-                          cursor: 'pointer',
-                          background: 'rgba(6, 182, 212, 0.05)',
-                          border: '1px solid rgba(34, 211, 238, 0.3)',
-                          backdropFilter: 'blur(8px)'
-                        }}
-                      >
-                        {regions.map((r) => (
-                          <option key={r.id} value={r.id} style={{ background: '#001d3d', color: '#e0f2fe' }}>
-                            {r.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  {/* Regional Vibe */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '0.85rem',
+                      fontWeight: '700',
+                      color: '#38bdf8',
+                      marginBottom: '0.7rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.15em',
+                      textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
+                    }}>
+                      🌍 Regional Vibe
+                    </label>
+                    <select
+                      value={region}
+                      onChange={(e) => setRegion(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '1rem 1.2rem',
+                        borderRadius: '0.8rem',
+                        color: '#e0f2fe',
+                        fontSize: '1rem',
+                        fontFamily: 'monospace',
+                        cursor: 'pointer',
+                        background: 'rgba(6, 182, 212, 0.05)',
+                        border: '1px solid rgba(34, 211, 238, 0.3)',
+                        backdropFilter: 'blur(10px)'
+                      }}
+                    >
+                      {regions.map((r) => (
+                        <option key={r.id} value={r.id} style={{ background: '#001d3d', color: '#e0f2fe' }}>
+                          {r.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   {/* Feedback box */}
                   <div>
                     <label style={{
                       display: 'block',
-                      fontSize: '0.8rem',
+                      fontSize: '0.85rem',
                       fontWeight: '700',
                       color: '#38bdf8',
-                      marginBottom: '0.5rem',
+                      marginBottom: '0.7rem',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.12em',
-                      textShadow: '0 0 8px rgba(56, 189, 248, 0.5)'
+                      letterSpacing: '0.15em',
+                      textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
                     }}>
-                      💬 Your feedback
+                      💬 Your valuable words for our improvement
                     </label>
                     <textarea
                       value={feedback}
                       onChange={(e) => setFeedback(e.target.value)}
-                      placeholder="Help us improve..."
+                      placeholder="Tell us what to improve, what you loved, what you hate—your words will shape FunCaption."
                       rows={2}
                       style={{
                         width: '100%',
-                        padding: '0.8rem 1rem',
-                        borderRadius: '0.7rem',
+                        padding: '1rem 1.2rem',
+                        borderRadius: '0.8rem',
                         color: '#e0f2fe',
-                        fontSize: '0.95rem',
-                        fontFamily: 'system-ui',
+                        fontSize: '0.98rem',
+                        fontFamily: 'monospace',
                         resize: 'vertical',
                         background: 'rgba(6, 182, 212, 0.05)',
                         border: '1px solid rgba(34, 211, 238, 0.3)',
-                        backdropFilter: 'blur(8px)'
+                        backdropFilter: 'blur(10px)'
                       }}
                     />
                   </div>
@@ -669,25 +705,21 @@ export default function Home() {
                     className="neon-button-enhanced"
                     style={{
                       width: '100%',
-                      padding: '1.2rem',
-                      fontSize: '0.95rem',
-                      fontWeight: '800',
                       cursor: loading ? 'not-allowed' : 'pointer',
-                      opacity: loading ? 0.7 : 1,
-                      marginTop: '0.5rem'
+                      opacity: loading ? 0.7 : 1
                     }}
                   >
-                    {loading ? '⚡ GENERATING...' : '🚀 GENERATE CAPTIONS'}
+                    {loading ? '⚡ GENERATING CAPTIONS...' : '🚀 GENERATE CAPTIONS'}
                   </button>
                 </form>
 
                 {/* Results */}
                 {variants.length > 0 && (
                   <div style={{ 
-                    marginTop: '3rem', 
+                    marginTop: '4rem', 
                     display: 'flex', 
                     flexDirection: 'column', 
-                    gap: '1.5rem'
+                    gap: '2rem'
                   }}>
                     {variants.map((v, i) => {
                       const processedCaption = (v.caption || '').replace(
@@ -697,43 +729,96 @@ export default function Home() {
                       
                       const instagramLink = 'https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA=='
                       const isPremium = v.premium
-                      const isLongCaption = v.type === 'long'
                       const isShortCaption = v.type === 'short'
 
                       if (isPremium) {
                         return (
-                          <div key={i} className="holographic-premium" style={{ padding: '2rem', borderRadius: '20px' }}>
-                            <div className="premium-badge" style={{ padding: '0.5rem 1.5rem', fontSize: '0.7rem' }}>★ {v.label || "STORY MODE"} ★</div>
+                          <div key={i} className="holographic-premium" style={{ 
+                            position: 'relative',
+                            background: 'linear-gradient(135deg, rgba(15, 25, 45, 0.8), rgba(25, 45, 85, 0.95))',
+                            backdropFilter: 'blur(25px)',
+                            border: '3px solid transparent',
+                            borderRadius: '25px',
+                            padding: '2.5rem',
+                            boxShadow: 
+                              '0 0 80px rgba(0, 255, 255, 0.5), 0 0 150px rgba(138, 43, 226, 0.4), inset 0 0 40px rgba(0, 255, 255, 0.3)',
+                            overflow: 'hidden',
+                            transform: 'perspective(1000px) rotateX(2deg)',
+                            marginBottom: '2rem'
+                          }}>
+                            {/* Animated Border */}
+                            <div style={{
+                              position: 'absolute',
+                              top: '-3px',
+                              left: '-3px',
+                              right: '-3px',
+                              bottom: '-3px',
+                              background: 'conic-gradient(from 0deg, #00ffff, #8a2be2, #ff2db8, #00ffff)',
+                              borderRadius: '28px',
+                              zIndex: '-1',
+                              animation: 'rotateBorder 4s linear infinite'
+                            }}></div>
                             
-                            <div className="premium-content" style={{ whiteSpace: 'pre-line', fontSize: '1rem', marginTop: '1.5rem' }}>
+                            {/* Premium Badge */}
+                            <div style={{
+                              position: 'absolute',
+                              top: '0',
+                              left: '50%',
+                              transform: 'translateX(-50%)',
+                              padding: '0.6rem 2rem',
+                              borderRadius: '0 0 1.2rem 1.2rem',
+                              background: 'linear-gradient(135deg, #ffd700, #ffa500)',
+                              color: '#000',
+                              fontWeight: '900',
+                              fontSize: '0.8rem',
+                              letterSpacing: '0.15em',
+                              textTransform: 'uppercase',
+                              boxShadow: '0 5px 20px rgba(255, 215, 0, 0.6)',
+                              border: '2px solid rgba(255, 255, 255, 0.5)',
+                              borderTop: 'none',
+                              zIndex: '2'
+                            }}>
+                              ★ PREMIUM ★
+                            </div>
+
+                            {/* Premium Content */}
+                            <div style={{
+                              fontSize: '1.1rem',
+                              lineHeight: '1.8',
+                              color: '#e0f7ff',
+                              margin: '2rem 0',
+                              textShadow: '0 0 10px rgba(0, 255, 255, 0.3)',
+                              fontFamily: 'monospace',
+                              whiteSpace: 'pre-line'
+                            }}>
                               {processedCaption}
                             </div>
-                            
+
                             {v.regionLabel && (
                               <div style={{
                                 display: 'inline-block',
-                                padding: '0.4rem 1rem',
+                                padding: '0.5rem 1.2rem',
                                 background: 'linear-gradient(90deg, rgba(0, 255, 255, 0.2), rgba(138, 43, 226, 0.2))',
                                 border: '2px solid rgba(0, 255, 255, 0.5)',
                                 borderRadius: '999px',
-                                fontSize: '0.75rem',
+                                fontSize: '0.8rem',
                                 color: '#bae6fd',
-                                marginBottom: '1rem',
+                                marginBottom: '1.2rem',
                                 fontWeight: '700'
                               }}>
                                 🌍 {v.regionLabel}
                               </div>
                             )}
-                            
+
                             {/* Instagram CTA */}
                             <div style={{
                               background: 'rgba(0, 8, 20, 0.6)',
-                              padding: '1rem',
-                              borderRadius: '0.8rem',
-                              margin: '1.2rem 0',
+                              padding: '1.2rem',
+                              borderRadius: '1rem',
+                              margin: '1.5rem 0',
                               display: 'flex',
                               justifyContent: 'center',
-                              gap: '0.6rem',
+                              gap: '0.8rem',
                               alignItems: 'center',
                               border: '2px dashed rgba(0, 255, 255, 0.3)'
                             }}>
@@ -745,55 +830,85 @@ export default function Home() {
                                 style={{
                                   display: 'inline-flex',
                                   alignItems: 'center',
-                                  gap: '0.5rem',
+                                  gap: '0.6rem',
                                   textDecoration: 'none',
-                                  padding: '0.6rem 1.1rem',
+                                  padding: '0.7rem 1.3rem',
                                   borderRadius: '999px',
-                                  fontSize: '0.85rem',
-                                  fontWeight: '700'
+                                  fontSize: '0.95rem',
+                                  fontWeight: '800'
                                 }}
                               >
-                                <InstagramIcon /> Follow Tips
+                                <InstagramIcon /> Click to follow
                               </a>
                             </div>
-                            
+
                             <button
                               type="button"
                               onClick={() => copyCaption(v.caption, i)}
-                              className={`premium-copy-btn ${copiedIndex === i ? 'copied' : ''}`}
-                              style={{ padding: '1rem', fontSize: '0.9rem' }}
+                              className="neon-button-enhanced"
+                              style={{
+                                width: '100%',
+                                padding: '1.2rem',
+                                background: copiedIndex === i
+                                  ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(22, 163, 74, 0.3))'
+                                  : 'linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3))',
+                                color: copiedIndex === i ? '#86efac' : '#FFD700',
+                                border: copiedIndex === i 
+                                  ? '2px solid #22c55e' 
+                                  : '2px solid #FFD700',
+                                borderRadius: '1rem',
+                                fontSize: '1rem',
+                                fontWeight: '900',
+                                cursor: 'pointer',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.15em',
+                                fontFamily: 'Orbitron, monospace, sans-serif'
+                              }}
                             >
-                              {copiedIndex === i ? '✓ COPIED!' : '📋 COPY PREMIUM'}
+                              {copiedIndex === i ? '✓ COPIED!' : '📋 COPY PREMIUM CAPTION'}
                             </button>
                           </div>
                         )
                       } else if (isShortCaption) {
-                        // Short Caption Card
+                        // Short Caption Card - Enhanced styling
                         return (
                           <div key={i} className="glass-card" style={{ 
-                            border: '1px solid rgba(255, 215, 0, 0.4)',
-                            background: 'rgba(40, 30, 15, 0.4)',
-                            padding: '1.5rem'
+                            border: '2px solid rgba(255, 215, 0, 0.5)',
+                            background: 'linear-gradient(135deg, rgba(40, 30, 15, 0.6), rgba(60, 45, 20, 0.8))',
+                            position: 'relative',
+                            borderRadius: '20px',
+                            overflow: 'hidden'
                           }}>
+                            {/* Animated Border for Short Caption */}
                             <div style={{
-                              fontSize: '0.7rem',
+                              position: 'absolute',
+                              top: '0',
+                              left: '0',
+                              right: '0',
+                              height: '3px',
+                              background: 'linear-gradient(90deg, transparent, #FFD700, transparent)',
+                              animation: 'scanLineFast 2s linear infinite'
+                            }}></div>
+                            
+                            <div style={{
+                              fontSize: '0.75rem',
                               color: '#FFD700',
-                              marginBottom: '0.8rem',
+                              marginBottom: '1rem',
                               fontWeight: '800',
                               textTransform: 'uppercase',
-                              letterSpacing: '0.12em',
-                              textShadow: '0 0 8px rgba(255, 215, 0, 0.5)'
+                              letterSpacing: '0.15em',
+                              textShadow: '0 0 10px rgba(255, 215, 0, 0.5)'
                             }}>
                               ⚡ {v.label || "QUICK FIRE"}
                             </div>
                             
                             <p style={{
-                              fontSize: '0.95rem',
-                              lineHeight: '1.5',
+                              fontSize: '1rem',
+                              lineHeight: '1.6',
                               color: '#FFE5B4',
-                              marginBottom: '1rem',
+                              marginBottom: '1.2rem',
                               whiteSpace: 'pre-line',
-                              fontFamily: 'system-ui',
+                              fontFamily: 'monospace',
                               fontWeight: '600'
                             }}>
                               {processedCaption}
@@ -802,13 +917,13 @@ export default function Home() {
                             {v.regionLabel && (
                               <div style={{
                                 display: 'inline-block',
-                                padding: '0.35rem 0.9rem',
+                                padding: '0.45rem 1.1rem',
                                 background: 'rgba(255, 215, 0, 0.15)',
                                 border: '1px solid rgba(255, 215, 0, 0.3)',
                                 borderRadius: '999px',
-                                fontSize: '0.7rem',
+                                fontSize: '0.75rem',
                                 color: '#FFD700',
-                                marginBottom: '1rem',
+                                marginBottom: '1.2rem',
                                 fontWeight: '700'
                               }}>
                                 🌍 {v.regionLabel}
@@ -821,50 +936,50 @@ export default function Home() {
                               className="neon-button-enhanced"
                               style={{
                                 width: '100%',
-                                padding: '0.9rem',
+                                padding: '1.1rem',
                                 background: copiedIndex === i
                                   ? 'linear-gradient(135deg, rgba(50, 205, 50, 0.3), rgba(34, 139, 34, 0.3))'
                                   : 'linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2))',
                                 color: copiedIndex === i ? '#90EE90' : '#FFD700',
                                 border: copiedIndex === i 
-                                  ? '2px solid #32CD32' 
+                                  ? '2px solid rgba(50, 205, 50, 0.5)' 
                                   : '2px solid rgba(255, 215, 0, 0.5)',
-                                borderRadius: '0.7rem',
-                                fontSize: '0.85rem',
-                                fontWeight: '700',
+                                borderRadius: '0.8rem',
+                                fontSize: '0.95rem',
+                                fontWeight: '800',
                                 cursor: 'pointer',
                                 textTransform: 'uppercase',
-                                letterSpacing: '0.1em',
-                                fontFamily: 'system-ui'
+                                letterSpacing: '0.12em',
+                                fontFamily: 'monospace'
                               }}
                             >
-                              {copiedIndex === i ? '✓ COPIED!' : `📋 COPY ${v.label || "SHORT"}`}
+                              {copiedIndex === i ? '✓ COPIED!' : `📋 COPY ${v.label || "SHORT CAPTION"}`}
                             </button>
                           </div>
                         )
                       } else {
                         // Standard/Regional Caption Card
                         return (
-                          <div key={i} className="glass-card" style={{ padding: '1.5rem' }}>
+                          <div key={i} className="glass-card">
                             <div style={{
-                              fontSize: '0.7rem',
+                              fontSize: '0.75rem',
                               color: '#38bdf8',
-                              marginBottom: '0.8rem',
+                              marginBottom: '1rem',
                               fontWeight: '800',
                               textTransform: 'uppercase',
-                              letterSpacing: '0.12em',
-                              textShadow: '0 0 8px rgba(56, 189, 248, 0.5)'
+                              letterSpacing: '0.15em',
+                              textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
                             }}>
                               📝 {v.label || `Caption ${i + 1}`}
                             </div>
                             
                             <p style={{
-                              fontSize: '0.95rem',
-                              lineHeight: '1.7',
+                              fontSize: '1rem',
+                              lineHeight: '1.9',
                               color: '#cbd5e1',
-                              marginBottom: '1rem',
+                              marginBottom: '1.2rem',
                               whiteSpace: 'pre-line',
-                              fontFamily: 'system-ui'
+                              fontFamily: 'monospace'
                             }}>
                               {processedCaption}
                             </p>
@@ -872,13 +987,13 @@ export default function Home() {
                             {v.regionLabel && (
                               <div style={{
                                 display: 'inline-block',
-                                padding: '0.35rem 0.9rem',
+                                padding: '0.45rem 1.1rem',
                                 background: 'rgba(6, 182, 212, 0.15)',
                                 border: '1px solid rgba(34, 211, 238, 0.3)',
                                 borderRadius: '999px',
-                                fontSize: '0.7rem',
+                                fontSize: '0.75rem',
                                 color: '#7dd3fc',
-                                marginBottom: '1rem',
+                                marginBottom: '1.2rem',
                                 fontWeight: '700'
                               }}>
                                 🌍 {v.regionLabel}
@@ -891,7 +1006,7 @@ export default function Home() {
                               className="neon-button-enhanced"
                               style={{
                                 width: '100%',
-                                padding: '0.9rem',
+                                padding: '1.1rem',
                                 background: copiedIndex === i
                                   ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.2))'
                                   : 'linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(34, 197, 94, 0.15))',
@@ -899,13 +1014,13 @@ export default function Home() {
                                 border: copiedIndex === i 
                                   ? '2px solid rgba(34, 197, 94, 0.5)' 
                                   : '2px solid rgba(34, 211, 238, 0.3)',
-                                borderRadius: '0.7rem',
-                                fontSize: '0.85rem',
-                                fontWeight: '700',
+                                borderRadius: '0.8rem',
+                                fontSize: '0.95rem',
+                                fontWeight: '800',
                                 cursor: 'pointer',
                                 textTransform: 'uppercase',
-                                letterSpacing: '0.1em',
-                                fontFamily: 'system-ui'
+                                letterSpacing: '0.12em',
+                                fontFamily: 'monospace'
                               }}
                             >
                               {copiedIndex === i ? '✓ COPIED!' : `📋 COPY ${v.label || "CAPTION"}`}
@@ -922,13 +1037,13 @@ export default function Home() {
 
           {/* Footer with Instagram Link */}
           <footer style={{
-            padding: '2rem 1rem',
+            padding: '3rem 1.5rem',
             textAlign: 'center',
             color: '#64748b',
-            fontSize: '0.8rem',
+            fontSize: '0.9rem',
             position: 'relative'
           }}>
-            <div style={{ marginBottom: '1.2rem', marginTop: '0.8rem' }}>
+            <div style={{ marginBottom: '1.5rem', marginTop: '1rem' }}>
               <a 
                 href="https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA==" 
                 target="_blank" 
@@ -937,47 +1052,57 @@ export default function Home() {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
+                  gap: '0.6rem',
                   color: '#e0f2fe',
                   textDecoration: 'none',
                   fontWeight: '700',
-                  padding: '0.7rem 1.3rem',
-                  borderRadius: '999px',
-                  fontSize: '0.85rem'
+                  padding: '0.8rem 1.5rem',
+                  borderRadius: '999px'
                 }}
               >
                 <InstagramIcon />
-                Follow @instaalgohacker
+                Follow @instaalgohacker on Instagram
               </a>
             </div>
             <p style={{ 
               color: '#94a3b8',
-              textShadow: '0 0 8px rgba(148, 163, 184, 0.3)'
+              textShadow: '0 0 10px rgba(148, 163, 184, 0.3)'
             }}>
               FunCaption © 2025 — Built for creators who refuse to stay invisible 🔥
             </p>
           </footer>
         </div>
 
-        {/* Floating Instagram Button - Mobile optimized */}
+        {/* Floating Instagram Button */}
         <a 
           href="https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA==" 
           target="_blank" 
           rel="noopener noreferrer"
           className="floating-instagram"
-          style={{
-            bottom: '20px',
-            right: '20px',
-            padding: '10px 16px',
-            fontSize: '0.8rem',
-            borderRadius: '50px'
-          }}
         >
-          <svg className="instagram-icon" viewBox="0 0 24 24" style={{ width: '16px', height: '16px' }}>
+          <svg className="instagram-icon" viewBox="0 0 24 24">
             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
           </svg>
-          Follow
+          Follow on Instagram
         </a>
+
+        {/* Realm-Shifting Generating Animation */}
+        <div className={`realm-shift-overlay ${isGenerating ? 'active' : ''}`}>
+          <div className="quantum-portal">
+            <div className="portal-core"></div>
+            <div className="portal-rings">
+              <div className="ring"></div>
+              <div className="ring"></div>
+              <div className="ring"></div>
+            </div>
+            <div className="particles-container" id="particlesContainer"></div>
+            <div className="neural-grid"></div>
+            <div className="data-stream" id="dataStream"></div>
+          </div>
+          
+          <h2 className="realm-shift-text">QUANTUM PROCESSING</h2>
+          <p className="realm-shift-subtext">TRANSMITTING THROUGH NEURAL NETWORKS</p>
+        </div>
       </div>
     </>
   )
