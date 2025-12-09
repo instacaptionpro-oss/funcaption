@@ -179,98 +179,6 @@ export default function Home() {
   const [copiedIndex, setCopiedIndex] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
 
-  // Create Siri-style activation threads
-  useEffect(() => {
-    const createActivationThreads = () => {
-      const container = document.getElementById('activationThread');
-      if (!container) return;
-      
-      // Clear existing threads
-      container.innerHTML = '';
-      
-      const colors = ['#00c8ff', '#8a2be2', '#ff2db8'];
-      
-      // Create 30 threads
-      for (let i = 0; i < 30; i++) {
-        const thread = document.createElement('div');
-        thread.className = 'thread';
-        
-        // Random properties
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const startX = Math.random() * 100;
-        const startY = Math.random() * 100;
-        const length = 20 + Math.random() * 80;
-        const angle = Math.random() * 360;
-        const duration = 2 + Math.random() * 3;
-        const delay = Math.random() * 5;
-        
-        // Apply styles
-        thread.style.background = `linear-gradient(90deg, transparent, ${color}, transparent)`;
-        thread.style.left = `${startX}%`;
-        thread.style.top = `${startY}%`;
-        thread.style.width = `${length}px`;
-        thread.style.transform = `rotate(${angle}deg)`;
-        thread.style.animation = `threadActivate ${duration}s linear ${delay}s infinite`;
-        thread.style.boxShadow = `0 0 10px ${color}`;
-        
-        container.appendChild(thread);
-      }
-    };
-    
-    // Initialize threads
-    createActivationThreads();
-    
-    // Periodically refresh threads
-    const interval = setInterval(() => {
-      const threads = document.querySelectorAll('.thread');
-      threads.forEach(thread => {
-        if (Math.random() > 0.7) {
-          thread.style.animation = 'none';
-          setTimeout(() => {
-            thread.style.animation = '';
-          }, 10);
-        }
-      });
-    }, 3000);
-    
-    return () => clearInterval(interval);
-  }, []);
-
-  // Create realm-shifting particles and data streams
-  useEffect(() => {
-    if (isGenerating) {
-      // Create particles
-      const particlesContainer = document.getElementById('particlesContainer');
-      const dataStream = document.getElementById('dataStream');
-      
-      if (particlesContainer && dataStream) {
-        particlesContainer.innerHTML = '';
-        dataStream.innerHTML = '';
-        
-        // Create particles
-        for (let i = 0; i < 50; i++) {
-          const particle = document.createElement('div');
-          particle.className = 'particle';
-          particle.style.left = `${Math.random() * 100}%`;
-          particle.style.top = `${Math.random() * 100}%`;
-          particle.style.setProperty('--tx', `${(Math.random() - 0.5) * 200}px`);
-          particle.style.setProperty('--ty', `${(Math.random() - 0.5) * 200}px`);
-          particle.style.animationDelay = `${Math.random() * 5}s`;
-          particlesContainer.appendChild(particle);
-        }
-        
-        // Create data streams
-        for (let i = 0; i < 20; i++) {
-          const stream = document.createElement('div');
-          stream.className = 'stream-column';
-          stream.style.left = `${i * 5}%`;
-          stream.style.animationDelay = `${Math.random() * 8}s`;
-          dataStream.appendChild(stream);
-        }
-      }
-    }
-  }, [isGenerating]);
-
   const handleGenerate = async (e) => {
     e.preventDefault()
     setIsGenerating(true)
@@ -300,7 +208,7 @@ export default function Home() {
       console.error(err)
     } finally {
       setLoading(false)
-      setIsGenerating(false)
+      setIsGenerating(false) // Disable generating animation
     }
   }
 
@@ -733,20 +641,13 @@ export default function Home() {
 
                       if (isPremium) {
                         return (
-                          <div key={i} className="holographic-premium" style={{ 
+                          <div key={i} className="holographic-premium" style={{
                             position: 'relative',
-                            background: 'linear-gradient(135deg, rgba(15, 25, 45, 0.8), rgba(25, 45, 85, 0.95))',
-                            backdropFilter: 'blur(25px)',
                             border: '3px solid transparent',
-                            borderRadius: '25px',
-                            padding: '2.5rem',
-                            boxShadow: 
-                              '0 0 80px rgba(0, 255, 255, 0.5), 0 0 150px rgba(138, 43, 226, 0.4), inset 0 0 40px rgba(0, 255, 255, 0.3)',
-                            overflow: 'hidden',
-                            transform: 'perspective(1000px) rotateX(2deg)',
-                            marginBottom: '2rem'
+                            borderRadius: '20px',
+                            overflow: 'hidden'
                           }}>
-                            {/* Animated Border */}
+                            {/* Animated Gradient Border */}
                             <div style={{
                               position: 'absolute',
                               top: '-3px',
@@ -754,46 +655,17 @@ export default function Home() {
                               right: '-3px',
                               bottom: '-3px',
                               background: 'conic-gradient(from 0deg, #00ffff, #8a2be2, #ff2db8, #00ffff)',
-                              borderRadius: '28px',
+                              borderRadius: '23px',
                               zIndex: '-1',
                               animation: 'rotateBorder 4s linear infinite'
                             }}></div>
                             
-                            {/* Premium Badge */}
-                            <div style={{
-                              position: 'absolute',
-                              top: '0',
-                              left: '50%',
-                              transform: 'translateX(-50%)',
-                              padding: '0.6rem 2rem',
-                              borderRadius: '0 0 1.2rem 1.2rem',
-                              background: 'linear-gradient(135deg, #ffd700, #ffa500)',
-                              color: '#000',
-                              fontWeight: '900',
-                              fontSize: '0.8rem',
-                              letterSpacing: '0.15em',
-                              textTransform: 'uppercase',
-                              boxShadow: '0 5px 20px rgba(255, 215, 0, 0.6)',
-                              border: '2px solid rgba(255, 255, 255, 0.5)',
-                              borderTop: 'none',
-                              zIndex: '2'
-                            }}>
-                              ★ PREMIUM ★
-                            </div>
-
-                            {/* Premium Content */}
-                            <div style={{
-                              fontSize: '1.1rem',
-                              lineHeight: '1.8',
-                              color: '#e0f7ff',
-                              margin: '2rem 0',
-                              textShadow: '0 0 10px rgba(0, 255, 255, 0.3)',
-                              fontFamily: 'monospace',
-                              whiteSpace: 'pre-line'
-                            }}>
+                            <div className="premium-badge">★ PREMIUM ★</div>
+                            
+                            <div className="premium-content" style={{ whiteSpace: 'pre-line' }}>
                               {processedCaption}
                             </div>
-
+                            
                             {v.regionLabel && (
                               <div style={{
                                 display: 'inline-block',
@@ -809,7 +681,7 @@ export default function Home() {
                                 🌍 {v.regionLabel}
                               </div>
                             )}
-
+                            
                             {/* Instagram CTA */}
                             <div style={{
                               background: 'rgba(0, 8, 20, 0.6)',
@@ -838,34 +710,16 @@ export default function Home() {
                                   fontWeight: '800'
                                 }}
                               >
-                                <InstagramIcon /> Click to follow
+                                <InstagramIcon /> Follow for More Premium Tips
                               </a>
                             </div>
-
+                            
                             <button
                               type="button"
                               onClick={() => copyCaption(v.caption, i)}
-                              className="neon-button-enhanced"
-                              style={{
-                                width: '100%',
-                                padding: '1.2rem',
-                                background: copiedIndex === i
-                                  ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(22, 163, 74, 0.3))'
-                                  : 'linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3))',
-                                color: copiedIndex === i ? '#86efac' : '#FFD700',
-                                border: copiedIndex === i 
-                                  ? '2px solid #22c55e' 
-                                  : '2px solid #FFD700',
-                                borderRadius: '1rem',
-                                fontSize: '1rem',
-                                fontWeight: '900',
-                                cursor: 'pointer',
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.15em',
-                                fontFamily: 'Orbitron, monospace, sans-serif'
-                              }}
+                              className={`premium-copy-btn ${copiedIndex === i ? 'copied' : ''}`}
                             >
-                              {copiedIndex === i ? '✓ COPIED!' : '📋 COPY PREMIUM CAPTION'}
+                              {copiedIndex === i ? '✓ COPIED PREMIUM CAPTION!' : '📋 COPY PREMIUM CAPTION'}
                             </button>
                           </div>
                         )
@@ -873,13 +727,11 @@ export default function Home() {
                         // Short Caption Card - Enhanced styling
                         return (
                           <div key={i} className="glass-card" style={{ 
-                            border: '2px solid rgba(255, 215, 0, 0.5)',
-                            background: 'linear-gradient(135deg, rgba(40, 30, 15, 0.6), rgba(60, 45, 20, 0.8))',
-                            position: 'relative',
-                            borderRadius: '20px',
-                            overflow: 'hidden'
+                            border: '2px solid rgba(255, 215, 0, 0.6)',
+                            background: 'linear-gradient(135deg, rgba(40, 30, 15, 0.7), rgba(60, 45, 20, 0.9))',
+                            position: 'relative'
                           }}>
-                            {/* Animated Border for Short Caption */}
+                            {/* Animated Top Line */}
                             <div style={{
                               position: 'absolute',
                               top: '0',
@@ -887,7 +739,7 @@ export default function Home() {
                               right: '0',
                               height: '3px',
                               background: 'linear-gradient(90deg, transparent, #FFD700, transparent)',
-                              animation: 'scanLineFast 2s linear infinite'
+                              animation: 'scanLineFast 1.5s linear infinite'
                             }}></div>
                             
                             <div style={{
@@ -897,7 +749,7 @@ export default function Home() {
                               fontWeight: '800',
                               textTransform: 'uppercase',
                               letterSpacing: '0.15em',
-                              textShadow: '0 0 10px rgba(255, 215, 0, 0.5)'
+                              textShadow: '0 0 10px rgba(255, 215, 0, 0.7)'
                             }}>
                               ⚡ {v.label || "QUICK FIRE"}
                             </div>
@@ -1086,22 +938,13 @@ export default function Home() {
           Follow on Instagram
         </a>
 
-        {/* Realm-Shifting Generating Animation */}
-        <div className={`realm-shift-overlay ${isGenerating ? 'active' : ''}`}>
-          <div className="quantum-portal">
-            <div className="portal-core"></div>
-            <div className="portal-rings">
-              <div className="ring"></div>
-              <div className="ring"></div>
-              <div className="ring"></div>
-            </div>
-            <div className="particles-container" id="particlesContainer"></div>
-            <div className="neural-grid"></div>
-            <div className="data-stream" id="dataStream"></div>
+        {/* Lightweight Generating Animation */}
+        <div className={`generating-overlay ${isGenerating ? 'active' : ''}`}>
+          <div className="generating-content">
+            <div className="neon-spinner"></div>
+            <h2 className="generating-text">PROCESSING CAPTION</h2>
+            <p className="generating-subtext">AI is crafting your perfect caption...</p>
           </div>
-          
-          <h2 className="realm-shift-text">QUANTUM PROCESSING</h2>
-          <p className="realm-shift-subtext">TRANSMITTING THROUGH NEURAL NETWORKS</p>
         </div>
       </div>
     </>
