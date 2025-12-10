@@ -1,5 +1,4 @@
 import OpenAI from 'openai';
-import { db } from '../../lib/firebase-admin';
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -26,7 +25,6 @@ export default async function handler(req, res) {
 
   const cleanFeedback =
     typeof feedback === "string" && feedback.trim().length > 0
-      ? feedback.trim()
       : null;
 
   if (cleanFeedback) {
@@ -212,30 +210,22 @@ Rules:
     }
   ];
 
-  // LOG THE EVENT TO FIREBASE
-  async function logCaptionEvent({ subject, mood, region, premiumUsed }) {
-    try {
+  // TRY to log the event to Firebase (but don't block if it fails)
+  try {
+    if (process.env.FIREBASE_PROJECT_ID) {
+      const { db } = await import('../../lib/firebase-admin');
       await db.collection('captionEvents').add({
         subject: subject?.slice(0, 120) || '',
         mood,
         region,
-        premiumUsed,
+        premiumUsed: true,
         model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B:novita",
         createdAt: new Date(),
-      });
-    } catch (e) {
-      console.error('Failed to log caption event', e);
+      }).catch(console.error);
     }
+  } catch (e) {
+    console.error('Firebase logging failed (continuing anyway):', e);
   }
-
-  // Log the event
-  const premiumUsed = variants.some(v => v.premium);
-  await logCaptionEvent({
-    subject,
-    mood,
-    region,
-    premiumUsed,
-  });
 
   return res.status(200).json({ variants });
 }
