@@ -1,23 +1,5 @@
-import fs from "fs";
-import path from "path";
-
-const analyticsPath = path.join(process.cwd(), "data", "analytics.json");
-
-function updateAnalytics() {
-  try {
-    const raw = fs.readFileSync(analyticsPath, "utf8");
-    const data = JSON.parse(raw);
-
-    const today = new Date().toISOString().slice(0, 10);
-
-    data.total_requests += 1;
-    data.by_day[today] = (data.by_day[today] || 0) + 1;
-
-    fs.writeFileSync(analyticsPath, JSON.stringify(data, null, 2));
-  } catch (err) {
-    console.error("Analytics update failed:", err);
-  }
-}
+import OpenAI from 'openai';
+import { db } from '../../lib/firebase-admin';
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -30,9 +12,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Subject and mood required" });
   }
 
-  const HF_API_KEY = process.env.HUGGINGFACE_API_KEY;
-  const MODEL = process.env.HUGGINGFACE_MODEL;
-  const HF_URL = "https://router.huggingface.co/v1/chat/completions";
+  const HF_TOKEN = process.env.HF_TOKEN;
+  
+  if (!HF_TOKEN) {
+    return res.status(500).json({ error: "Server configuration error" });
+  }
 
   // Clean extras
   const cleanDetails =
@@ -53,9 +37,14 @@ export default async function handler(req, res) {
   let longCaption = null;
   let regionalCaption = null;
 
-  // Generate captions using HuggingFace
+  // Generate captions using DeepSeek model
   try {
-    if (HF_API_KEY && MODEL) {
+    const client = new OpenAI({
+      baseURL: "https://router.huggingface.co/v1",
+      apiKey: HF_TOKEN,
+    });
+
+    if (HF_TOKEN) {
       const extraDetails = cleanDetails
         ? `Reel details: ${cleanDetails}\n`
         : "";
@@ -120,68 +109,62 @@ Rules:
         `;
       }
 
-      // Fetch short caption
-      const shortResponse = await fetch(HF_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${HF_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: MODEL,
+      // Fetch short caption with timeout
+      const shortResponse = await Promise.race([
+        client.chat.completions.create({
+          model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B:novita",
           messages: [{ role: "user", content: shortPrompt }],
           max_tokens: 150,
+          temperature: 0.7,
         }),
-      });
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout')), 15000)
+        )
+      ]);
 
-      if (shortResponse.ok) {
-        const data = await shortResponse.json();
-        const text = data?.choices?.[0]?.message?.content || "";
+      if (shortResponse && shortResponse.choices && shortResponse.choices[0]) {
+        const text = shortResponse.choices[0].message.content || "";
         if (text && text.trim().length > 10) {
           shortCaption = text.trim();
         }
       }
 
-      // Fetch long caption
-      const longResponse = await fetch(HF_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${HF_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: MODEL,
+      // Fetch long caption with timeout
+      const longResponse = await Promise.race([
+        client.chat.completions.create({
+          model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B:novita",
           messages: [{ role: "user", content: longPrompt }],
           max_tokens: 200,
+          temperature: 0.7,
         }),
-      });
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout')), 15000)
+        )
+      ]);
 
-      if (longResponse.ok) {
-        const data = await longResponse.json();
-        const text = data?.choices?.[0]?.message?.content || "";
+      if (longResponse && longResponse.choices && longResponse.choices[0]) {
+        const text = longResponse.choices[0].message.content || "";
         if (text && text.trim().length > 10) {
           longCaption = text.trim();
         }
       }
 
-      // Fetch regional caption (if applicable)
+      // Fetch regional caption (if applicable) with timeout
       if (regionalPrompt) {
-        const regionalResponse = await fetch(HF_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${HF_API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: MODEL,
+        const regionalResponse = await Promise.race([
+          client.chat.completions.create({
+            model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B:novita",
             messages: [{ role: "user", content: regionalPrompt }],
             max_tokens: 180,
+            temperature: 0.7,
           }),
-        });
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout')), 15000)
+          )
+        ]);
 
-        if (regionalResponse.ok) {
-          const data = await regionalResponse.json();
-          const text = data?.choices?.[0]?.message?.content || "";
+        if (regionalResponse && regionalResponse.choices && regionalResponse.choices[0]) {
+          const text = regionalResponse.choices[0].message.content || "";
           if (text && text.trim().length > 10) {
             regionalCaption = text.trim();
           }
@@ -189,7 +172,8 @@ Rules:
       }
     }
   } catch (err) {
-    console.error("Caption generation failed", err);
+    console.error("Caption generation failed:", err.message);
+    // Don't return error to user, continue with fallbacks
   }
 
   // Build base line for fallbacks
@@ -228,8 +212,30 @@ Rules:
     }
   ];
 
-  // Update analytics
-  updateAnalytics();
+  // LOG THE EVENT TO FIREBASE
+  async function logCaptionEvent({ subject, mood, region, premiumUsed }) {
+    try {
+      await db.collection('captionEvents').add({
+        subject: subject?.slice(0, 120) || '',
+        mood,
+        region,
+        premiumUsed,
+        model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B:novita",
+        createdAt: new Date(),
+      });
+    } catch (e) {
+      console.error('Failed to log caption event', e);
+    }
+  }
+
+  // Log the event
+  const premiumUsed = variants.some(v => v.premium);
+  await logCaptionEvent({
+    subject,
+    mood,
+    region,
+    premiumUsed,
+  });
 
   return res.status(200).json({ variants });
 }
