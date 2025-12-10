@@ -25,6 +25,7 @@ export default async function handler(req, res) {
 
   const cleanFeedback =
     typeof feedback === "string" && feedback.trim().length > 0
+      ? feedback.trim()
       : null;
 
   if (cleanFeedback) {
@@ -47,7 +48,7 @@ export default async function handler(req, res) {
         ? `Reel details: ${cleanDetails}\n`
         : "";
 
-      // Short Caption Prompt
+      // Short Caption Prompt (Quick Fire - 1-2 lines)
       const shortPrompt = `
 You are a caption writer for Indian Instagram creators.
 
@@ -66,11 +67,11 @@ Rules:
 - Return ONLY the caption text, nothing else.
       `;
 
-      // Long Caption Prompt
-      const longPrompt = `
+      // Medium Caption Prompt (Premium - 2-3 lines)
+      const mediumPrompt = `
 You are a caption writer for Indian Instagram creators.
 
-Generate exactly 1 LONG Instagram caption (3-4 lines).
+Generate exactly 1 MEDIUM Instagram caption (2-3 lines).
 
 Subject: ${subject}
 Mood: ${mood}
@@ -78,8 +79,8 @@ Region: ${region}
 ${extraDetails}
 Rules:
 - Make it emotional, deep, and storytelling
-- 3-4 lines maximum
-- Include 5-8 relevant, modern hashtags
+- 2-3 lines maximum
+- Include 4-6 relevant, modern hashtags
 - Do NOT just repeat the subject or details word-by-word
 - Make it feel like a premium caption built to hack Instagram's algorithm
 - Return ONLY the caption text, nothing else.
@@ -127,12 +128,12 @@ Rules:
         }
       }
 
-      // Fetch long caption with timeout
-      const longResponse = await Promise.race([
+      // Fetch medium caption with timeout
+      const mediumResponse = await Promise.race([
         client.chat.completions.create({
           model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B:novita",
-          messages: [{ role: "user", content: longPrompt }],
-          max_tokens: 200,
+          messages: [{ role: "user", content: mediumPrompt }],
+          max_tokens: 180,
           temperature: 0.7,
         }),
         new Promise((_, reject) => 
@@ -140,8 +141,8 @@ Rules:
         )
       ]);
 
-      if (longResponse && longResponse.choices && longResponse.choices[0]) {
-        const text = longResponse.choices[0].message.content || "";
+      if (mediumResponse && mediumResponse.choices && mediumResponse.choices[0]) {
+        const text = mediumResponse.choices[0].message.content || "";
         if (text && text.trim().length > 10) {
           longCaption = text.trim();
         }
@@ -181,7 +182,7 @@ Rules:
 
   // Fallback captions
   const fallbackShort = `${baseLine}.\n${mood} energy 🔥\n\n#${mood} #viral #instagram #indiancreator`;
-  const fallbackLong = `${baseLine} speaks louder than words.\nThis ${mood} moment defines everything.\nFeel the vibe, share the energy.\n\n#${mood} #trending #creators #indiancontent #viral`;
+  const fallbackMedium = `${baseLine} speaks louder than words.\nThis ${mood} moment defines everything.\nFeel the vibe, share the energy.\n\n#${mood} #trending #creators #indiancontent #viral`;
 
   // Regional fallback
   const regionalFallback = region && region !== "none" 
@@ -190,16 +191,16 @@ Rules:
 
   const variants = [
     {
-      caption: longCaption || fallbackLong,
-      type: "long",
-      label: "Story Mode",
-      premium: true
-    },
-    {
       caption: shortCaption || fallbackShort,
       type: "short",
       label: "Quick Fire",
       premium: false
+    },
+    {
+      caption: longCaption || fallbackMedium,
+      type: "medium",
+      label: "Story Mode",
+      premium: true
     },
     {
       caption: regionalCaption || regionalFallback,
@@ -210,9 +211,33 @@ Rules:
     }
   ];
 
-  // TRY to log the event to Firebase (but don't block if it fails)
+  // UPDATE ANALYTICS FILE (KEEP YOUR OLD WORKING SYSTEM)
   try {
-    if (process.env.FIREBASE_PROJECT_ID) {
+    if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'development') {
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const analyticsPath = path.join(process.cwd(), 'data', 'analytics.json');
+      
+      if (fs.existsSync(analyticsPath)) {
+        const raw = fs.readFileSync(analyticsPath, 'utf8');
+        const data = JSON.parse(raw);
+        
+        const today = new Date().toISOString().split('T')[0];
+        
+        data.total_requests += 1;
+        data.by_day[today] = (data.by_day[today] || 0) + 1;
+        
+        fs.writeFileSync(analyticsPath, JSON.stringify(data, null, 2));
+      }
+    }
+  } catch (err) {
+    console.error('Analytics update failed:', err);
+  }
+
+  // OPTIONAL: LOG TO FIREBASE (DON'T BLOCK IF IT FAILS)
+  if (process.env.FIREBASE_PROJECT_ID) {
+    try {
       const { db } = await import('../../lib/firebase-admin');
       await db.collection('captionEvents').add({
         subject: subject?.slice(0, 120) || '',
@@ -220,11 +245,13 @@ Rules:
         region,
         premiumUsed: true,
         model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B:novita",
-        createdAt: new Date(),
-      }).catch(console.error);
+        timestamp: new Date(),
+      }).catch(err => {
+        console.error('Firebase logging error:', err);
+      });
+    } catch (err) {
+      console.error('Firebase initialization error:', err);
     }
-  } catch (e) {
-    console.error('Firebase logging failed (continuing anyway):', e);
   }
 
   return res.status(200).json({ variants });
