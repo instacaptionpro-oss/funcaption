@@ -1,209 +1,39 @@
-import OpenAI from 'openai';
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { subject, mood, region, details, feedback } = req.body;
+  const { subject, mood, region, details } = req.body;
 
   if (!subject || !mood) {
     return res.status(400).json({ error: "Subject and mood required" });
   }
 
-  const HF_TOKEN = process.env.HF_TOKEN;
-  
-  if (!HF_TOKEN) {
-    return res.status(500).json({ error: "Server configuration error" });
-  }
+  // Build base line
+  const baseLine = details ? `${subject} — ${details}` : subject;
 
-  // Clean extras
-  const cleanDetails =
-    typeof details === "string" && details.trim().length > 0
-      ? details.trim()
-      : null;
-
-  const cleanFeedback =
-    typeof feedback === "string" && feedback.trim().length > 0
-      ? feedback.trim()
-      : null;
-
-  if (cleanFeedback) {
-    console.log("User feedback:", cleanFeedback);
-  }
-
-  let shortCaption = null;
-  let longCaption = null;
-  let regionalCaption = null;
-
-  // Generate captions using DeepSeek model
-  try {
-    const client = new OpenAI({
-      baseURL: "https://router.huggingface.co/v1",
-      apiKey: HF_TOKEN,
-    });
-
-    if (HF_TOKEN) {
-      const extraDetails = cleanDetails
-        ? `Reel details: ${cleanDetails}\n`
-        : "";
-
-      // Short Caption Prompt (Quick Fire - 1-2 lines)
-      const shortPrompt = `
-You are a caption writer for Indian Instagram creators.
-
-Generate exactly 1 SHORT Instagram caption (1-2 lines max).
-
-Subject: ${subject}
-Mood: ${mood}
-Region: ${region}
-${extraDetails}
-Rules:
-- Make it punchy, impactful, and catchy
-- 1-2 lines maximum
-- Include 3-5 relevant, modern hashtags
-- Do NOT just repeat the subject or details word-by-word
-- Make it feel like a viral caption built to hack Instagram's algorithm
-- Return ONLY the caption text, nothing else.
-      `;
-
-      // Medium Caption Prompt (Premium - 2-3 lines)
-      const mediumPrompt = `
-You are a caption writer for Indian Instagram creators.
-
-Generate exactly 1 MEDIUM Instagram caption (2-3 lines).
-
-Subject: ${subject}
-Mood: ${mood}
-Region: ${region}
-${extraDetails}
-Rules:
-- Make it emotional, deep, and storytelling
-- 2-3 lines maximum
-- Include 4-6 relevant, modern hashtags
-- Do NOT just repeat the subject or details word-by-word
-- Make it feel like a premium caption built to hack Instagram's algorithm
-- Return ONLY the caption text, nothing else.
-      `;
-
-      // Regional Caption Prompt (if region is specified)
-      let regionalPrompt = null;
-      if (region && region !== "none") {
-        regionalPrompt = `
-You are a caption writer for Indian Instagram creators.
-
-Generate exactly 1 Instagram caption in the specified regional language AND English.
-
-Subject: ${subject}
-Mood: ${mood}
-Region: ${region}
-${extraDetails}
-Rules:
-- Write primarily in the regional language associated with: ${region}
-- Include English translation if helpful
-- Make it culturally relevant and authentic
-- 2-3 lines maximum
-- Include 3-5 relevant hashtags in English
-- Return ONLY the caption text, nothing else.
-        `;
-      }
-
-      // Fetch short caption with timeout
-      const shortResponse = await Promise.race([
-        client.chat.completions.create({
-          model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B:novita",
-          messages: [{ role: "user", content: shortPrompt }],
-          max_tokens: 150,
-          temperature: 0.7,
-        }),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout')), 15000)
-        )
-      ]);
-
-      if (shortResponse && shortResponse.choices && shortResponse.choices[0]) {
-        const text = shortResponse.choices[0].message.content || "";
-        if (text && text.trim().length > 10) {
-          shortCaption = text.trim();
-        }
-      }
-
-      // Fetch medium caption with timeout
-      const mediumResponse = await Promise.race([
-        client.chat.completions.create({
-          model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B:novita",
-          messages: [{ role: "user", content: mediumPrompt }],
-          max_tokens: 180,
-          temperature: 0.7,
-        }),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout')), 15000)
-        )
-      ]);
-
-      if (mediumResponse && mediumResponse.choices && mediumResponse.choices[0]) {
-        const text = mediumResponse.choices[0].message.content || "";
-        if (text && text.trim().length > 10) {
-          longCaption = text.trim();
-        }
-      }
-
-      // Fetch regional caption (if applicable) with timeout
-      if (regionalPrompt) {
-        const regionalResponse = await Promise.race([
-          client.chat.completions.create({
-            model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B:novita",
-            messages: [{ role: "user", content: regionalPrompt }],
-            max_tokens: 180,
-            temperature: 0.7,
-          }),
-          new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout')), 15000)
-          )
-        ]);
-
-        if (regionalResponse && regionalResponse.choices && regionalResponse.choices[0]) {
-          const text = regionalResponse.choices[0].message.content || "";
-          if (text && text.trim().length > 10) {
-            regionalCaption = text.trim();
-          }
-        }
-      }
-    }
-  } catch (err) {
-    console.error("Caption generation failed:", err.message);
-    // Don't return error to user, continue with fallbacks
-  }
-
-  // Build base line for fallbacks
-  const baseLine = cleanDetails
-    ? `${subject} — ${cleanDetails}`
-    : subject;
-
-  // Fallback captions
+  // Simple fallback captions that always work
   const fallbackShort = `${baseLine}.\n${mood} energy 🔥\n\n#${mood} #viral #instagram #indiancreator`;
   const fallbackMedium = `${baseLine} speaks louder than words.\nThis ${mood} moment defines everything.\nFeel the vibe, share the energy.\n\n#${mood} #trending #creators #indiancontent #viral`;
-
-  // Regional fallback
   const regionalFallback = region && region !== "none" 
     ? `${baseLine} (${region} style)\n${mood} vibes only 🌟\n\n#${mood} #${region} #localcreator`
     : fallbackShort;
 
   const variants = [
     {
-      caption: shortCaption || fallbackShort,
+      caption: fallbackShort,
       type: "short",
       label: "Quick Fire",
       premium: false
     },
     {
-      caption: longCaption || fallbackMedium,
+      caption: fallbackMedium,
       type: "medium",
       label: "Story Mode",
       premium: true
     },
     {
-      caption: regionalCaption || regionalFallback,
+      caption: regionalFallback,
       type: "regional",
       label: region && region !== "none" ? `${region.charAt(0).toUpperCase() + region.slice(1)} Style` : "Regional",
       premium: false,
@@ -211,47 +41,12 @@ Rules:
     }
   ];
 
-  // UPDATE ANALYTICS FILE (KEEP YOUR OLD WORKING SYSTEM)
+  // Simple analytics update
   try {
-    if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'development') {
-      const fs = await import('fs');
-      const path = await import('path');
-      
-      const analyticsPath = path.join(process.cwd(), 'data', 'analytics.json');
-      
-      if (fs.existsSync(analyticsPath)) {
-        const raw = fs.readFileSync(analyticsPath, 'utf8');
-        const data = JSON.parse(raw);
-        
-        const today = new Date().toISOString().split('T')[0];
-        
-        data.total_requests += 1;
-        data.by_day[today] = (data.by_day[today] || 0) + 1;
-        
-        fs.writeFileSync(analyticsPath, JSON.stringify(data, null, 2));
-      }
-    }
+    // This will work without any external dependencies
+    console.log(`Caption generated: ${subject} - ${mood}`);
   } catch (err) {
-    console.error('Analytics update failed:', err);
-  }
-
-  // OPTIONAL: LOG TO FIREBASE (DON'T BLOCK IF IT FAILS)
-  if (process.env.FIREBASE_PROJECT_ID) {
-    try {
-      const { db } = await import('../../lib/firebase-admin');
-      await db.collection('captionEvents').add({
-        subject: subject?.slice(0, 120) || '',
-        mood,
-        region,
-        premiumUsed: true,
-        model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B:novita",
-        timestamp: new Date(),
-      }).catch(err => {
-        console.error('Firebase logging error:', err);
-      });
-    } catch (err) {
-      console.error('Firebase initialization error:', err);
-    }
+    console.error('Logging failed:', err);
   }
 
   return res.status(200).json({ variants });
