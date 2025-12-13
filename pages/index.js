@@ -225,6 +225,11 @@ export default function Home() {
     }
   }
 
+  // Separate variants by type for ordering
+  const shortCaptions = variants.filter(v => v.type === 'short')
+  const premiumCaptions = variants.filter(v => v.premium)
+  const standardCaptions = variants.filter(v => !v.premium && v.type !== 'short')
+
   return (
     <>
       <Head>
@@ -267,152 +272,147 @@ export default function Home() {
         <div style={{ position: 'relative', zIndex: 2 }}>
           <Logo />
           
-          {/* SECTION 1: HERO / STORY - Updated with glass card */}
+          {/* SECTION 1: HERO / WELCOME */}
           <section style={{
-            padding: '4rem 1.5rem 3rem',
-            position: 'relative'
+            padding: '6rem 1.5rem 4rem',
+            position: 'relative',
+            textAlign: 'center'
           }}>
             <div className="hero-background"></div>
             <div style={{ 
               maxWidth: '900px', 
               margin: '0 auto', 
-              paddingTop: '60px', 
               position: 'relative', 
               zIndex: 1 
             }}>
-              {/* Brand + Tagline in glass card */}
-              <div className="glass-card" style={{ marginBottom: '3rem', textAlign: 'center' }}>
-                <div style={{
-                  fontSize: '3.2rem',
-                  fontWeight: '900',
-                  marginBottom: '0.4rem',
-                  background: 'linear-gradient(135deg, #22d3ee, #a855f7, #ec4899)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  textShadow: '0 0 40px rgba(34, 211, 238, 0.6)',
-                  fontFamily: 'Orbitron, monospace, sans-serif',
-                  letterSpacing: '0.05em'
-                }}>
-                  FunCaption
-                </div>
-                <div style={{
-                  fontSize: '1.05rem',
+              <h1 style={{
+                fontSize: '3.5rem',
+                fontWeight: '900',
+                marginBottom: '1.5rem',
+                background: 'linear-gradient(135deg, #22d3ee, #a855f7, #ec4899)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                textShadow: '0 0 40px rgba(34, 211, 238, 0.6)',
+                fontFamily: 'Orbitron, monospace, sans-serif',
+                letterSpacing: '0.05em',
+                lineHeight: '1.2'
+              }}>
+                Welcome to the World of FunCaption
+              </h1>
+              
+              <p style={{
+                fontSize: '1.8rem',
+                fontWeight: '700',
+                color: '#e0f2fe',
+                marginBottom: '3rem',
+                textShadow: '0 0 15px rgba(34, 211, 238, 0.4)',
+                lineHeight: '1.4'
+              }}>
+                Where Dreams Become Reality
+              </p>
+              
+              <div style={{ 
+                maxWidth: '700px', 
+                margin: '0 auto 4rem',
+                background: 'rgba(6, 182, 212, 0.1)',
+                border: '1px solid rgba(34, 211, 238, 0.3)',
+                borderRadius: '1rem',
+                padding: '2rem',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <h2 style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '800',
                   color: '#38bdf8',
-                  fontWeight: '600',
-                  letterSpacing: '0.2em',
+                  marginBottom: '1.5rem',
                   textTransform: 'uppercase',
-                  textShadow: '0 0 10px rgba(34, 211, 238, 0.5)'
+                  letterSpacing: '0.15em'
                 }}>
-                  Engineered attention for Indian creators
+                  ⚡ Quick Fire Examples
+                </h2>
+                
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+                  gap: '1.5rem' 
+                }}>
+                  <div className="glass-card" style={{ 
+                    padding: '1.5rem',
+                    border: '2px solid rgba(255, 215, 0, 0.6)',
+                    background: 'linear-gradient(135deg, rgba(40, 30, 15, 0.7), rgba(60, 45, 20, 0.9))'
+                  }}>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#FFD700',
+                      marginBottom: '1rem',
+                      fontWeight: '800',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.15em'
+                    }}>
+                      💪 GYM MOTIVATION
+                    </div>
+                    <p style={{
+                      fontSize: '1.1rem',
+                      lineHeight: '1.6',
+                      color: '#FFE5B4',
+                      fontFamily: 'monospace',
+                      fontWeight: '600'
+                    }}>
+                      "Sweat now, shine later. Every rep is a step closer to the body you've always wanted. 💪🔥"
+                    </p>
+                  </div>
+                  
+                  <div className="glass-card" style={{ 
+                    padding: '1.5rem',
+                    border: '2px solid rgba(255, 215, 0, 0.6)',
+                    background: 'linear-gradient(135deg, rgba(40, 30, 15, 0.7), rgba(60, 45, 20, 0.9))'
+                  }}>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#FFD700',
+                      marginBottom: '1rem',
+                      fontWeight: '800',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.15em'
+                    }}>
+                      ❤️ LOVE QUOTE
+                    </div>
+                    <p style={{
+                      fontSize: '1.1rem',
+                      lineHeight: '1.6',
+                      color: '#FFE5B4',
+                      fontFamily: 'monospace',
+                      fontWeight: '600'
+                    }}>
+                      "You're not just my person, you're my favorite person. In a world full of chaos, you're my peace. 💌✨"
+                    </p>
+                  </div>
                 </div>
-                
-                {/* Instagram Link with Icon */}
-                <div style={{ marginTop: '1.5rem' }}>
-                  <a 
-                    href="https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA==" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="neon-button-enhanced"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.6rem',
-                      textDecoration: 'none',
-                      fontSize: '0.95rem',
-                      padding: '0.7rem 1.4rem',
-                      borderRadius: '999px'
-                    }}
-                  >
-                    <InstagramIcon />
-                    Follow us on Instagram
-                  </a>
-                </div>
               </div>
-
-              {/* Aggressive questions */}
-              <div style={{ marginBottom: '3rem', lineHeight: '2.2' }}>
-                <p style={{ 
-                  fontSize: '1.3rem', 
-                  color: '#94a3b8', 
-                  marginBottom: '0.8rem',
-                  textShadow: '0 0 10px rgba(148, 163, 184, 0.3)'
-                }}>
-                  Do you really think you work hard for your content?
-                </p>
-                <p style={{ 
-                  fontSize: '1.3rem', 
-                  color: '#94a3b8', 
-                  marginBottom: '0.8rem',
-                  textShadow: '0 0 10px rgba(148, 163, 184, 0.3)'
-                }}>
-                  Do you really think people see your content when you post it?
-                </p>
-                <p style={{ 
-                  fontSize: '1.3rem', 
-                  color: '#94a3b8', 
-                  marginBottom: '1.8rem',
-                  textShadow: '0 0 10px rgba(148, 163, 184, 0.3)'
-                }}>
-                  Do you think you are even capable for this game?
-                </p>
-              </div>
-
-              {/* Answer in premium card */}
-              <div className="premium-card">
-                <p style={{ 
-                  fontSize: '1.6rem', 
-                  fontWeight: '700', 
-                  color: '#e0f2fe',
-                  marginBottom: '1.6rem',
-                  lineHeight: '1.7',
-                  textShadow: '0 0 15px rgba(34, 211, 238, 0.4)'
-                }}>
-                  Yes — we think you are. That is why you and us are here.
-                  <br />
-                  Because the world makes us feel the same way.
-                </p>
-                
-                <p style={{ 
-                  fontSize: '1.1rem', 
-                  color: '#bae6fd', 
-                  marginBottom: '1.2rem',
-                  textShadow: '0 0 10px rgba(186, 230, 253, 0.3)'
-                }}>
-                  By using this, people will NOT magically start to see you.
-                </p>
-                
-                <p style={{ 
-                  fontSize: '2rem', 
-                  fontWeight: '900', 
-                  background: 'linear-gradient(135deg, #22c55e, #22d3ee, #a855f7)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  marginBottom: '1rem',
-                  textShadow: '0 0 30px rgba(34, 211, 238, 0.6)',
-                  fontFamily: 'Orbitron, monospace, sans-serif'
-                }}>
-                  But Instagram algorithm WILL start working for you.
-                </p>
-                
-                <p style={{ 
-                  fontSize: '1rem', 
-                  color: '#fde047', 
-                  fontStyle: 'italic',
-                  textShadow: '0 0 15px rgba(253, 224, 71, 0.4)'
-                }}>
-                  Share this with your regional creators — let all brothers rise together.
-                </p>
-              </div>
+              
+              <a 
+                href="#generator" 
+                className="neon-button-enhanced"
+                style={{
+                  display: 'inline-block',
+                  padding: '1.2rem 2.5rem',
+                  fontSize: '1.2rem',
+                  fontWeight: '800',
+                  borderRadius: '999px',
+                  textDecoration: 'none'
+                }}
+              >
+                🚀 Generate Your Captions Now
+              </a>
             </div>
           </section>
 
           {/* Section Divider */}
           <div className="section-divider"></div>
 
-          {/* SECTION 2: GENERATOR - Updated with glass card */}
-          <section style={{
+          {/* SECTION 2: GENERATOR */}
+          <section id="generator" style={{
             padding: '4rem 1.5rem 5rem',
             position: 'relative'
           }}>
@@ -629,7 +629,101 @@ export default function Home() {
                     flexDirection: 'column', 
                     gap: '2rem'
                   }}>
-                    {variants.map((v, i) => {
+                    {/* Short Captions First */}
+                    {shortCaptions.map((v, i) => {
+                      const processedCaption = (v.caption || '').replace(
+                        /\n\nHelp please make us a favour follow us on Instagram.*$/s,
+                        ''
+                      )
+                      
+                      return (
+                        <div key={`short-${i}`} className="glass-card" style={{ 
+                          border: '2px solid rgba(255, 215, 0, 0.6)',
+                          background: 'linear-gradient(135deg, rgba(40, 30, 15, 0.7), rgba(60, 45, 20, 0.9))',
+                          position: 'relative'
+                        }}>
+                          {/* Animated Top Line */}
+                          <div style={{
+                            position: 'absolute',
+                            top: '0',
+                            left: '0',
+                            right: '0',
+                            height: '3px',
+                            background: 'linear-gradient(90deg, transparent, #FFD700, transparent)',
+                            animation: 'scanLineFast 1.5s linear infinite'
+                          }}></div>
+                          
+                          <div style={{
+                            fontSize: '0.75rem',
+                            color: '#FFD700',
+                            marginBottom: '1rem',
+                            fontWeight: '800',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.15em',
+                            textShadow: '0 0 10px rgba(255, 215, 0, 0.7)'
+                          }}>
+                            ⚡ {v.label || "QUICK FIRE"}
+                          </div>
+                          
+                          <p style={{
+                            fontSize: '1rem',
+                            lineHeight: '1.6',
+                            color: '#FFE5B4',
+                            marginBottom: '1.2rem',
+                            whiteSpace: 'pre-line',
+                            fontFamily: 'monospace',
+                            fontWeight: '600'
+                          }}>
+                            {processedCaption}
+                          </p>
+
+                          {v.regionLabel && (
+                            <div style={{
+                              display: 'inline-block',
+                              padding: '0.45rem 1.1rem',
+                              background: 'rgba(255, 215, 0, 0.15)',
+                              border: '1px solid rgba(255, 215, 0, 0.3)',
+                              borderRadius: '999px',
+                              fontSize: '0.75rem',
+                              color: '#FFD700',
+                              marginBottom: '1.2rem',
+                              fontWeight: '700'
+                            }}>
+                              🌍 {v.regionLabel}
+                            </div>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => copyCaption(v.caption, `short-${i}`)}
+                            className="neon-button-enhanced"
+                            style={{
+                              width: '100%',
+                              padding: '1.1rem',
+                              background: copiedIndex === `short-${i}`
+                                ? 'linear-gradient(135deg, rgba(50, 205, 50, 0.3), rgba(34, 139, 34, 0.3))'
+                                : 'linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2))',
+                              color: copiedIndex === `short-${i}` ? '#90EE90' : '#FFD700',
+                              border: copiedIndex === `short-${i}` 
+                                ? '2px solid rgba(50, 205, 50, 0.5)' 
+                                : '2px solid rgba(255, 215, 0, 0.5)',
+                              borderRadius: '0.8rem',
+                              fontSize: '0.95rem',
+                              fontWeight: '800',
+                              cursor: 'pointer',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.12em',
+                              fontFamily: 'monospace'
+                            }}
+                          >
+                            {copiedIndex === `short-${i}` ? '✓ COPIED!' : `📋 COPY ${v.label || "SHORT CAPTION"}`}
+                          </button>
+                        </div>
+                      )
+                    })}
+
+                    {/* Premium Captions Second */}
+                    {premiumCaptions.map((v, i) => {
                       const processedCaption = (v.caption || '').replace(
                         /\n\nHelp please make us a favour follow us on Instagram.*$/s,
                         ''
@@ -637,249 +731,167 @@ export default function Home() {
                       
                       const instagramLink = 'https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA=='
                       const isPremium = v.premium
-                      const isShortCaption = v.type === 'short'
 
-                      if (isPremium) {
-                        return (
-                          <div key={i} className="holographic-premium" style={{
-                            position: 'relative',
-                            border: '3px solid transparent',
-                            borderRadius: '20px',
-                            overflow: 'hidden'
-                          }}>
-                            {/* Animated Gradient Border */}
-                            <div style={{
-                              position: 'absolute',
-                              top: '-3px',
-                              left: '-3px',
-                              right: '-3px',
-                              bottom: '-3px',
-                              background: 'conic-gradient(from 0deg, #00ffff, #8a2be2, #ff2db8, #00ffff)',
-                              borderRadius: '23px',
-                              zIndex: '-1',
-                              animation: 'rotateBorder 4s linear infinite'
-                            }}></div>
-                            
-                            <div className="premium-badge">★ PREMIUM ★</div>
-                            
-                            <div className="premium-content" style={{ whiteSpace: 'pre-line' }}>
-                              {processedCaption}
-                            </div>
-                            
-                            {v.regionLabel && (
-                              <div style={{
-                                display: 'inline-block',
-                                padding: '0.5rem 1.2rem',
-                                background: 'linear-gradient(90deg, rgba(0, 255, 255, 0.2), rgba(138, 43, 226, 0.2))',
-                                border: '2px solid rgba(0, 255, 255, 0.5)',
-                                borderRadius: '999px',
-                                fontSize: '0.8rem',
-                                color: '#bae6fd',
-                                marginBottom: '1.2rem',
-                                fontWeight: '700'
-                              }}>
-                                🌍 {v.regionLabel}
-                              </div>
-                            )}
-                            
-                            {/* Instagram CTA */}
-                            <div style={{
-                              background: 'rgba(0, 8, 20, 0.6)',
-                              padding: '1.2rem',
-                              borderRadius: '1rem',
-                              margin: '1.5rem 0',
-                              display: 'flex',
-                              justifyContent: 'center',
-                              gap: '0.8rem',
-                              alignItems: 'center',
-                              border: '2px dashed rgba(0, 255, 255, 0.3)'
-                            }}>
-                              <a
-                                href={instagramLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="neon-button-enhanced"
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '0.6rem',
-                                  textDecoration: 'none',
-                                  padding: '0.7rem 1.3rem',
-                                  borderRadius: '999px',
-                                  fontSize: '0.95rem',
-                                  fontWeight: '800'
-                                }}
-                              >
-                                <InstagramIcon /> Follow for More Premium Tips
-                              </a>
-                            </div>
-                            
-                            <button
-                              type="button"
-                              onClick={() => copyCaption(v.caption, i)}
-                              className={`premium-copy-btn ${copiedIndex === i ? 'copied' : ''}`}
-                            >
-                              {copiedIndex === i ? '✓ COPIED PREMIUM CAPTION!' : '📋 COPY PREMIUM CAPTION'}
-                            </button>
+                      return (
+                        <div key={`premium-${i}`} className="holographic-premium" style={{
+                          position: 'relative',
+                          border: '3px solid transparent',
+                          borderRadius: '20px',
+                          overflow: 'hidden'
+                        }}>
+                          {/* Animated Gradient Border */}
+                          <div style={{
+                            position: 'absolute',
+                            top: '-3px',
+                            left: '-3px',
+                            right: '-3px',
+                            bottom: '-3px',
+                            background: 'conic-gradient(from 0deg, #00ffff, #8a2be2, #ff2db8, #00ffff)',
+                            borderRadius: '23px',
+                            zIndex: '-1',
+                            animation: 'rotateBorder 4s linear infinite'
+                          }}></div>
+                          
+                          <div className="premium-badge">★ PREMIUM ★</div>
+                          
+                          <div className="premium-content" style={{ whiteSpace: 'pre-line' }}>
+                            {processedCaption}
                           </div>
-                        )
-                      } else if (isShortCaption) {
-                        // Short Caption Card - Enhanced styling
-                        return (
-                          <div key={i} className="glass-card" style={{ 
-                            border: '2px solid rgba(255, 215, 0, 0.6)',
-                            background: 'linear-gradient(135deg, rgba(40, 30, 15, 0.7), rgba(60, 45, 20, 0.9))',
-                            position: 'relative'
-                          }}>
-                            {/* Animated Top Line */}
+                          
+                          {v.regionLabel && (
                             <div style={{
-                              position: 'absolute',
-                              top: '0',
-                              left: '0',
-                              right: '0',
-                              height: '3px',
-                              background: 'linear-gradient(90deg, transparent, #FFD700, transparent)',
-                              animation: 'scanLineFast 1.5s linear infinite'
-                            }}></div>
-                            
-                            <div style={{
-                              fontSize: '0.75rem',
-                              color: '#FFD700',
-                              marginBottom: '1rem',
-                              fontWeight: '800',
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.15em',
-                              textShadow: '0 0 10px rgba(255, 215, 0, 0.7)'
-                            }}>
-                              ⚡ {v.label || "QUICK FIRE"}
-                            </div>
-                            
-                            <p style={{
-                              fontSize: '1rem',
-                              lineHeight: '1.6',
-                              color: '#FFE5B4',
+                              display: 'inline-block',
+                              padding: '0.5rem 1.2rem',
+                              background: 'linear-gradient(90deg, rgba(0, 255, 255, 0.2), rgba(138, 43, 226, 0.2))',
+                              border: '2px solid rgba(0, 255, 255, 0.5)',
+                              borderRadius: '999px',
+                              fontSize: '0.8rem',
+                              color: '#bae6fd',
                               marginBottom: '1.2rem',
-                              whiteSpace: 'pre-line',
-                              fontFamily: 'monospace',
-                              fontWeight: '600'
+                              fontWeight: '700'
                             }}>
-                              {processedCaption}
-                            </p>
-
-                            {v.regionLabel && (
-                              <div style={{
-                                display: 'inline-block',
-                                padding: '0.45rem 1.1rem',
-                                background: 'rgba(255, 215, 0, 0.15)',
-                                border: '1px solid rgba(255, 215, 0, 0.3)',
-                                borderRadius: '999px',
-                                fontSize: '0.75rem',
-                                color: '#FFD700',
-                                marginBottom: '1.2rem',
-                                fontWeight: '700'
-                              }}>
-                                🌍 {v.regionLabel}
-                              </div>
-                            )}
-
-                            <button
-                              type="button"
-                              onClick={() => copyCaption(v.caption, i)}
+                              🌍 {v.regionLabel}
+                            </div>
+                          )}
+                          
+                          {/* Instagram CTA */}
+                          <div style={{
+                            background: 'rgba(0, 8, 20, 0.6)',
+                            padding: '1.2rem',
+                            borderRadius: '1rem',
+                            margin: '1.5rem 0',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            gap: '0.8rem',
+                            alignItems: 'center',
+                            border: '2px dashed rgba(0, 255, 255, 0.3)'
+                          }}>
+                            <a
+                              href={instagramLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="neon-button-enhanced"
                               style={{
-                                width: '100%',
-                                padding: '1.1rem',
-                                background: copiedIndex === i
-                                  ? 'linear-gradient(135deg, rgba(50, 205, 50, 0.3), rgba(34, 139, 34, 0.3))'
-                                  : 'linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2))',
-                                color: copiedIndex === i ? '#90EE90' : '#FFD700',
-                                border: copiedIndex === i 
-                                  ? '2px solid rgba(50, 205, 50, 0.5)' 
-                                  : '2px solid rgba(255, 215, 0, 0.5)',
-                                borderRadius: '0.8rem',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.6rem',
+                                textDecoration: 'none',
+                                padding: '0.7rem 1.3rem',
+                                borderRadius: '999px',
                                 fontSize: '0.95rem',
-                                fontWeight: '800',
-                                cursor: 'pointer',
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.12em',
-                                fontFamily: 'monospace'
+                                fontWeight: '800'
                               }}
                             >
-                              {copiedIndex === i ? '✓ COPIED!' : `📋 COPY ${v.label || "SHORT CAPTION"}`}
-                            </button>
+                              <InstagramIcon /> Follow for More Premium Tips
+                            </a>
                           </div>
-                        )
-                      } else {
-                        // Standard/Regional Caption Card
-                        return (
-                          <div key={i} className="glass-card">
+                          
+                          <button
+                            type="button"
+                            onClick={() => copyCaption(v.caption, `premium-${i}`)}
+                            className={`premium-copy-btn ${copiedIndex === `premium-${i}` ? 'copied' : ''}`}
+                          >
+                            {copiedIndex === `premium-${i}` ? '✓ COPIED PREMIUM CAPTION!' : '📋 COPY PREMIUM CAPTION'}
+                          </button>
+                        </div>
+                      )
+                    })}
+
+                    {/* Standard Captions Last */}
+                    {standardCaptions.map((v, i) => {
+                      const processedCaption = (v.caption || '').replace(
+                        /\n\nHelp please make us a favour follow us on Instagram.*$/s,
+                        ''
+                      )
+
+                      return (
+                        <div key={`standard-${i}`} className="glass-card">
+                          <div style={{
+                            fontSize: '0.75rem',
+                            color: '#38bdf8',
+                            marginBottom: '1rem',
+                            fontWeight: '800',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.15em',
+                            textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
+                          }}>
+                            📝 {v.label || `Caption ${i + 1}`}
+                          </div>
+                          
+                          <p style={{
+                            fontSize: '1rem',
+                            lineHeight: '1.9',
+                            color: '#cbd5e1',
+                            marginBottom: '1.2rem',
+                            whiteSpace: 'pre-line',
+                            fontFamily: 'monospace'
+                          }}>
+                            {processedCaption}
+                          </p>
+
+                          {v.regionLabel && (
                             <div style={{
+                              display: 'inline-block',
+                              padding: '0.45rem 1.1rem',
+                              background: 'rgba(6, 182, 212, 0.15)',
+                              border: '1px solid rgba(34, 211, 238, 0.3)',
+                              borderRadius: '999px',
                               fontSize: '0.75rem',
-                              color: '#38bdf8',
-                              marginBottom: '1rem',
-                              fontWeight: '800',
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.15em',
-                              textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
-                            }}>
-                              📝 {v.label || `Caption ${i + 1}`}
-                            </div>
-                            
-                            <p style={{
-                              fontSize: '1rem',
-                              lineHeight: '1.9',
-                              color: '#cbd5e1',
+                              color: '#7dd3fc',
                               marginBottom: '1.2rem',
-                              whiteSpace: 'pre-line',
+                              fontWeight: '700'
+                            }}>
+                              🌍 {v.regionLabel}
+                            </div>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => copyCaption(v.caption, `standard-${i}`)}
+                            className="neon-button-enhanced"
+                            style={{
+                              width: '100%',
+                              padding: '1.1rem',
+                              background: copiedIndex === `standard-${i}`
+                                ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.2))'
+                                : 'linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(34, 197, 94, 0.15))',
+                              color: copiedIndex === `standard-${i}` ? '#86efac' : '#bae6fd',
+                              border: copiedIndex === `standard-${i}` 
+                                ? '2px solid rgba(34, 197, 94, 0.5)' 
+                                : '2px solid rgba(34, 211, 238, 0.3)',
+                              borderRadius: '0.8rem',
+                              fontSize: '0.95rem',
+                              fontWeight: '800',
+                              cursor: 'pointer',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.12em',
                               fontFamily: 'monospace'
-                            }}>
-                              {processedCaption}
-                            </p>
-
-                            {v.regionLabel && (
-                              <div style={{
-                                display: 'inline-block',
-                                padding: '0.45rem 1.1rem',
-                                background: 'rgba(6, 182, 212, 0.15)',
-                                border: '1px solid rgba(34, 211, 238, 0.3)',
-                                borderRadius: '999px',
-                                fontSize: '0.75rem',
-                                color: '#7dd3fc',
-                                marginBottom: '1.2rem',
-                                fontWeight: '700'
-                              }}>
-                                🌍 {v.regionLabel}
-                              </div>
-                            )}
-
-                            <button
-                              type="button"
-                              onClick={() => copyCaption(v.caption, i)}
-                              className="neon-button-enhanced"
-                              style={{
-                                width: '100%',
-                                padding: '1.1rem',
-                                background: copiedIndex === i
-                                  ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.2))'
-                                  : 'linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(34, 197, 94, 0.15))',
-                                color: copiedIndex === i ? '#86efac' : '#bae6fd',
-                                border: copiedIndex === i 
-                                  ? '2px solid rgba(34, 197, 94, 0.5)' 
-                                  : '2px solid rgba(34, 211, 238, 0.3)',
-                                borderRadius: '0.8rem',
-                                fontSize: '0.95rem',
-                                fontWeight: '800',
-                                cursor: 'pointer',
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.12em',
-                                fontFamily: 'monospace'
-                              }}
-                            >
-                              {copiedIndex === i ? '✓ COPIED!' : `📋 COPY ${v.label || "CAPTION"}`}
-                            </button>
-                          </div>
-                        )
-                      }
+                            }}
+                          >
+                            {copiedIndex === `standard-${i}` ? '✓ COPIED!' : `📋 COPY ${v.label || "CAPTION"}`}
+                          </button>
+                        </div>
+                      )
                     })}
                   </div>
                 )}
