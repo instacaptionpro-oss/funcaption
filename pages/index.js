@@ -115,7 +115,7 @@ const Logo = () => (
 )
 
 const regions = [
-  { id: "none", label: "No Region" },
+  { id: "none", label: "No Tribe" },
   { id: "genz", label: "GenZ" },
   { id: "professional", label: "Professional" },
   { id: "gujarati", label: "Gujarati" },
@@ -359,8 +359,16 @@ export default function Home() {
                       fontFamily: 'monospace',
                       fontWeight: '600'
                     }}>
-                      "Sweat now, shine later. Every rep is a step closer to the body you've always wanted. 💪🔥"
+                      "I don't explain my grind. Results are my language."
                     </p>
+                    <div style={{
+                      marginTop: '1rem',
+                      fontSize: '0.8rem',
+                      color: '#cba640',
+                      fontStyle: 'italic'
+                    }}>
+                      #QuietConfidence #NoNoiseJustResults #BuiltInSilence #FocusMode #WinnerMindset #CreatorLife #DisciplineOverDrama #MindsetMatters
+                    </div>
                   </div>
                   
                   <div className="glass-card" style={{ 
@@ -385,8 +393,16 @@ export default function Home() {
                       fontFamily: 'monospace',
                       fontWeight: '600'
                     }}>
-                      "You're not just my person, you're my favorite person. In a world full of chaos, you're my peace. 💌✨"
+                      "Love feels easy when it's real. No chasing. No pretending."
                     </p>
+                    <div style={{
+                      marginTop: '1rem',
+                      fontSize: '0.8rem',
+                      color: '#cba640',
+                      fontStyle: 'italic'
+                    }}>
+                      #RealLoveEnergy #CalmHearts #SoftButStrong #EmotionalMaturity #PeaceIsPower #AuthenticVibes #LoveWithoutFear
+                    </div>
                   </div>
                 </div>
               </div>
@@ -534,7 +550,7 @@ export default function Home() {
                     </select>
                   </div>
 
-                  {/* Regional Vibe */}
+                  {/* Your Tribe */}
                   <div>
                     <label style={{
                       display: 'block',
@@ -546,7 +562,7 @@ export default function Home() {
                       letterSpacing: '0.15em',
                       textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
                     }}>
-                      🌍 Regional Vibe
+                      🌍 Your Tribe
                     </label>
                     <select
                       value={region}
