@@ -272,7 +272,7 @@ export default function Home() {
         <div style={{ position: 'relative', zIndex: 2 }}>
           <Logo />
           
-          {/* PROBLEM SECTION (ABOVE THE FOLD) */}
+          {/* HERO SECTION WITH FUNCAPTION TITLE */}
           <section style={{
             padding: '6rem 1.5rem 4rem',
             position: 'relative',
@@ -285,20 +285,8 @@ export default function Home() {
               position: 'relative', 
               zIndex: 1 
             }}>
-              <div style={{
-                fontSize: '1rem',
-                fontWeight: '700',
-                color: '#38bdf8',
-                marginBottom: '1rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.15em',
-                textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
-              }}>
-                Problem
-              </div>
-              
               <h1 style={{
-                fontSize: '3rem',
+                fontSize: '3.5rem',
                 fontWeight: '900',
                 marginBottom: '1.5rem',
                 background: 'linear-gradient(135deg, #22d3ee, #a855f7, #ec4899)',
@@ -310,84 +298,63 @@ export default function Home() {
                 letterSpacing: '0.05em',
                 lineHeight: '1.2'
               }}>
-                It's not your content. It's your caption. 😱
+                FunCaption
               </h1>
               
               <p style={{
-                fontSize: '1.5rem',
-                fontWeight: '700',
-                color: '#e0f2fe',
+                fontSize: '1.2rem',
+                fontWeight: '600',
+                color: '#94a3b8',
                 marginBottom: '3rem',
-                textShadow: '0 0 15px rgba(34, 211, 238, 0.4)',
-                lineHeight: '1.4'
+                textShadow: '0 0 10px rgba(148, 163, 184, 0.3)'
               }}>
+                It's not your content. It's your caption. 😱<br />
                 Yeah, it looks small — but it decides who stops… and who scrolls 📉
               </p>
-            </div>
-          </section>
-
-          {/* SOLUTION SECTION */}
-          <section style={{
-            padding: '2rem 1.5rem 4rem',
-            position: 'relative',
-            textAlign: 'center'
-          }}>
-            <div style={{ 
-              maxWidth: '900px', 
-              margin: '0 auto', 
-              position: 'relative', 
-              zIndex: 1 
-            }}>
-              <div style={{
-                fontSize: '1rem',
-                fontWeight: '700',
-                color: '#38bdf8',
-                marginBottom: '1rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.15em',
-                textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
+              
+              <div style={{ 
+                maxWidth: '700px', 
+                margin: '0 auto 4rem',
+                background: 'rgba(6, 182, 212, 0.1)',
+                border: '1px solid rgba(34, 211, 238, 0.3)',
+                borderRadius: '1rem',
+                padding: '2rem',
+                backdropFilter: 'blur(10px)'
               }}>
-                Solution
+                <h2 style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '800',
+                  color: '#38bdf8',
+                  marginBottom: '1.5rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.15em'
+                }}>
+                  ⚡ Solution
+                </h2>
+                
+                <p style={{
+                  fontSize: '1.2rem',
+                  lineHeight: '1.8',
+                  color: '#cbd5e1',
+                  marginBottom: '2rem'
+                }}>
+                  Here's the solution 👇<br />
+                  For millions of views 🚀, captions matter 😲<br />
+                  But you're not a poet or a writer ✍️ — and you don't need to be.<br /><br />
+                  Why waste time overthinking 🤯<br />
+                  when a tool can create the right caption for you, instantly ⚡
+                </p>
               </div>
               
-              <p style={{
-                fontSize: '1.2rem',
-                lineHeight: '1.8',
-                color: '#cbd5e1',
-                marginBottom: '2rem',
-                maxWidth: '700px',
-                margin: '0 auto 3rem'
-              }}>
-                Here's the solution 👇<br />
-                For millions of views 🚀, captions matter 😲<br />
-                But you're not a poet or a writer ✍️ — and you don't need to be.<br /><br />
-                Why waste time overthinking 🤯<br />
-                when a tool can create the right caption for you, instantly ⚡
-              </p>
-            </div>
-          </section>
-
-          {/* EXAMPLES SECTION */}
-          <section style={{
-            padding: '2rem 1.5rem 4rem',
-            position: 'relative',
-            textAlign: 'center'
-          }}>
-            <div style={{ 
-              maxWidth: '900px', 
-              margin: '0 auto', 
-              position: 'relative', 
-              zIndex: 1 
-            }}>
-              <p style={{
-                fontSize: '1.2rem',
-                fontWeight: '700',
+              <h2 style={{
+                fontSize: '1.5rem',
+                fontWeight: '800',
                 color: '#e0f2fe',
                 marginBottom: '3rem',
                 textShadow: '0 0 15px rgba(34, 211, 238, 0.4)'
               }}>
                 See the difference below 👀
-              </p>
+              </h2>
               
               <div style={{ 
                 display: 'grid', 
@@ -408,7 +375,7 @@ export default function Home() {
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em'
                   }}>
-                    Before
+                    Weak Caption
                   </div>
                   <p style={{
                     fontSize: '1.1rem',
@@ -429,7 +396,7 @@ export default function Home() {
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em'
                   }}>
-                    After
+                    FunCaption
                   </div>
                   <p style={{
                     fontSize: '1.1rem',
@@ -455,7 +422,7 @@ export default function Home() {
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em'
                   }}>
-                    Before
+                    Weak Caption
                   </div>
                   <p style={{
                     fontSize: '1.1rem',
@@ -475,7 +442,7 @@ export default function Home() {
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em'
                   }}>
-                    After
+                    FunCaption
                   </div>
                   <p style={{
                     fontSize: '1.1rem',
