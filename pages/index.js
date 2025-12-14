@@ -272,7 +272,7 @@ export default function Home() {
         <div style={{ position: 'relative', zIndex: 2 }}>
           <Logo />
           
-          {/* SECTION 1: HERO / WELCOME */}
+          {/* PROBLEM SECTION (ABOVE THE FOLD) */}
           <section style={{
             padding: '6rem 1.5rem 4rem',
             position: 'relative',
@@ -285,8 +285,20 @@ export default function Home() {
               position: 'relative', 
               zIndex: 1 
             }}>
+              <div style={{
+                fontSize: '1rem',
+                fontWeight: '700',
+                color: '#38bdf8',
+                marginBottom: '1rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.15em',
+                textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
+              }}>
+                Problem
+              </div>
+              
               <h1 style={{
-                fontSize: '3.5rem',
+                fontSize: '3rem',
                 fontWeight: '900',
                 marginBottom: '1.5rem',
                 background: 'linear-gradient(135deg, #22d3ee, #a855f7, #ec4899)',
@@ -298,115 +310,186 @@ export default function Home() {
                 letterSpacing: '0.05em',
                 lineHeight: '1.2'
               }}>
-                Welcome to the World of FunCaption
+                It's not your content. It's your caption. 😱
               </h1>
               
               <p style={{
-                fontSize: '1.8rem',
+                fontSize: '1.5rem',
                 fontWeight: '700',
                 color: '#e0f2fe',
                 marginBottom: '3rem',
                 textShadow: '0 0 15px rgba(34, 211, 238, 0.4)',
                 lineHeight: '1.4'
               }}>
-                Where Dreams Become Reality
+                Yeah, it looks small — but it decides who stops… and who scrolls 📉
+              </p>
+            </div>
+          </section>
+
+          {/* SOLUTION SECTION */}
+          <section style={{
+            padding: '2rem 1.5rem 4rem',
+            position: 'relative',
+            textAlign: 'center'
+          }}>
+            <div style={{ 
+              maxWidth: '900px', 
+              margin: '0 auto', 
+              position: 'relative', 
+              zIndex: 1 
+            }}>
+              <div style={{
+                fontSize: '1rem',
+                fontWeight: '700',
+                color: '#38bdf8',
+                marginBottom: '1rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.15em',
+                textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
+              }}>
+                Solution
+              </div>
+              
+              <p style={{
+                fontSize: '1.2rem',
+                lineHeight: '1.8',
+                color: '#cbd5e1',
+                marginBottom: '2rem',
+                maxWidth: '700px',
+                margin: '0 auto 3rem'
+              }}>
+                Here's the solution 👇<br />
+                For millions of views 🚀, captions matter 😲<br />
+                But you're not a poet or a writer ✍️ — and you don't need to be.<br /><br />
+                Why waste time overthinking 🤯<br />
+                when a tool can create the right caption for you, instantly ⚡
+              </p>
+            </div>
+          </section>
+
+          {/* EXAMPLES SECTION */}
+          <section style={{
+            padding: '2rem 1.5rem 4rem',
+            position: 'relative',
+            textAlign: 'center'
+          }}>
+            <div style={{ 
+              maxWidth: '900px', 
+              margin: '0 auto', 
+              position: 'relative', 
+              zIndex: 1 
+            }}>
+              <p style={{
+                fontSize: '1.2rem',
+                fontWeight: '700',
+                color: '#e0f2fe',
+                marginBottom: '3rem',
+                textShadow: '0 0 15px rgba(34, 211, 238, 0.4)'
+              }}>
+                See the difference below 👀
               </p>
               
               <div style={{ 
-                maxWidth: '700px', 
-                margin: '0 auto 4rem',
-                background: 'rgba(6, 182, 212, 0.1)',
-                border: '1px solid rgba(34, 211, 238, 0.3)',
-                borderRadius: '1rem',
-                padding: '2rem',
-                backdropFilter: 'blur(10px)'
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+                gap: '2rem',
+                marginBottom: '3rem'
               }}>
-                <h2 style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '800',
-                  color: '#38bdf8',
-                  marginBottom: '1.5rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.15em'
+                {/* Comparison 1 */}
+                <div className="glass-card" style={{ 
+                  padding: '1.5rem',
+                  textAlign: 'left'
                 }}>
-                  ⚡ Quick Fire Examples
-                </h2>
-                
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-                  gap: '1.5rem' 
-                }}>
-                  <div className="glass-card" style={{ 
-                    padding: '1.5rem',
-                    border: '2px solid rgba(255, 215, 0, 0.6)',
-                    background: 'linear-gradient(135deg, rgba(40, 30, 15, 0.7), rgba(60, 45, 20, 0.9))'
+                  <div style={{
+                    fontSize: '0.9rem',
+                    color: '#cbd5e1',
+                    marginBottom: '1rem',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em'
                   }}>
-                    <div style={{
-                      fontSize: '0.9rem',
-                      color: '#FFD700',
-                      marginBottom: '1rem',
-                      fontWeight: '800',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.15em'
-                    }}>
-                      💪 GYM MOTIVATION
-                    </div>
-                    <p style={{
-                      fontSize: '1.1rem',
-                      lineHeight: '1.6',
-                      color: '#FFE5B4',
-                      fontFamily: 'monospace',
-                      fontWeight: '600'
-                    }}>
-                      "I don't explain my grind. Results are my language."
-                    </p>
-                    <div style={{
-                      marginTop: '1rem',
-                      fontSize: '0.8rem',
-                      color: '#cba640',
-                      fontStyle: 'italic'
-                    }}>
-                      #QuietConfidence #NoNoiseJustResults #BuiltInSilence #FocusMode #WinnerMindset #CreatorLife #DisciplineOverDrama #MindsetMatters
-                    </div>
+                    Before
                   </div>
+                  <p style={{
+                    fontSize: '1.1rem',
+                    lineHeight: '1.6',
+                    color: '#e0f2fe',
+                    fontFamily: 'monospace',
+                    marginBottom: '1.5rem'
+                  }}>
+                    Hard work always pays off.<br />
+                    Stay focused and trust the process.
+                  </p>
                   
-                  <div className="glass-card" style={{ 
-                    padding: '1.5rem',
-                    border: '2px solid rgba(255, 215, 0, 0.6)',
-                    background: 'linear-gradient(135deg, rgba(40, 30, 15, 0.7), rgba(60, 45, 20, 0.9))'
+                  <div style={{
+                    fontSize: '0.9rem',
+                    color: '#cbd5e1',
+                    marginBottom: '1rem',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em'
                   }}>
-                    <div style={{
-                      fontSize: '0.9rem',
-                      color: '#FFD700',
-                      marginBottom: '1rem',
-                      fontWeight: '800',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.15em'
-                    }}>
-                      ❤️ LOVE QUOTE
-                    </div>
-                    <p style={{
-                      fontSize: '1.1rem',
-                      lineHeight: '1.6',
-                      color: '#FFE5B4',
-                      fontFamily: 'monospace',
-                      fontWeight: '600'
-                    }}>
-                      "Love feels easy when it's real. No chasing. No pretending."
-                    </p>
-                    <div style={{
-                      marginTop: '1rem',
-                      fontSize: '0.8rem',
-                      color: '#cba640',
-                      fontStyle: 'italic'
-                    }}>
-                      #RealLoveEnergy #CalmHearts #SoftButStrong #EmotionalMaturity #PeaceIsPower #AuthenticVibes #LoveWithoutFear
-                    </div>
+                    After
                   </div>
+                  <p style={{
+                    fontSize: '1.1rem',
+                    lineHeight: '1.6',
+                    color: '#e0f2fe',
+                    fontFamily: 'monospace'
+                  }}>
+                    Everyone claps at the finish.<br />
+                    No one comes at the start.
+                  </p>
+                </div>
+                
+                {/* Comparison 2 */}
+                <div className="glass-card" style={{ 
+                  padding: '1.5rem',
+                  textAlign: 'left'
+                }}>
+                  <div style={{
+                    fontSize: '0.9rem',
+                    color: '#cbd5e1',
+                    marginBottom: '1rem',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em'
+                  }}>
+                    Before
+                  </div>
+                  <p style={{
+                    fontSize: '1.1rem',
+                    lineHeight: '1.6',
+                    color: '#e0f2fe',
+                    fontFamily: 'monospace',
+                    marginBottom: '1.5rem'
+                  }}>
+                    Love yourself and everything will fall into place ❤️
+                  </p>
+                  
+                  <div style={{
+                    fontSize: '0.9rem',
+                    color: '#cbd5e1',
+                    marginBottom: '1rem',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em'
+                  }}>
+                    After
+                  </div>
+                  <p style={{
+                    fontSize: '1.1rem',
+                    lineHeight: '1.6',
+                    color: '#e0f2fe',
+                    fontFamily: 'monospace'
+                  }}>
+                    Love feels easy<br />
+                    when it's real.
+                  </p>
                 </div>
               </div>
               
+              {/* CALL TO ACTION BUTTON */}
               <a 
                 href="#generator" 
                 className="neon-button-enhanced"
@@ -419,7 +502,7 @@ export default function Home() {
                   textDecoration: 'none'
                 }}
               >
-                🚀 Generate Your Captions Now
+                Generate Caption
               </a>
             </div>
           </section>
