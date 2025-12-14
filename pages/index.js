@@ -329,7 +329,7 @@ export default function Home() {
                   textTransform: 'uppercase',
                   letterSpacing: '0.15em'
                 }}>
-                  ⚡ Solution
+                  ⚡ Solution 👇
                 </h2>
                 
                 <p style={{
@@ -375,7 +375,7 @@ export default function Home() {
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em'
                   }}>
-                    Weak Caption
+                    Weak Caption 😞
                   </div>
                   <p style={{
                     fontSize: '1.1rem',
@@ -396,7 +396,7 @@ export default function Home() {
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em'
                   }}>
-                    FunCaption
+                    FunCaption 🚀
                   </div>
                   <p style={{
                     fontSize: '1.1rem',
@@ -422,7 +422,7 @@ export default function Home() {
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em'
                   }}>
-                    Weak Caption
+                    Weak Caption 💔
                   </div>
                   <p style={{
                     fontSize: '1.1rem',
@@ -442,7 +442,7 @@ export default function Home() {
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em'
                   }}>
-                    FunCaption
+                    FunCaption ✨
                   </div>
                   <p style={{
                     fontSize: '1.1rem',
