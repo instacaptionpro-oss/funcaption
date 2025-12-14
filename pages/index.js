@@ -358,7 +358,7 @@ export default function Home() {
               
               <div style={{ 
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+                gridTemplateColumns: '1fr', 
                 gap: '2rem',
                 marginBottom: '3rem'
               }}>
@@ -406,52 +406,6 @@ export default function Home() {
                   }}>
                     Everyone claps at the finish.<br />
                     No one comes at the start.
-                  </p>
-                </div>
-                
-                {/* Comparison 2 */}
-                <div className="glass-card" style={{ 
-                  padding: '1.5rem',
-                  textAlign: 'left'
-                }}>
-                  <div style={{
-                    fontSize: '0.9rem',
-                    color: '#cbd5e1',
-                    marginBottom: '1rem',
-                    fontWeight: '700',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em'
-                  }}>
-                    Weak Caption 💔
-                  </div>
-                  <p style={{
-                    fontSize: '1.1rem',
-                    lineHeight: '1.6',
-                    color: '#e0f2fe',
-                    fontFamily: 'monospace',
-                    marginBottom: '1.5rem'
-                  }}>
-                    Love yourself and everything will fall into place ❤️
-                  </p>
-                  
-                  <div style={{
-                    fontSize: '0.9rem',
-                    color: '#cbd5e1',
-                    marginBottom: '1rem',
-                    fontWeight: '700',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em'
-                  }}>
-                    FunCaption ✨
-                  </div>
-                  <p style={{
-                    fontSize: '1.1rem',
-                    lineHeight: '1.6',
-                    color: '#e0f2fe',
-                    fontFamily: 'monospace'
-                  }}>
-                    Love feels easy<br />
-                    when it's real.
                   </p>
                 </div>
               </div>
