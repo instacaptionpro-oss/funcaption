@@ -1,107 +1,235 @@
-// pages/api/generate.js
+import fs from "fs";
+import path from "path";
+
+const analyticsPath = path.join(process.cwd(), "data", "analytics.json");
+
+function updateAnalytics() {
+  try {
+    const raw = fs.readFileSync(analyticsPath, "utf8");
+    const data = JSON.parse(raw);
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    data.total_requests += 1;
+    data.by_day[today] = (data.by_day[today] || 0) + 1;
+
+    fs.writeFileSync(analyticsPath, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error("Analytics update failed:", err);
+  }
+}
+
 export default async function handler(req, res) {
-  // Set CORS headers to allow requests from any origin
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
-
-  // Handle preflight OPTIONS request
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
-  // Only allow POST requests
   if (req.method !== "POST") {
-    return res.status(405).json({ 
-      error: "Method not allowed. Use POST method." 
-    });
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // Parse and validate request body
   const { subject, mood, region, details, feedback } = req.body;
 
-  // Validate required fields
-  if (!subject || typeof subject !== 'string' || subject.trim().length === 0) {
-    return res.status(400).json({ 
-      error: "Subject is required and must be a non-empty string" 
-    });
+  if (!subject || !mood) {
+    return res.status(400).json({ error: "Subject and mood required" });
   }
 
-  if (!mood || typeof mood !== 'string' || mood.trim().length === 0) {
-    return res.status(400).json({ 
-      error: "Mood is required and must be a non-empty string" 
-    });
+  const HF_API_KEY = process.env.HUGGINGFACE_API_KEY;
+  const MODEL = process.env.HUGGINGFACE_MODEL;
+  const HF_URL = "https://router.huggingface.co/v1/chat/completions";
+
+  // Clean extras
+  const cleanDetails =
+    typeof details === "string" && details.trim().length > 0
+      ? details.trim()
+      : null;
+
+  const cleanFeedback =
+    typeof feedback === "string" && feedback.trim().length > 0
+      ? feedback.trim()
+      : null;
+
+  if (cleanFeedback) {
+    console.log("User feedback:", cleanFeedback);
   }
 
+  let shortCaption = null;
+  let longCaption = null;
+  let regionalCaption = null;
+
+  // Generate captions using HuggingFace
   try {
-    // Build base line with subject and optional details
-    const baseLine = details && details.trim() 
-      ? `${subject.trim()} — ${details.trim()}` 
-      : subject.trim();
+    if (HF_API_KEY && MODEL) {
+      const extraDetails = cleanDetails
+        ? `Reel details: ${cleanDetails}\n`
+        : "";
 
-    // 1-LINE QUICK FIRE CAPTION
-    const quickFire = `${baseLine}.\n${mood} energy 🔥\n\n#${mood} #viral #instagram #indiancreator`;
+      // Short Caption Prompt
+      const shortPrompt = `
+You are a caption writer for Indian Instagram creators.
 
-    // 2-3 LINE PREMIUM CAPTION  
-    const premiumCaption = `${baseLine} speaks louder than words.\nThis ${mood} moment defines everything.\nFeel the vibe, share the energy.\n\n#${mood} #trending #creators #indiancontent #viral`;
+Generate exactly 1 SHORT Instagram caption (1-2 lines max).
 
-    // REGIONAL CAPTION
-    const regionalCaption = region && region !== "none" 
-      ? `${baseLine} (${region} style)\n${mood} vibes only 🌟\n\n#${mood} #${region} #localcreator`
-      : quickFire;
+Subject: ${subject}
+Mood: ${mood}
+Region: ${region}
+${extraDetails}
+Rules:
+- Make it punchy, impactful, and catchy
+- 1-2 lines maximum
+- Include 3-5 relevant, modern hashtags
+- Do NOT just repeat the subject or details word-by-word
+- Make it feel like a viral caption built to hack Instagram's algorithm
+- Return ONLY the caption text, nothing else.
+      `;
 
-    // Create variants array
-    const variants = [
-      {
-        caption: quickFire,
-        type: "short",
-        label: "Quick Fire",
-        premium: false
-      },
-      {
-        caption: premiumCaption,
-        type: "medium",
-        label: "Story Mode",
-        premium: true
-      },
-      {
-        caption: regionalCaption,
-        type: "regional",
-        label: region && region !== "none" 
-          ? `${region.charAt(0).toUpperCase() + region.slice(1)} Style` 
-          : "Regional",
-        premium: false,
-        regionLabel: region && region !== "none" 
-          ? region.charAt(0).toUpperCase() + region.slice(1) 
-          : null
+      // Long Caption Prompt
+      const longPrompt = `
+You are a caption writer for Indian Instagram creators.
+
+Generate exactly 1 LONG Instagram caption (3-4 lines).
+
+Subject: ${subject}
+Mood: ${mood}
+Region: ${region}
+${extraDetails}
+Rules:
+- Make it emotional, deep, and storytelling
+- 3-4 lines maximum
+- Include 5-8 relevant, modern hashtags
+- Do NOT just repeat the subject or details word-by-word
+- Make it feel like a premium caption built to hack Instagram's algorithm
+- Return ONLY the caption text, nothing else.
+      `;
+
+      // Regional Caption Prompt (if region is specified)
+      let regionalPrompt = null;
+      if (region && region !== "none") {
+        regionalPrompt = `
+You are a caption writer for Indian Instagram creators.
+
+Generate exactly 1 Instagram caption in the specified regional language AND English.
+
+Subject: ${subject}
+Mood: ${mood}
+Region: ${region}
+${extraDetails}
+Rules:
+- Write primarily in the regional language associated with: ${region}
+- Include English translation if helpful
+- Make it culturally relevant and authentic
+- 2-3 lines maximum
+- Include 3-5 relevant hashtags in English
+- Return ONLY the caption text, nothing else.
+        `;
       }
-    ];
 
-    // Log analytics data
-    console.log(`Caption generated:`, {
-      subject: subject.trim(),
-      mood: mood.trim(),
-      region: region || 'none',
-      hasDetails: !!details,
-      hasFeedback: !!feedback
-    });
+      // Fetch short caption
+      const shortResponse = await fetch(HF_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${HF_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [{ role: "user", content: shortPrompt }],
+          max_tokens: 150,
+        }),
+      });
 
-    // Return successful response with variants
-    return res.status(200).json({ variants });
-    
-  } catch (error) {
-    // Log error for debugging
-    console.error('API Generation Error:', {
-      message: error.message,
-      stack: error.stack,
-      requestBody: req.body
-    });
-    
-    // Return error response
-    return res.status(500).json({ 
-      error: "Internal server error. Failed to generate captions." 
-    });
+      if (shortResponse.ok) {
+        const data = await shortResponse.json();
+        const text = data?.choices?.[0]?.message?.content || "";
+        if (text && text.trim().length > 10) {
+          shortCaption = text.trim();
+        }
+      }
+
+      // Fetch long caption
+      const longResponse = await fetch(HF_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${HF_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [{ role: "user", content: longPrompt }],
+          max_tokens: 200,
+        }),
+      });
+
+      if (longResponse.ok) {
+        const data = await longResponse.json();
+        const text = data?.choices?.[0]?.message?.content || "";
+        if (text && text.trim().length > 10) {
+          longCaption = text.trim();
+        }
+      }
+
+      // Fetch regional caption (if applicable)
+      if (regionalPrompt) {
+        const regionalResponse = await fetch(HF_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${HF_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: MODEL,
+            messages: [{ role: "user", content: regionalPrompt }],
+            max_tokens: 180,
+          }),
+        });
+
+        if (regionalResponse.ok) {
+          const data = await regionalResponse.json();
+          const text = data?.choices?.[0]?.message?.content || "";
+          if (text && text.trim().length > 10) {
+            regionalCaption = text.trim();
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Caption generation failed", err);
   }
+
+  // Build base line for fallbacks
+  const baseLine = cleanDetails
+    ? `${subject} — ${cleanDetails}`
+    : subject;
+
+  // Fallback captions
+  const fallbackShort = `${baseLine}.\n${mood} energy 🔥\n\n#${mood} #viral #instagram #indiancreator`;
+  const fallbackLong = `${baseLine} speaks louder than words.\nThis ${mood} moment defines everything.\nFeel the vibe, share the energy.\n\n#${mood} #trending #creators #indiancontent #viral`;
+
+  // Regional fallback
+  const regionalFallback = region && region !== "none" 
+    ? `${baseLine} (${region} style)\n${mood} vibes only 🌟\n\n#${mood} #${region} #localcreator`
+    : fallbackShort;
+
+  const variants = [
+    {
+      caption: longCaption || fallbackLong,
+      type: "long",
+      label: "Story Mode",
+      premium: true
+    },
+    {
+      caption: shortCaption || fallbackShort,
+      type: "short",
+      label: "Quick Fire",
+      premium: false
+    },
+    {
+      caption: regionalCaption || regionalFallback,
+      type: "regional",
+      label: region && region !== "none" ? `${region.charAt(0).toUpperCase() + region.slice(1)} Style` : "Regional",
+      premium: false,
+      regionLabel: region && region !== "none" ? region : null
+    }
+  ];
+
+  // Update analytics
+  updateAnalytics();
+
+  return res.status(200).json({ variants });
 }
