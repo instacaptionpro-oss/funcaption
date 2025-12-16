@@ -208,7 +208,7 @@ export default function Home() {
       console.error(err)
     } finally {
       setLoading(false)
-      setIsGenerating(false) // Disable generating animation
+      setIsGenerating(false)
     }
   }
 
@@ -312,6 +312,7 @@ export default function Home() {
                 Yeah, it looks small — but it decides who stops… and who scrolls 📉
               </p>
               
+              {/* SOLUTION SECTION - UPDATED WITH NO LOGIN NO PAYMENT */}
               <div style={{ 
                 maxWidth: '700px', 
                 margin: '0 auto 4rem',
@@ -344,6 +345,27 @@ export default function Home() {
                   Why waste time overthinking 🤯<br />
                   when a tool can create the right caption for you, instantly ⚡
                 </p>
+
+                {/* NEW ADDITION - No Login No Payment */}
+                <div style={{
+                  background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(6, 182, 212, 0.2))',
+                  border: '2px solid rgba(34, 197, 94, 0.5)',
+                  borderRadius: '0.8rem',
+                  padding: '1.2rem 1.5rem',
+                  textAlign: 'center'
+                }}>
+                  <p style={{
+                    fontSize: '1.3rem',
+                    fontWeight: '800',
+                    color: '#4ade80',
+                    margin: 0,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    textShadow: '0 0 15px rgba(74, 222, 128, 0.5)'
+                  }}>
+                    🔓 No Login • 💳 No Payment • ⚡ Generate Caption Instantly
+                  </p>
+                </div>
               </div>
               
               <h2 style={{
@@ -981,4 +1003,4 @@ export default function Home() {
       </div>
     </>
   )
-}
+  }
