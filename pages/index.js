@@ -272,7 +272,7 @@ export default function Home() {
         <div style={{ position: 'relative', zIndex: 2 }}>
           <Logo />
           
-          {/* HERO SECTION WITH FUNCAPTION TITLE */}
+          {/* HERO SECTION */}
           <section style={{
             padding: '6rem 1.5rem 4rem',
             position: 'relative',
@@ -285,6 +285,8 @@ export default function Home() {
               position: 'relative', 
               zIndex: 1 
             }}>
+              
+              {/* TITLE */}
               <h1 style={{
                 fontSize: '3.5rem',
                 fontWeight: '900',
@@ -301,152 +303,194 @@ export default function Home() {
                 FunCaption
               </h1>
               
+              {/* TAGLINE */}
               <p style={{
-                fontSize: '1.2rem',
+                fontSize: '1.3rem',
                 fontWeight: '600',
-                color: '#94a3b8',
-                marginBottom: '3rem',
-                textShadow: '0 0 10px rgba(148, 163, 184, 0.3)'
+                color: '#e0f2fe',
+                marginBottom: '2.5rem',
+                lineHeight: '1.8',
+                textShadow: '0 0 20px rgba(34, 211, 238, 0.4)'
               }}>
-                It's not your content. It's your caption. 😱<br />
-                Yeah, it looks small — but it decides who stops… and who scrolls 📉
+                <span style={{
+                  background: 'linear-gradient(90deg, #f97316, #ec4899)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  fontWeight: '800'
+                }}>It's not your content. It's your caption.</span> 😱<br />
+                <span style={{ color: '#94a3b8' }}>Yeah, it looks small — but it decides who stops… and who scrolls</span> 📉
               </p>
               
-              {/* SOLUTION SECTION - UPDATED WITH NO LOGIN NO PAYMENT */}
+              {/* SOLUTION SECTION */}
               <div style={{ 
                 maxWidth: '700px', 
-                margin: '0 auto 4rem',
-                background: 'rgba(6, 182, 212, 0.1)',
+                margin: '0 auto 2rem',
+                background: 'rgba(6, 182, 212, 0.08)',
                 border: '1px solid rgba(34, 211, 238, 0.3)',
-                borderRadius: '1rem',
+                borderRadius: '1.2rem',
                 padding: '2rem',
                 backdropFilter: 'blur(10px)'
               }}>
-                <h2 style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '800',
-                  color: '#38bdf8',
-                  marginBottom: '1.5rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.15em'
-                }}>
-                  ⚡ Solution 👇
-                </h2>
-                
                 <p style={{
-                  fontSize: '1.2rem',
-                  lineHeight: '1.8',
+                  fontSize: '1.25rem',
+                  lineHeight: '2',
                   color: '#cbd5e1',
-                  marginBottom: '2rem'
+                  marginBottom: '1.5rem'
                 }}>
-                  Here's the solution 👇<br />
-                  For millions of views 🚀, captions matter 😲<br />
-                  But you're not a poet or a writer ✍️ — and you don't need to be.<br /><br />
-                  Why waste time overthinking 🤯<br />
-                  when a tool can create the right caption for you, instantly ⚡
+                  <span style={{
+                    color: '#22d3ee',
+                    fontWeight: '800',
+                    fontSize: '1.4rem',
+                    textShadow: '0 0 15px rgba(34, 211, 238, 0.6)'
+                  }}>Here's the solution 👇</span><br />
+                  For <span style={{ color: '#4ade80', fontWeight: '700' }}>millions of views</span> 🚀, captions matter 😲<br />
+                  But you're not a poet or a writer ✍️<br />
+                  <span style={{
+                    background: 'linear-gradient(90deg, #a855f7, #ec4899)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    fontWeight: '800',
+                    fontSize: '1.3rem'
+                  }}>...rest, you are smart 🧠</span><br />
+                  So click this button 👇
                 </p>
 
-                {/* NEW ADDITION - No Login No Payment */}
-                <div style={{
-                  background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(6, 182, 212, 0.2))',
-                  border: '2px solid rgba(34, 197, 94, 0.5)',
-                  borderRadius: '0.8rem',
-                  padding: '1.2rem 1.5rem',
-                  textAlign: 'center'
-                }}>
-                  <p style={{
-                    fontSize: '1.3rem',
+                {/* GENERATE CAPTION BUTTON */}
+                <a 
+                  href="#generator" 
+                  className="neon-button-enhanced"
+                  style={{
+                    display: 'inline-block',
+                    padding: '1.2rem 2.5rem',
+                    fontSize: '1.2rem',
                     fontWeight: '800',
-                    color: '#4ade80',
-                    margin: 0,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                    textShadow: '0 0 15px rgba(74, 222, 128, 0.5)'
-                  }}>
-                    🔓 No Login • 💳 No Payment • ⚡ Generate Caption Instantly
-                  </p>
-                </div>
-              </div>
-              
-              <h2 style={{
-                fontSize: '1.5rem',
-                fontWeight: '800',
-                color: '#e0f2fe',
-                marginBottom: '3rem',
-                textShadow: '0 0 15px rgba(34, 211, 238, 0.4)'
-              }}>
-                See the difference below 👀
-              </h2>
-              
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: '1fr', 
-                gap: '2rem',
-                marginBottom: '3rem'
-              }}>
-                {/* Comparison 1 */}
-                <div className="glass-card" style={{ 
-                  padding: '1.5rem',
-                  textAlign: 'left'
-                }}>
-                  <div style={{
-                    fontSize: '0.9rem',
-                    color: '#cbd5e1',
-                    marginBottom: '1rem',
-                    fontWeight: '700',
+                    borderRadius: '999px',
+                    textDecoration: 'none',
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em'
-                  }}>
-                    Weak Caption 😞
-                  </div>
-                  <p style={{
-                    fontSize: '1.1rem',
-                    lineHeight: '1.6',
-                    color: '#e0f2fe',
-                    fontFamily: 'monospace',
-                    marginBottom: '1.5rem'
-                  }}>
-                    Hard work always pays off.<br />
-                    Stay focused and trust the process.
-                  </p>
-                  
-                  <div style={{
-                    fontSize: '0.9rem',
-                    color: '#cbd5e1',
-                    marginBottom: '1rem',
-                    fontWeight: '700',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em'
-                  }}>
-                    FunCaption 🚀
-                  </div>
-                  <p style={{
-                    fontSize: '1.1rem',
-                    lineHeight: '1.6',
-                    color: '#e0f2fe',
-                    fontFamily: 'monospace'
-                  }}>
-                    Everyone claps at the finish.<br />
-                    No one comes at the start.
-                  </p>
-                </div>
+                  }}
+                >
+                  🚀 Generate Caption
+                </a>
               </div>
-              
-              {/* CALL TO ACTION BUTTON */}
-              <a 
-                href="#generator" 
-                className="neon-button-enhanced"
-                style={{
-                  display: 'inline-block',
-                  padding: '1.2rem 2.5rem',
+
+              {/* NO LOGIN NO PAYMENT BOX */}
+              <div style={{
+                maxWidth: '600px',
+                margin: '0 auto 3rem',
+                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(6, 182, 212, 0.15))',
+                border: '2px solid rgba(34, 197, 94, 0.5)',
+                borderRadius: '1rem',
+                padding: '1.2rem 1.5rem',
+                textAlign: 'center',
+                boxShadow: '0 0 30px rgba(34, 197, 94, 0.2)'
+              }}>
+                <p style={{
                   fontSize: '1.2rem',
                   fontWeight: '800',
-                  borderRadius: '999px',
-                  textDecoration: 'none'
-                }}
-              >
-                Generate Caption
-              </a>
+                  color: '#4ade80',
+                  margin: 0,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  textShadow: '0 0 20px rgba(74, 222, 128, 0.6)'
+                }}>
+                  🔓 No Login &nbsp;•&nbsp; 💳 No Payment &nbsp;•&nbsp; ⚡ Generate Instantly
+                </p>
+              </div>
+
+              {/* BEFORE/AFTER EXAMPLE */}
+              <div style={{ 
+                maxWidth: '650px', 
+                margin: '0 auto 3rem'
+              }}>
+                <h3 style={{
+                  fontSize: '1.3rem',
+                  fontWeight: '700',
+                  color: '#e0f2fe',
+                  marginBottom: '1.5rem',
+                  textShadow: '0 0 15px rgba(34, 211, 238, 0.4)'
+                }}>
+                  See the difference 👀
+                </h3>
+
+                <div className="glass-card" style={{ 
+                  padding: '1.8rem',
+                  textAlign: 'left'
+                }}>
+                  {/* Weak Caption */}
+                  <div style={{
+                    marginBottom: '1.5rem',
+                    paddingBottom: '1.5rem',
+                    borderBottom: '1px solid rgba(148, 163, 184, 0.2)'
+                  }}>
+                    <div style={{
+                      fontSize: '0.85rem',
+                      color: '#f87171',
+                      marginBottom: '0.8rem',
+                      fontWeight: '800',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.12em',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}>
+                      <span style={{
+                        width: '8px',
+                        height: '8px',
+                        background: '#f87171',
+                        borderRadius: '50%',
+                        boxShadow: '0 0 10px rgba(248, 113, 113, 0.6)'
+                      }}></span>
+                      Weak Caption 😞
+                    </div>
+                    <p style={{
+                      fontSize: '1.1rem',
+                      lineHeight: '1.6',
+                      color: '#94a3b8',
+                      fontFamily: 'monospace',
+                      fontStyle: 'italic'
+                    }}>
+                      Working out at the gym. Stay consistent. 💪
+                    </p>
+                  </div>
+                  
+                  {/* FunCaption */}
+                  <div>
+                    <div style={{
+                      fontSize: '0.85rem',
+                      color: '#4ade80',
+                      marginBottom: '0.8rem',
+                      fontWeight: '800',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.12em',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}>
+                      <span style={{
+                        width: '8px',
+                        height: '8px',
+                        background: '#4ade80',
+                        borderRadius: '50%',
+                        boxShadow: '0 0 10px rgba(74, 222, 128, 0.6)'
+                      }}></span>
+                      FunCaption 🚀
+                    </div>
+                    <p style={{
+                      fontSize: '1.2rem',
+                      lineHeight: '1.7',
+                      color: '#e0f2fe',
+                      fontFamily: 'monospace',
+                      fontWeight: '600',
+                      textShadow: '0 0 10px rgba(224, 242, 254, 0.3)'
+                    }}>
+                      They laughed when I started.<br />
+                      Now they ask for my routine.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </section>
 
