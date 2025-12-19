@@ -114,27 +114,6 @@ const Logo = () => (
   </div>
 )
 
-const regions = [
-  { id: "none", label: "No Tribe" },
-  { id: "genz", label: "GenZ" },
-  { id: "professional", label: "Professional" },
-  { id: "gujarati", label: "Gujarati" },
-  { id: "marathi", label: "Marathi" },
-  { id: "punjabi", label: "Punjabi" },
-  { id: "hindi", label: "Hindi / Desi" },
-  { id: "rajasthani", label: "Rajasthani" },
-  { id: "bengali", label: "Bengali" },
-  { id: "tamil", label: "Tamil" },
-  { id: "telugu", label: "Telugu" },
-  { id: "kannada", label: "Kannada" },
-  { id: "malayalam", label: "Malayalam" },
-  { id: "bhojpuri", label: "Bhojpuri" },
-  { id: "odia", label: "Odia" },
-  { id: "assamese", label: "Assamese" },
-  { id: "kashmiri", label: "Kashmiri" },
-  { id: "nepali", label: "Nepali" }
-]
-
 const moods = [
   { id: "attitude", label: "Attitude" },
   { id: "motivation", label: "Motivation" },
@@ -173,11 +152,13 @@ export default function Home() {
   const [details, setDetails] = useState('')
   const [feedback, setFeedback] = useState('')
   const [mood, setMood] = useState('attitude')
-  const [region, setRegion] = useState('none')
   const [loading, setLoading] = useState(false)
   const [variants, setVariants] = useState([])
   const [copiedIndex, setCopiedIndex] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
+
+  // Region is hardcoded to "genz"
+  const region = 'genz'
 
   const handleGenerate = async (e) => {
     e.preventDefault()
@@ -280,17 +261,17 @@ export default function Home() {
           }}>
             <div className="hero-background"></div>
             <div style={{ 
-              maxWidth: '900px', 
+              maxWidth: '800px', 
               margin: '0 auto', 
               position: 'relative', 
               zIndex: 1 
             }}>
               
-              {/* TITLE */}
+              {/* ========== 1. TITLE ========== */}
               <h1 style={{
                 fontSize: '3.5rem',
                 fontWeight: '900',
-                marginBottom: '1.5rem',
+                marginBottom: '2rem',
                 background: 'linear-gradient(135deg, #22d3ee, #a855f7, #ec4899)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -303,192 +284,226 @@ export default function Home() {
                 FunCaption
               </h1>
               
-              {/* TAGLINE */}
+              {/* ========== 2. HERE'S THE SOLUTION ========== */}
               <p style={{
-                fontSize: '1.3rem',
-                fontWeight: '600',
-                color: '#e0f2fe',
+                fontSize: '1.5rem',
+                fontWeight: '800',
+                color: '#22d3ee',
                 marginBottom: '2.5rem',
-                lineHeight: '1.8',
-                textShadow: '0 0 20px rgba(34, 211, 238, 0.4)'
+                textShadow: '0 0 25px rgba(34, 211, 238, 0.6)'
               }}>
-                <span style={{
-                  background: 'linear-gradient(90deg, #f97316, #ec4899)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  fontWeight: '800'
-                }}>It's not your content. It's your caption.</span> 😱<br />
-                <span style={{ color: '#94a3b8' }}>Yeah, it looks small — but it decides who stops… and who scrolls</span> 📉
+                Here's the solution 👇
               </p>
-              
-              {/* SOLUTION SECTION */}
+
+              {/* ========== 3. EXAMPLE 1: WEAK VS FUNCAPTION ========== */}
               <div style={{ 
-                maxWidth: '700px', 
-                margin: '0 auto 2rem',
-                background: 'rgba(6, 182, 212, 0.08)',
-                border: '1px solid rgba(34, 211, 238, 0.3)',
+                maxWidth: '600px', 
+                margin: '0 auto 2.5rem',
+                background: 'rgba(15, 23, 42, 0.6)',
+                border: '1px solid rgba(34, 211, 238, 0.2)',
                 borderRadius: '1.2rem',
                 padding: '2rem',
                 backdropFilter: 'blur(10px)'
               }}>
-                <p style={{
-                  fontSize: '1.25rem',
-                  lineHeight: '2',
-                  color: '#cbd5e1',
+                {/* Section Label */}
+                <div style={{
+                  fontSize: '0.8rem',
+                  color: '#64748b',
+                  marginBottom: '1.5rem',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.15em'
+                }}>
+                  📍 Example: Gym Reel
+                </div>
+
+                {/* Weak Caption */}
+                <div style={{
+                  marginBottom: '2rem',
+                  paddingBottom: '1.5rem',
+                  borderBottom: '1px dashed rgba(148, 163, 184, 0.2)'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.6rem',
+                    marginBottom: '1rem'
+                  }}>
+                    <span style={{
+                      width: '10px',
+                      height: '10px',
+                      background: '#ef4444',
+                      borderRadius: '50%',
+                      boxShadow: '0 0 12px rgba(239, 68, 68, 0.7)'
+                    }}></span>
+                    <span style={{
+                      fontSize: '0.9rem',
+                      color: '#ef4444',
+                      fontWeight: '700',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em'
+                    }}>
+                      Weak Caption
+                    </span>
+                  </div>
+                  <p style={{
+                    fontSize: '1.15rem',
+                    lineHeight: '1.7',
+                    color: '#94a3b8',
+                    fontFamily: 'Georgia, serif',
+                    fontStyle: 'italic',
+                    paddingLeft: '1.5rem',
+                    borderLeft: '3px solid rgba(239, 68, 68, 0.3)'
+                  }}>
+                    Working out at the gym. Stay consistent. 💪
+                  </p>
+                </div>
+                
+                {/* FunCaption */}
+                <div>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.6rem',
+                    marginBottom: '1rem'
+                  }}>
+                    <span style={{
+                      width: '10px',
+                      height: '10px',
+                      background: '#22c55e',
+                      borderRadius: '50%',
+                      boxShadow: '0 0 12px rgba(34, 197, 94, 0.7)'
+                    }}></span>
+                    <span style={{
+                      fontSize: '0.9rem',
+                      color: '#22c55e',
+                      fontWeight: '700',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em'
+                    }}>
+                      FunCaption ✨
+                    </span>
+                  </div>
+                  <p style={{
+                    fontSize: '1.3rem',
+                    lineHeight: '1.8',
+                    color: '#e0f2fe',
+                    fontFamily: 'Georgia, serif',
+                    fontWeight: '500',
+                    paddingLeft: '1.5rem',
+                    borderLeft: '3px solid rgba(34, 197, 94, 0.5)',
+                    textShadow: '0 0 10px rgba(224, 242, 254, 0.2)'
+                  }}>
+                    They laughed when I started.<br />
+                    Now they ask for my routine.
+                  </p>
+                </div>
+              </div>
+
+              {/* ========== 4. GENERATE CAPTION BUTTON ========== */}
+              <a 
+                href="#generator" 
+                className="neon-button-enhanced"
+                style={{
+                  display: 'inline-block',
+                  padding: '1.3rem 3rem',
+                  fontSize: '1.2rem',
+                  fontWeight: '800',
+                  borderRadius: '999px',
+                  textDecoration: 'none',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  marginBottom: '2.5rem'
+                }}
+              >
+                🚀 Generate Your Caption
+              </a>
+
+              {/* ========== 5. EXAMPLE 2: ONLY FUNCAPTION ========== */}
+              <div style={{ 
+                maxWidth: '600px', 
+                margin: '0 auto 2.5rem',
+                background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(236, 72, 153, 0.1))',
+                border: '2px solid rgba(168, 85, 247, 0.4)',
+                borderRadius: '1.2rem',
+                padding: '2rem',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 0 40px rgba(168, 85, 247, 0.15)'
+              }}>
+                {/* Section Label */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
                   marginBottom: '1.5rem'
                 }}>
                   <span style={{
-                    color: '#22d3ee',
+                    fontSize: '0.85rem',
+                    color: '#a855f7',
                     fontWeight: '800',
-                    fontSize: '1.4rem',
-                    textShadow: '0 0 15px rgba(34, 211, 238, 0.6)'
-                  }}>Here's the solution 👇</span><br />
-                  For <span style={{ color: '#4ade80', fontWeight: '700' }}>millions of views</span> 🚀, captions matter 😲<br />
-                  But you're not a poet or a writer ✍️<br />
-                  <span style={{
-                    background: 'linear-gradient(90deg, #a855f7, #ec4899)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    fontWeight: '800',
-                    fontSize: '1.3rem'
-                  }}>...rest, you are smart 🧠</span><br />
-                  So click this button 👇
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.15em',
+                    textShadow: '0 0 15px rgba(168, 85, 247, 0.6)'
+                  }}>
+                    ✨ Generated by FunCaption
+                  </span>
+                </div>
+
+                {/* The Caption */}
+                <p style={{
+                  fontSize: '1.4rem',
+                  lineHeight: '1.9',
+                  color: '#f0abfc',
+                  fontFamily: 'Georgia, serif',
+                  fontWeight: '500',
+                  textAlign: 'center',
+                  textShadow: '0 0 15px rgba(240, 171, 252, 0.3)'
+                }}>
+                  Rich is when your parents<br />
+                  stop checking price tags because of you.
                 </p>
 
-                {/* GENERATE CAPTION BUTTON */}
-                <a 
-                  href="#generator" 
-                  className="neon-button-enhanced"
-                  style={{
-                    display: 'inline-block',
-                    padding: '1.2rem 2.5rem',
-                    fontSize: '1.2rem',
-                    fontWeight: '800',
+                {/* Feeling Tag */}
+                <div style={{
+                  marginTop: '1.5rem',
+                  display: 'flex',
+                  justifyContent: 'center'
+                }}>
+                  <span style={{
+                    fontSize: '0.75rem',
+                    color: '#cbd5e1',
+                    background: 'rgba(168, 85, 247, 0.2)',
+                    padding: '0.5rem 1rem',
                     borderRadius: '999px',
-                    textDecoration: 'none',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em'
-                  }}
-                >
-                  🚀 Generate Caption
-                </a>
+                    fontWeight: '600'
+                  }}>
+                    💜 Hits different, right?
+                  </span>
+                </div>
               </div>
 
-              {/* NO LOGIN NO PAYMENT BOX */}
+              {/* ========== 6. NO LOGIN NO PAYMENT BOX ========== */}
               <div style={{
-                maxWidth: '600px',
-                margin: '0 auto 3rem',
-                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(6, 182, 212, 0.15))',
+                maxWidth: '550px',
+                margin: '0 auto',
+                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(6, 182, 212, 0.12))',
                 border: '2px solid rgba(34, 197, 94, 0.5)',
                 borderRadius: '1rem',
-                padding: '1.2rem 1.5rem',
+                padding: '1.3rem 1.8rem',
                 textAlign: 'center',
-                boxShadow: '0 0 30px rgba(34, 197, 94, 0.2)'
+                boxShadow: '0 0 35px rgba(34, 197, 94, 0.2)'
               }}>
                 <p style={{
-                  fontSize: '1.2rem',
+                  fontSize: '1.1rem',
                   fontWeight: '800',
                   color: '#4ade80',
                   margin: 0,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
+                  letterSpacing: '0.05em',
                   textShadow: '0 0 20px rgba(74, 222, 128, 0.6)'
                 }}>
                   🔓 No Login &nbsp;•&nbsp; 💳 No Payment &nbsp;•&nbsp; ⚡ Generate Instantly
                 </p>
-              </div>
-
-              {/* BEFORE/AFTER EXAMPLE */}
-              <div style={{ 
-                maxWidth: '650px', 
-                margin: '0 auto 3rem'
-              }}>
-                <h3 style={{
-                  fontSize: '1.3rem',
-                  fontWeight: '700',
-                  color: '#e0f2fe',
-                  marginBottom: '1.5rem',
-                  textShadow: '0 0 15px rgba(34, 211, 238, 0.4)'
-                }}>
-                  See the difference 👀
-                </h3>
-
-                <div className="glass-card" style={{ 
-                  padding: '1.8rem',
-                  textAlign: 'left'
-                }}>
-                  {/* Weak Caption */}
-                  <div style={{
-                    marginBottom: '1.5rem',
-                    paddingBottom: '1.5rem',
-                    borderBottom: '1px solid rgba(148, 163, 184, 0.2)'
-                  }}>
-                    <div style={{
-                      fontSize: '0.85rem',
-                      color: '#f87171',
-                      marginBottom: '0.8rem',
-                      fontWeight: '800',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.12em',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem'
-                    }}>
-                      <span style={{
-                        width: '8px',
-                        height: '8px',
-                        background: '#f87171',
-                        borderRadius: '50%',
-                        boxShadow: '0 0 10px rgba(248, 113, 113, 0.6)'
-                      }}></span>
-                      Weak Caption 😞
-                    </div>
-                    <p style={{
-                      fontSize: '1.1rem',
-                      lineHeight: '1.6',
-                      color: '#94a3b8',
-                      fontFamily: 'monospace',
-                      fontStyle: 'italic'
-                    }}>
-                      Working out at the gym. Stay consistent. 💪
-                    </p>
-                  </div>
-                  
-                  {/* FunCaption */}
-                  <div>
-                    <div style={{
-                      fontSize: '0.85rem',
-                      color: '#4ade80',
-                      marginBottom: '0.8rem',
-                      fontWeight: '800',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.12em',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem'
-                    }}>
-                      <span style={{
-                        width: '8px',
-                        height: '8px',
-                        background: '#4ade80',
-                        borderRadius: '50%',
-                        boxShadow: '0 0 10px rgba(74, 222, 128, 0.6)'
-                      }}></span>
-                      FunCaption 🚀
-                    </div>
-                    <p style={{
-                      fontSize: '1.2rem',
-                      lineHeight: '1.7',
-                      color: '#e0f2fe',
-                      fontFamily: 'monospace',
-                      fontWeight: '600',
-                      textShadow: '0 0 10px rgba(224, 242, 254, 0.3)'
-                    }}>
-                      They laughed when I started.<br />
-                      Now they ask for my routine.
-                    </p>
-                  </div>
-                </div>
               </div>
 
             </div>
@@ -497,7 +512,7 @@ export default function Home() {
           {/* Section Divider */}
           <div className="section-divider"></div>
 
-          {/* SECTION 2: GENERATOR */}
+          {/* ========== 7. GENERATOR SECTION ========== */}
           <section id="generator" style={{
             padding: '4rem 1.5rem 5rem',
             position: 'relative'
@@ -620,43 +635,7 @@ export default function Home() {
                     </select>
                   </div>
 
-                  {/* Your Tribe */}
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '0.85rem',
-                      fontWeight: '700',
-                      color: '#38bdf8',
-                      marginBottom: '0.7rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.15em',
-                      textShadow: '0 0 10px rgba(56, 189, 248, 0.5)'
-                    }}>
-                      🌍 Your Tribe
-                    </label>
-                    <select
-                      value={region}
-                      onChange={(e) => setRegion(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '1rem 1.2rem',
-                        borderRadius: '0.8rem',
-                        color: '#e0f2fe',
-                        fontSize: '1rem',
-                        fontFamily: 'monospace',
-                        cursor: 'pointer',
-                        background: 'rgba(6, 182, 212, 0.05)',
-                        border: '1px solid rgba(34, 211, 238, 0.3)',
-                        backdropFilter: 'blur(10px)'
-                      }}
-                    >
-                      {regions.map((r) => (
-                        <option key={r.id} value={r.id} style={{ background: '#001d3d', color: '#e0f2fe' }}>
-                          {r.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {/* TRIBE SECTION REMOVED - region is hardcoded to "genz" */}
 
                   {/* Feedback box */}
                   <div>
@@ -763,22 +742,6 @@ export default function Home() {
                             {processedCaption}
                           </p>
 
-                          {v.regionLabel && (
-                            <div style={{
-                              display: 'inline-block',
-                              padding: '0.45rem 1.1rem',
-                              background: 'rgba(255, 215, 0, 0.15)',
-                              border: '1px solid rgba(255, 215, 0, 0.3)',
-                              borderRadius: '999px',
-                              fontSize: '0.75rem',
-                              color: '#FFD700',
-                              marginBottom: '1.2rem',
-                              fontWeight: '700'
-                            }}>
-                              🌍 {v.regionLabel}
-                            </div>
-                          )}
-
                           <button
                             type="button"
                             onClick={() => copyCaption(v.caption, `short-${i}`)}
@@ -816,7 +779,6 @@ export default function Home() {
                       )
                       
                       const instagramLink = 'https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA=='
-                      const isPremium = v.premium
 
                       return (
                         <div key={`premium-${i}`} className="holographic-premium" style={{
@@ -843,22 +805,6 @@ export default function Home() {
                           <div className="premium-content" style={{ whiteSpace: 'pre-line' }}>
                             {processedCaption}
                           </div>
-                          
-                          {v.regionLabel && (
-                            <div style={{
-                              display: 'inline-block',
-                              padding: '0.5rem 1.2rem',
-                              background: 'linear-gradient(90deg, rgba(0, 255, 255, 0.2), rgba(138, 43, 226, 0.2))',
-                              border: '2px solid rgba(0, 255, 255, 0.5)',
-                              borderRadius: '999px',
-                              fontSize: '0.8rem',
-                              color: '#bae6fd',
-                              marginBottom: '1.2rem',
-                              fontWeight: '700'
-                            }}>
-                              🌍 {v.regionLabel}
-                            </div>
-                          )}
                           
                           {/* Instagram CTA */}
                           <div style={{
@@ -934,22 +880,6 @@ export default function Home() {
                           }}>
                             {processedCaption}
                           </p>
-
-                          {v.regionLabel && (
-                            <div style={{
-                              display: 'inline-block',
-                              padding: '0.45rem 1.1rem',
-                              background: 'rgba(6, 182, 212, 0.15)',
-                              border: '1px solid rgba(34, 211, 238, 0.3)',
-                              borderRadius: '999px',
-                              fontSize: '0.75rem',
-                              color: '#7dd3fc',
-                              marginBottom: '1.2rem',
-                              fontWeight: '700'
-                            }}>
-                              🌍 {v.regionLabel}
-                            </div>
-                          )}
 
                           <button
                             type="button"
@@ -1047,4 +977,4 @@ export default function Home() {
       </div>
     </>
   )
-  }
+  }            
