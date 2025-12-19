@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { subject, mood, region, details, feedback } = req.body;
+  const { subject, mood, details, feedback } = req.body;
 
   if (!subject || !mood) {
     return res.status(400).json({ error: "Subject and mood required" });
@@ -51,7 +51,6 @@ export default async function handler(req, res) {
 
   let shortCaption = null;
   let longCaption = null;
-  let regionalCaption = null;
 
   // Generate captions using HuggingFace
   try {
@@ -60,65 +59,49 @@ export default async function handler(req, res) {
         ? `Reel details: ${cleanDetails}\n`
         : "";
 
-      // Short Caption Prompt
+      // Short Caption Prompt (GenZ focused)
       const shortPrompt = `
-You are a caption writer for Indian Instagram creators.
+You are a viral caption writer for Indian GenZ Instagram creators.
 
 Generate exactly 1 SHORT Instagram caption (1-2 lines max).
 
 Subject: ${subject}
 Mood: ${mood}
-Region: ${region}
 ${extraDetails}
 Rules:
-- Make it punchy, impactful, and catchy
+- Write for GenZ audience (18-25 years old)
+- Use trendy, modern language that GenZ relates to
+- Make it punchy, impactful, and scroll-stopping
 - 1-2 lines maximum
+- Can include English, Hinglish, or trendy slang
 - Include 3-5 relevant, modern hashtags
 - Do NOT just repeat the subject or details word-by-word
 - Make it feel like a viral caption built to hack Instagram's algorithm
+- Think: what would make a GenZ stop scrolling and feel "this is SO me"
 - Return ONLY the caption text, nothing else.
       `;
 
-      // Long Caption Prompt
+      // Long Caption Prompt (GenZ focused)
       const longPrompt = `
-You are a caption writer for Indian Instagram creators.
+You are a viral caption writer for Indian GenZ Instagram creators.
 
 Generate exactly 1 LONG Instagram caption (3-4 lines).
 
 Subject: ${subject}
 Mood: ${mood}
-Region: ${region}
 ${extraDetails}
 Rules:
+- Write for GenZ audience (18-25 years old)
 - Make it emotional, deep, and storytelling
+- Use language that hits different for GenZ
 - 3-4 lines maximum
+- Can include English, Hinglish, or trendy expressions
 - Include 5-8 relevant, modern hashtags
 - Do NOT just repeat the subject or details word-by-word
-- Make it feel like a premium caption built to hack Instagram's algorithm
+- Make it feel like a premium caption that speaks to GenZ soul
+- Think: captions that get saved and shared
 - Return ONLY the caption text, nothing else.
       `;
-
-      // Regional Caption Prompt (if region is specified)
-      let regionalPrompt = null;
-      if (region && region !== "none") {
-        regionalPrompt = `
-You are a caption writer for Indian Instagram creators.
-
-Generate exactly 1 Instagram caption in the specified regional language AND English.
-
-Subject: ${subject}
-Mood: ${mood}
-Region: ${region}
-${extraDetails}
-Rules:
-- Write primarily in the regional language associated with: ${region}
-- Include English translation if helpful
-- Make it culturally relevant and authentic
-- 2-3 lines maximum
-- Include 3-5 relevant hashtags in English
-- Return ONLY the caption text, nothing else.
-        `;
-      }
 
       // Fetch short caption
       const shortResponse = await fetch(HF_URL, {
@@ -163,30 +146,6 @@ Rules:
           longCaption = text.trim();
         }
       }
-
-      // Fetch regional caption (if applicable)
-      if (regionalPrompt) {
-        const regionalResponse = await fetch(HF_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${HF_API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: MODEL,
-            messages: [{ role: "user", content: regionalPrompt }],
-            max_tokens: 180,
-          }),
-        });
-
-        if (regionalResponse.ok) {
-          const data = await regionalResponse.json();
-          const text = data?.choices?.[0]?.message?.content || "";
-          if (text && text.trim().length > 10) {
-            regionalCaption = text.trim();
-          }
-        }
-      }
     }
   } catch (err) {
     console.error("Caption generation failed", err);
@@ -197,14 +156,9 @@ Rules:
     ? `${subject} — ${cleanDetails}`
     : subject;
 
-  // Fallback captions
-  const fallbackShort = `${baseLine}.\n${mood} energy 🔥\n\n#${mood} #viral #instagram #indiancreator`;
-  const fallbackLong = `${baseLine} speaks louder than words.\nThis ${mood} moment defines everything.\nFeel the vibe, share the energy.\n\n#${mood} #trending #creators #indiancontent #viral`;
-
-  // Regional fallback
-  const regionalFallback = region && region !== "none" 
-    ? `${baseLine} (${region} style)\n${mood} vibes only 🌟\n\n#${mood} #${region} #localcreator`
-    : fallbackShort;
+  // Fallback captions (GenZ style)
+  const fallbackShort = `${baseLine}.\n${mood} energy only 🔥\n\n#${mood} #viral #genz #reels #trending`;
+  const fallbackLong = `${baseLine} hits different fr.\nThis ${mood} moment > everything else.\nIykyk 🤷‍♂️\n\n#${mood} #trending #genz #viral #reelsinstagram #relatable`;
 
   const variants = [
     {
@@ -218,13 +172,6 @@ Rules:
       type: "short",
       label: "Quick Fire",
       premium: false
-    },
-    {
-      caption: regionalCaption || regionalFallback,
-      type: "regional",
-      label: region && region !== "none" ? `${region.charAt(0).toUpperCase() + region.slice(1)} Style` : "Regional",
-      premium: false,
-      regionLabel: region && region !== "none" ? region : null
     }
   ];
 
