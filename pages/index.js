@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 
-// Mood options with emojis
+// Only 7 items: 6 moods + 1 "More" option
 const moodOptions = [
   { id: 'funny', emoji: '😂', label: 'Funny' },
   { id: 'fire', emoji: '🔥', label: 'Fire' },
@@ -9,6 +9,11 @@ const moodOptions = [
   { id: 'deep', emoji: '🧠', label: 'Deep' },
   { id: 'poetic', emoji: '✍️', label: 'Poetic' },
   { id: 'motivation', emoji: '🚀', label: 'Motivation' },
+  { id: 'more', emoji: '➕', label: 'More' }
+]
+
+// Extended moods when "More" is clicked
+const extendedMoods = [
   { id: 'attitude', emoji: '😎', label: 'Attitude' },
   { id: 'love', emoji: '💕', label: 'Love' },
   { id: 'breakup', emoji: '💔', label: 'Breakup' },
@@ -18,7 +23,9 @@ const moodOptions = [
   { id: 'alone', emoji: '🌙', label: 'Alone' },
   { id: 'confident', emoji: '💪', label: 'Confident' },
   { id: 'romantic', emoji: '🌹', label: 'Romantic' },
-  { id: 'sarcastic', emoji: '🙄', label: 'Sarcastic' }
+  { id: 'sarcastic', emoji: '🙄', label: 'Sarcastic' },
+  { id: 'nostalgic', emoji: '📷', label: 'Nostalgic' },
+  { id: 'rebellious', emoji: '⚡', label: 'Rebellious' }
 ]
 
 // Target goal chips
@@ -37,7 +44,7 @@ const loadingMessages = [
   "Almost there..."
 ]
 
-// Example subjects for placeholder
+// Example subjects that cycle
 const exampleSubjects = [
   "Making coffee in a cozy café ☕",
   "Gym grind at 5 AM 💪",
@@ -58,6 +65,7 @@ export default function Home() {
   const [subject, setSubject] = useState('')
   const [details, setDetails] = useState('')
   const [selectedMood, setSelectedMood] = useState('fire')
+  const [showExtendedMoods, setShowExtendedMoods] = useState(false)
   const [wheelRotation, setWheelRotation] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [startAngle, setStartAngle] = useState(0)
@@ -99,7 +107,7 @@ export default function Home() {
     return () => clearInterval(interval)
   }, [])
 
-  // Wheel drag handlers
+  // Get angle from mouse/touch event
   const getAngleFromEvent = (e, rect) => {
     const centerX = rect.left + rect.width / 2
     const centerY = rect.top + rect.height / 2
@@ -123,8 +131,10 @@ export default function Home() {
   }
 
   const handleWheelEnd = () => {
+    if (!isDragging) return
     setIsDragging(false)
-    // Snap to nearest mood
+    
+    // Snap to nearest mood (7 items)
     const moodCount = moodOptions.length
     const anglePerMood = 360 / moodCount
     const normalizedRotation = ((wheelRotation % 360) + 360) % 360
@@ -132,18 +142,36 @@ export default function Home() {
     const snappedRotation = nearestIndex * anglePerMood
     setWheelRotation(snappedRotation)
     
-    // Calculate which mood is at the top (12 o'clock position)
+    // Calculate which mood is at the top
     const topMoodIndex = (moodCount - nearestIndex) % moodCount
-    setSelectedMood(moodOptions[topMoodIndex].id)
+    const selectedMoodItem = moodOptions[topMoodIndex]
+    
+    if (selectedMoodItem.id === 'more') {
+      setShowExtendedMoods(true)
+    } else {
+      setSelectedMood(selectedMoodItem.id)
+      setShowExtendedMoods(false)
+    }
   }
 
   const selectMoodDirectly = (moodId, index) => {
+    if (moodId === 'more') {
+      setShowExtendedMoods(!showExtendedMoods)
+      return
+    }
+    
     setSelectedMood(moodId)
+    setShowExtendedMoods(false)
+    
     const moodCount = moodOptions.length
     const anglePerMood = 360 / moodCount
-    // Rotate so selected mood is at top
     const targetRotation = ((moodCount - index) % moodCount) * anglePerMood
     setWheelRotation(targetRotation)
+  }
+
+  const selectExtendedMood = (moodId) => {
+    setSelectedMood(moodId)
+    setShowExtendedMoods(false)
   }
 
   const toggleGoal = (goalId) => {
@@ -200,10 +228,19 @@ export default function Home() {
     }
   }
 
+  // Get current mood info (from main or extended)
+  const getCurrentMoodInfo = () => {
+    const mainMood = moodOptions.find(m => m.id === selectedMood)
+    if (mainMood) return mainMood
+    return extendedMoods.find(m => m.id === selectedMood) || { emoji: '🔥', label: 'Fire' }
+  }
+
   // Separate variants by type
   const shortCaptions = variants.filter(v => v.type === 'short')
   const premiumCaptions = variants.filter(v => v.premium)
   const standardCaptions = variants.filter(v => !v.premium && v.type !== 'short')
+
+  const currentMoodInfo = getCurrentMoodInfo()
 
   return (
     <>
@@ -228,19 +265,23 @@ export default function Home() {
           color: #262626;
         }
 
-        /* Instagram Gradient */
+        /* EXACT Instagram Logo Gradient Colors */
         .instagram-gradient {
-          background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+          background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+        }
+
+        .instagram-gradient-alt {
+          background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D, #F56040, #F77737, #FCAF45, #FFDC80);
         }
 
         .instagram-gradient-text {
-          background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+          background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
 
-        /* Custom scrollbar */
+        /* Scrollbar */
         ::-webkit-scrollbar {
           width: 6px;
         }
@@ -248,22 +289,22 @@ export default function Home() {
           background: #f1f1f1;
         }
         ::-webkit-scrollbar-thumb {
-          background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+          background: linear-gradient(45deg, #F56040, #C13584, #833AB4);
           border-radius: 3px;
         }
 
-        /* Toggle Switch */
+        /* Toggle Switch with Instagram Colors */
         .toggle-switch {
           position: relative;
           width: 52px;
           height: 28px;
-          background: #e0e0e0;
+          background: #DBDBDB;
           border-radius: 14px;
           cursor: pointer;
           transition: all 0.3s ease;
         }
         .toggle-switch.active {
-          background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #bc1888);
+          background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
         }
         .toggle-switch::after {
           content: '';
@@ -287,27 +328,25 @@ export default function Home() {
           100% { background-position: 200% 0; }
         }
         .skeleton {
-          background: linear-gradient(90deg, 
-            #f0f0f0 25%, 
-            #e0e0e0 50%, 
-            #f0f0f0 75%
-          );
+          background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
           background-size: 200% 100%;
           animation: shimmer 1.5s infinite;
-          border-radius: 12px;
+          border-radius: 16px;
         }
 
-        /* Glow button pulse */
-        @keyframes glow-pulse {
+        /* Magic button glow pulse */
+        @keyframes magic-pulse {
           0%, 100% { 
-            box-shadow: 0 4px 20px rgba(225, 48, 108, 0.4), 
-                        0 8px 40px rgba(225, 48, 108, 0.2);
+            box-shadow: 0 4px 25px rgba(225, 48, 108, 0.5), 
+                        0 8px 40px rgba(193, 53, 132, 0.3),
+                        0 0 0 0 rgba(225, 48, 108, 0.4);
             transform: scale(1);
           }
           50% { 
-            box-shadow: 0 6px 30px rgba(225, 48, 108, 0.5), 
-                        0 12px 50px rgba(225, 48, 108, 0.3);
-            transform: scale(1.02);
+            box-shadow: 0 6px 35px rgba(225, 48, 108, 0.6), 
+                        0 12px 50px rgba(193, 53, 132, 0.4),
+                        0 0 0 8px rgba(225, 48, 108, 0);
+            transform: scale(1.03);
           }
         }
 
@@ -325,21 +364,22 @@ export default function Home() {
 
         /* Fade in animation */
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
+          from { opacity: 0; transform: translateY(15px); }
           to { opacity: 1; transform: translateY(0); }
         }
 
         /* Example text fade */
         @keyframes exampleFade {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 0.6; }
+          0%, 20% { opacity: 0; transform: translateY(5px); }
+          30%, 70% { opacity: 0.5; transform: translateY(0); }
+          80%, 100% { opacity: 0; transform: translateY(-5px); }
         }
 
         .example-text {
           animation: exampleFade 3s ease-in-out infinite;
         }
 
-        /* Wheel grab cursor */
+        /* Wheel cursor */
         .wheel-container {
           cursor: grab;
           touch-action: none;
@@ -348,13 +388,21 @@ export default function Home() {
           cursor: grabbing;
         }
 
-        /* Card hover */
+        /* Card hover effect */
         .card-hover {
           transition: all 0.3s ease;
         }
         .card-hover:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+          transform: translateY(-3px);
+          box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+        }
+
+        /* Mood item hover */
+        .mood-item {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .mood-item:hover {
+          transform: scale(1.15);
         }
       `}</style>
 
@@ -369,22 +417,22 @@ export default function Home() {
         {/* ========== HEADER ========== */}
         <header style={{
           textAlign: 'center',
-          padding: '24px 0 32px'
+          padding: '20px 0 28px'
         }}>
           <h1 className="instagram-gradient-text" style={{
-            fontSize: '2.2rem',
+            fontSize: '2.4rem',
             fontWeight: '900',
-            marginBottom: '8px',
-            letterSpacing: '-0.02em'
+            marginBottom: '6px',
+            letterSpacing: '-0.03em'
           }}>
             FunCaption
           </h1>
           <p style={{
-            fontSize: '0.95rem',
-            color: '#8e8e8e',
+            fontSize: '0.9rem',
+            color: '#8E8E8E',
             fontWeight: '500'
           }}>
-            AI-powered captions that go viral ✨
+            AI-powered captions that stop the scroll ✨
           </p>
         </header>
 
@@ -394,19 +442,19 @@ export default function Home() {
           borderRadius: '24px',
           padding: '24px',
           marginBottom: '20px',
-          boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
-          border: '1px solid rgba(0,0,0,0.05)'
+          boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+          border: '1px solid rgba(0,0,0,0.04)'
         }}>
           <label style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            fontSize: '0.9rem',
+            gap: '10px',
+            fontSize: '0.95rem',
             fontWeight: '700',
             color: '#262626',
             marginBottom: '16px'
           }}>
-            <span style={{ fontSize: '1.2rem' }}>📝</span>
+            <span style={{ fontSize: '1.3rem' }}>📝</span>
             What's the story?
           </label>
           
@@ -414,12 +462,11 @@ export default function Home() {
             <textarea
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder=""
               style={{
                 width: '100%',
-                minHeight: '120px',
+                minHeight: '110px',
                 background: '#FAFAFA',
-                border: '2px solid #efefef',
+                border: '2px solid #EFEFEF',
                 borderRadius: '16px',
                 padding: '16px',
                 outline: 'none',
@@ -429,13 +476,19 @@ export default function Home() {
                 lineHeight: '1.6',
                 resize: 'none',
                 fontFamily: 'inherit',
-                transition: 'border-color 0.3s ease'
+                transition: 'border-color 0.3s ease, box-shadow 0.3s ease'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#dc2743'}
-              onBlur={(e) => e.target.style.borderColor = '#efefef'}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#C13584'
+                e.target.style.boxShadow = '0 0 0 3px rgba(193, 53, 132, 0.1)'
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#EFEFEF'
+                e.target.style.boxShadow = 'none'
+              }}
             />
             
-            {/* Faded example text */}
+            {/* Faded cycling example */}
             {!subject && (
               <div 
                 className="example-text"
@@ -445,41 +498,38 @@ export default function Home() {
                   left: '16px',
                   right: '16px',
                   pointerEvents: 'none',
-                  color: '#8e8e8e',
+                  color: '#8E8E8E',
                   fontSize: '1.05rem',
                   fontWeight: '500',
                   lineHeight: '1.6'
                 }}
               >
-                <span style={{ color: '#c7c7c7' }}>Try: </span>
                 {exampleSubjects[currentExample]}
               </div>
             )}
           </div>
 
           {/* Optional details */}
-          <div style={{
-            marginTop: '16px'
-          }}>
+          <div style={{ marginTop: '16px' }}>
             <label style={{
               display: 'block',
               fontSize: '0.8rem',
               fontWeight: '600',
-              color: '#8e8e8e',
+              color: '#8E8E8E',
               marginBottom: '8px'
             }}>
-              Add more context (optional)
+              Add more details (optional)
             </label>
             <input
               type="text"
               value={details}
               onChange={(e) => setDetails(e.target.value)}
-              placeholder="Camera angle, emotions, location..."
+              placeholder="Emotions, location, camera angle..."
               style={{
                 width: '100%',
                 background: '#FAFAFA',
-                border: '2px solid #efefef',
-                borderRadius: '12px',
+                border: '2px solid #EFEFEF',
+                borderRadius: '14px',
                 outline: 'none',
                 color: '#262626',
                 fontSize: '0.95rem',
@@ -487,45 +537,45 @@ export default function Home() {
                 fontFamily: 'inherit',
                 transition: 'border-color 0.3s ease'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#dc2743'}
-              onBlur={(e) => e.target.style.borderColor = '#efefef'}
+              onFocus={(e) => e.target.style.borderColor = '#C13584'}
+              onBlur={(e) => e.target.style.borderColor = '#EFEFEF'}
             />
           </div>
         </div>
 
-        {/* ========== MOOD WHEEL SECTION ========== */}
+        {/* ========== MOOD WHEEL CARD ========== */}
         <div className="card-hover" style={{
           background: '#FFFFFF',
           borderRadius: '24px',
           padding: '24px',
           marginBottom: '20px',
-          boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
-          border: '1px solid rgba(0,0,0,0.05)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+          border: '1px solid rgba(0,0,0,0.04)',
           textAlign: 'center'
         }}>
           <label style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px',
-            fontSize: '0.9rem',
+            gap: '10px',
+            fontSize: '0.95rem',
             fontWeight: '700',
             color: '#262626',
             marginBottom: '24px'
           }}>
-            <span style={{ fontSize: '1.2rem' }}>🎨</span>
+            <span style={{ fontSize: '1.3rem' }}>🎨</span>
             Spin & Pick the Vibe
           </label>
 
-          {/* Spinnable Mood Wheel */}
+          {/* Spinnable Wheel - 7 items only */}
           <div 
             ref={wheelRef}
             className="wheel-container"
             style={{
               position: 'relative',
-              width: '300px',
-              height: '300px',
-              margin: '0 auto 24px',
+              width: '280px',
+              height: '280px',
+              margin: '0 auto 20px',
               userSelect: 'none'
             }}
             onMouseDown={handleWheelStart}
@@ -536,29 +586,27 @@ export default function Home() {
             onTouchMove={handleWheelMove}
             onTouchEnd={handleWheelEnd}
           >
-            {/* Outer decorative ring */}
-            <div style={{
+            {/* Instagram gradient outer ring */}
+            <div className="instagram-gradient" style={{
               position: 'absolute',
-              top: '-5px',
-              left: '-5px',
-              right: '-5px',
-              bottom: '-5px',
+              top: '-6px',
+              left: '-6px',
+              right: '-6px',
+              bottom: '-6px',
               borderRadius: '50%',
-              background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)',
-              opacity: 0.15
+              opacity: 0.25
             }}></div>
 
-            {/* Selection indicator at top */}
-            <div style={{
+            {/* Selection indicator triangle at top */}
+            <div className="instagram-gradient" style={{
               position: 'absolute',
-              top: '-12px',
+              top: '-14px',
               left: '50%',
               transform: 'translateX(-50%)',
-              width: '24px',
-              height: '24px',
-              background: 'linear-gradient(45deg, #f09433, #dc2743, #bc1888)',
+              width: '28px',
+              height: '28px',
               borderRadius: '50%',
-              boxShadow: '0 4px 12px rgba(225, 48, 108, 0.4)',
+              boxShadow: '0 4px 15px rgba(193, 53, 132, 0.5)',
               zIndex: 10,
               display: 'flex',
               alignItems: 'center',
@@ -567,14 +615,14 @@ export default function Home() {
               <div style={{
                 width: 0,
                 height: 0,
-                borderLeft: '6px solid transparent',
-                borderRight: '6px solid transparent',
-                borderTop: '8px solid white',
-                marginTop: '2px'
+                borderLeft: '7px solid transparent',
+                borderRight: '7px solid transparent',
+                borderTop: '10px solid white',
+                marginTop: '3px'
               }}></div>
             </div>
 
-            {/* Wheel background */}
+            {/* White wheel background */}
             <div style={{
               position: 'absolute',
               top: 0,
@@ -582,11 +630,11 @@ export default function Home() {
               right: 0,
               bottom: 0,
               borderRadius: '50%',
-              background: '#FAFAFA',
-              border: '3px solid #efefef'
+              background: '#FFFFFF',
+              border: '3px solid #EFEFEF'
             }}></div>
 
-            {/* Rotating mood items */}
+            {/* Rotating container with 7 mood items */}
             <div style={{
               position: 'absolute',
               top: 0,
@@ -594,19 +642,20 @@ export default function Home() {
               right: 0,
               bottom: 0,
               transform: `rotate(${wheelRotation}deg)`,
-              transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+              transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
             }}>
               {moodOptions.map((mood, index) => {
-                const angle = (index * (360 / moodOptions.length)) - 90
+                const angle = (index * (360 / 7)) - 90 // 7 items
                 const radian = (angle * Math.PI) / 180
-                const radius = 115
+                const radius = 105
                 const x = Math.cos(radian) * radius
                 const y = Math.sin(radian) * radius
-                const isSelected = selectedMood === mood.id
+                const isSelected = selectedMood === mood.id || (mood.id === 'more' && showExtendedMoods)
 
                 return (
                   <button
                     key={mood.id}
+                    className="mood-item"
                     onClick={(e) => {
                       e.stopPropagation()
                       selectMoodDirectly(mood.id, index)
@@ -615,25 +664,24 @@ export default function Home() {
                       position: 'absolute',
                       top: '50%',
                       left: '50%',
-                      transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${-wheelRotation}deg)`,
-                      width: isSelected ? '56px' : '48px',
-                      height: isSelected ? '56px' : '48px',
+                      transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${-wheelRotation}deg) scale(${isSelected ? 1.2 : 1})`,
+                      width: '52px',
+                      height: '52px',
                       borderRadius: '50%',
                       background: isSelected 
-                        ? 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #bc1888)' 
+                        ? 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)'
                         : '#FFFFFF',
                       border: isSelected 
                         ? 'none' 
-                        : '2px solid #efefef',
+                        : '2px solid #EFEFEF',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: isSelected ? '1.5rem' : '1.3rem',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      fontSize: '1.4rem',
                       boxShadow: isSelected 
-                        ? '0 6px 20px rgba(225, 48, 108, 0.35)' 
-                        : '0 2px 8px rgba(0,0,0,0.08)',
+                        ? '0 6px 20px rgba(193, 53, 132, 0.4)' 
+                        : '0 2px 10px rgba(0,0,0,0.08)',
                       zIndex: isSelected ? 5 : 1
                     }}
                   >
@@ -643,7 +691,7 @@ export default function Home() {
               })}
             </div>
 
-            {/* Center Generate Button - Instagram Style */}
+            {/* Center Magic Button - Instagram Colors */}
             <button
               onClick={handleGenerate}
               disabled={loading || !subject.trim()}
@@ -653,8 +701,8 @@ export default function Home() {
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                width: '110px',
-                height: '110px',
+                width: '100px',
+                height: '100px',
                 borderRadius: '50%',
                 border: 'none',
                 cursor: loading || !subject.trim() ? 'not-allowed' : 'pointer',
@@ -662,17 +710,16 @@ export default function Home() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '4px',
-                animation: loading || !subject.trim() ? 'none' : 'glow-pulse 2s ease-in-out infinite',
-                transition: 'all 0.3s ease',
-                opacity: !subject.trim() ? 0.6 : 1,
+                gap: '3px',
+                animation: loading || !subject.trim() ? 'none' : 'magic-pulse 2s ease-in-out infinite',
+                opacity: !subject.trim() ? 0.5 : 1,
                 zIndex: 10
               }}
             >
               {loading ? (
                 <div style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '28px',
+                  height: '28px',
                   border: '3px solid rgba(255,255,255,0.3)',
                   borderTop: '3px solid white',
                   borderRadius: '50%',
@@ -680,15 +727,15 @@ export default function Home() {
                 }}></div>
               ) : (
                 <>
-                  <span style={{ fontSize: '1.6rem' }}>✨</span>
+                  <span style={{ fontSize: '1.5rem' }}>✨</span>
                   <span style={{
                     color: 'white',
-                    fontSize: '0.7rem',
+                    fontSize: '0.65rem',
                     fontWeight: '800',
                     textAlign: 'center',
-                    lineHeight: '1.3',
+                    lineHeight: '1.2',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.02em'
+                    letterSpacing: '0.03em'
                   }}>
                     Work your<br/>magic!
                   </span>
@@ -697,59 +744,129 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Selected mood label */}
+          {/* Selected mood display */}
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
-            padding: '10px 20px',
+            gap: '10px',
+            padding: '12px 24px',
             background: '#FAFAFA',
-            borderRadius: '20px',
-            border: '1px solid #efefef'
+            borderRadius: '24px',
+            border: '1px solid #EFEFEF'
           }}>
-            <span style={{ fontSize: '1.2rem' }}>
-              {moodOptions.find(m => m.id === selectedMood)?.emoji}
-            </span>
+            <span style={{ fontSize: '1.4rem' }}>{currentMoodInfo.emoji}</span>
             <span style={{
-              fontSize: '0.9rem',
-              fontWeight: '600',
+              fontSize: '0.95rem',
+              fontWeight: '700',
               color: '#262626'
             }}>
-              {moodOptions.find(m => m.id === selectedMood)?.label}
+              {currentMoodInfo.label}
             </span>
           </div>
 
           {/* Spin hint */}
           <p style={{
             fontSize: '0.75rem',
-            color: '#c7c7c7',
-            marginTop: '12px'
+            color: '#C7C7C7',
+            marginTop: '14px'
           }}>
             👆 Drag to spin • Tap to select
           </p>
         </div>
 
-        {/* ========== ENHANCING FEATURES TRAY ========== */}
+        {/* ========== EXTENDED MOODS MODAL ========== */}
+        {showExtendedMoods && (
+          <div className="card-hover" style={{
+            background: '#FFFFFF',
+            borderRadius: '24px',
+            padding: '20px',
+            marginBottom: '20px',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+            border: '1px solid rgba(0,0,0,0.04)',
+            animation: 'fadeIn 0.3s ease'
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '16px'
+            }}>
+              <p style={{
+                fontSize: '0.9rem',
+                fontWeight: '700',
+                color: '#262626'
+              }}>
+                🎭 More Moods
+              </p>
+              <button
+                onClick={() => setShowExtendedMoods(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.2rem',
+                  cursor: 'pointer',
+                  color: '#8E8E8E'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '10px',
+              justifyContent: 'center'
+            }}>
+              {extendedMoods.map(mood => (
+                <button
+                  key={mood.id}
+                  onClick={() => selectExtendedMood(mood.id)}
+                  className={selectedMood === mood.id ? 'instagram-gradient' : ''}
+                  style={{
+                    padding: '10px 18px',
+                    borderRadius: '24px',
+                    background: selectedMood === mood.id ? undefined : '#FAFAFA',
+                    border: selectedMood === mood.id ? 'none' : '2px solid #EFEFEF',
+                    color: selectedMood === mood.id ? 'white' : '#262626',
+                    fontSize: '0.85rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <span>{mood.emoji}</span>
+                  <span>{mood.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ========== ENHANCING FEATURES ========== */}
         <div className="card-hover" style={{
           background: '#FFFFFF',
           borderRadius: '24px',
           padding: '20px',
           marginBottom: '20px',
-          boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
-          border: '1px solid rgba(0,0,0,0.05)'
+          boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+          border: '1px solid rgba(0,0,0,0.04)'
         }}>
           <p style={{
             fontSize: '0.8rem',
             fontWeight: '700',
-            color: '#8e8e8e',
+            color: '#8E8E8E',
             marginBottom: '16px',
             textTransform: 'uppercase',
-            letterSpacing: '0.05em'
+            letterSpacing: '0.06em'
           }}>
             🚀 Enhancing Features
           </p>
 
-          {/* Scroll-Stopper Hook Toggle */}
+          {/* Scroll-Stopper Hook */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -763,7 +880,7 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', fontWeight: '600', color: '#262626' }}>
                 🎣 Scroll-Stopper Hook
               </p>
-              <p style={{ fontSize: '0.75rem', color: '#8e8e8e', marginTop: '2px' }}>
+              <p style={{ fontSize: '0.75rem', color: '#8E8E8E', marginTop: '3px' }}>
                 Include a viral opening line
               </p>
             </div>
@@ -773,11 +890,11 @@ export default function Home() {
             ></div>
           </div>
 
-          {/* Target Goal Chips */}
+          {/* Target Goals */}
           <div style={{ marginBottom: '14px' }}>
             <p style={{ 
               fontSize: '0.8rem', 
-              color: '#8e8e8e', 
+              color: '#8E8E8E', 
               marginBottom: '10px',
               fontWeight: '600'
             }}>
@@ -792,16 +909,12 @@ export default function Home() {
                 <button
                   key={goal.id}
                   onClick={() => toggleGoal(goal.id)}
-                  className="instagram-gradient"
+                  className={selectedGoals.includes(goal.id) ? 'instagram-gradient' : ''}
                   style={{
                     padding: '10px 16px',
                     borderRadius: '20px',
-                    background: selectedGoals.includes(goal.id)
-                      ? undefined
-                      : '#FAFAFA',
-                    border: selectedGoals.includes(goal.id)
-                      ? 'none'
-                      : '2px solid #efefef',
+                    background: selectedGoals.includes(goal.id) ? undefined : '#FAFAFA',
+                    border: selectedGoals.includes(goal.id) ? 'none' : '2px solid #EFEFEF',
                     color: selectedGoals.includes(goal.id) ? 'white' : '#262626',
                     fontSize: '0.8rem',
                     fontWeight: '600',
@@ -819,7 +932,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Pro Tags Toggle */}
+          {/* Pro Tags */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -832,8 +945,8 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', fontWeight: '600', color: '#262626' }}>
                 #️⃣ Pro Tags
               </p>
-              <p style={{ fontSize: '0.75rem', color: '#8e8e8e', marginTop: '2px' }}>
-                Auto-generate 5 trending hashtags
+              <p style={{ fontSize: '0.75rem', color: '#8E8E8E', marginTop: '3px' }}>
+                Auto-generate trending hashtags
               </p>
             </div>
             <div 
@@ -850,18 +963,16 @@ export default function Home() {
             borderRadius: '24px',
             padding: '32px 24px',
             marginBottom: '20px',
-            boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
-            border: '1px solid rgba(0,0,0,0.05)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+            border: '1px solid rgba(0,0,0,0.04)',
             textAlign: 'center'
           }}>
-            {/* Skeleton Cards */}
             <div style={{ marginBottom: '24px' }}>
               <div className="skeleton" style={{ height: '80px', marginBottom: '12px' }}></div>
               <div className="skeleton" style={{ height: '60px', marginBottom: '12px' }}></div>
               <div className="skeleton" style={{ height: '40px', width: '60%', margin: '0 auto' }}></div>
             </div>
 
-            {/* Rotating Status */}
             <p className="instagram-gradient-text" style={{
               fontSize: '1.1rem',
               fontWeight: '700',
@@ -876,7 +987,7 @@ export default function Home() {
         {variants.length > 0 && !loading && (
           <div style={{ marginBottom: '24px' }}>
             <p style={{
-              fontSize: '0.9rem',
+              fontSize: '0.95rem',
               fontWeight: '700',
               color: '#262626',
               marginBottom: '16px',
@@ -901,9 +1012,9 @@ export default function Home() {
                     borderRadius: '24px',
                     padding: '20px',
                     marginBottom: '16px',
-                    boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
-                    border: '2px solid #fbbf24',
-                    animation: 'fadeIn 0.5s ease'
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+                    border: '2px solid #FBBF24',
+                    animation: 'fadeIn 0.4s ease'
                   }}
                 >
                   <div style={{
@@ -916,7 +1027,7 @@ export default function Home() {
                     <span style={{
                       fontSize: '0.75rem',
                       fontWeight: '800',
-                      color: '#f59e0b',
+                      color: '#F59E0B',
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em'
                     }}>
@@ -925,7 +1036,7 @@ export default function Home() {
                   </div>
 
                   <p style={{
-                    fontSize: '1rem',
+                    fontSize: '1.05rem',
                     lineHeight: '1.7',
                     color: '#262626',
                     marginBottom: '16px',
@@ -940,9 +1051,7 @@ export default function Home() {
                       width: '100%',
                       padding: '14px',
                       borderRadius: '16px',
-                      background: copiedIndex === `short-${i}`
-                        ? '#22c55e'
-                        : 'linear-gradient(45deg, #fbbf24, #f59e0b)',
+                      background: copiedIndex === `short-${i}` ? '#22C55E' : 'linear-gradient(45deg, #FBBF24, #F59E0B)',
                       border: 'none',
                       color: 'white',
                       fontSize: '0.9rem',
@@ -973,20 +1082,21 @@ export default function Home() {
                     borderRadius: '24px',
                     padding: '20px',
                     marginBottom: '16px',
-                    boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
-                    border: '2px solid transparent',
-                    borderImage: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #bc1888) 1',
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+                    border: '3px solid transparent',
+                    backgroundImage: 'linear-gradient(white, white), radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)',
+                    backgroundOrigin: 'border-box',
+                    backgroundClip: 'padding-box, border-box',
                     position: 'relative',
-                    overflow: 'hidden',
-                    animation: 'fadeIn 0.5s ease 0.1s both'
+                    animation: 'fadeIn 0.4s ease 0.1s both'
                   }}
                 >
                   {/* Premium badge */}
                   <div className="instagram-gradient" style={{
                     position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    padding: '4px 12px',
+                    top: '14px',
+                    right: '14px',
+                    padding: '5px 12px',
                     borderRadius: '12px',
                     fontSize: '0.65rem',
                     fontWeight: '800',
@@ -1015,7 +1125,7 @@ export default function Home() {
                   </div>
 
                   <p style={{
-                    fontSize: '1rem',
+                    fontSize: '1.05rem',
                     lineHeight: '1.8',
                     color: '#262626',
                     marginBottom: '16px',
@@ -1024,11 +1134,11 @@ export default function Home() {
                     {processedCaption}
                   </p>
 
-                  {/* Instagram CTA */}
+                  {/* Instagram follow CTA */}
                   <div style={{
                     background: '#FAFAFA',
-                    padding: '12px',
-                    borderRadius: '12px',
+                    padding: '14px',
+                    borderRadius: '14px',
                     marginBottom: '16px',
                     textAlign: 'center'
                   }}>
@@ -1053,12 +1163,12 @@ export default function Home() {
 
                   <button
                     onClick={() => copyCaption(v.caption, `premium-${i}`)}
-                    className="instagram-gradient"
+                    className={copiedIndex === `premium-${i}` ? '' : 'instagram-gradient'}
                     style={{
                       width: '100%',
                       padding: '14px',
                       borderRadius: '16px',
-                      background: copiedIndex === `premium-${i}` ? '#22c55e' : undefined,
+                      background: copiedIndex === `premium-${i}` ? '#22C55E' : undefined,
                       border: 'none',
                       color: 'white',
                       fontSize: '0.9rem',
@@ -1089,9 +1199,9 @@ export default function Home() {
                     borderRadius: '24px',
                     padding: '20px',
                     marginBottom: '16px',
-                    boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
-                    border: '1px solid #efefef',
-                    animation: 'fadeIn 0.5s ease 0.2s both'
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+                    border: '1px solid #EFEFEF',
+                    animation: 'fadeIn 0.4s ease 0.2s both'
                   }}
                 >
                   <div style={{
@@ -1104,7 +1214,7 @@ export default function Home() {
                     <span style={{
                       fontSize: '0.75rem',
                       fontWeight: '800',
-                      color: '#8e8e8e',
+                      color: '#8E8E8E',
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em'
                     }}>
@@ -1113,7 +1223,7 @@ export default function Home() {
                   </div>
 
                   <p style={{
-                    fontSize: '1rem',
+                    fontSize: '1.05rem',
                     lineHeight: '1.7',
                     color: '#262626',
                     marginBottom: '16px',
@@ -1128,8 +1238,8 @@ export default function Home() {
                       width: '100%',
                       padding: '14px',
                       borderRadius: '16px',
-                      background: copiedIndex === `standard-${i}` ? '#22c55e' : '#FAFAFA',
-                      border: copiedIndex === `standard-${i}` ? 'none' : '2px solid #efefef',
+                      background: copiedIndex === `standard-${i}` ? '#22C55E' : '#FAFAFA',
+                      border: copiedIndex === `standard-${i}` ? 'none' : '2px solid #EFEFEF',
                       color: copiedIndex === `standard-${i}` ? 'white' : '#262626',
                       fontSize: '0.9rem',
                       fontWeight: '600',
@@ -1149,7 +1259,7 @@ export default function Home() {
         <footer style={{
           textAlign: 'center',
           padding: '24px 0',
-          borderTop: '1px solid #efefef'
+          borderTop: '1px solid #EFEFEF'
         }}>
           <a
             href="https://www.instagram.com/instaalgohacker?igsh=MW1maXl2a3IxNm40OA=="
@@ -1159,15 +1269,15 @@ export default function Home() {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '8px',
-              padding: '12px 24px',
-              borderRadius: '24px',
+              gap: '10px',
+              padding: '14px 28px',
+              borderRadius: '28px',
               color: 'white',
               textDecoration: 'none',
               fontSize: '0.9rem',
               fontWeight: '700',
               marginBottom: '16px',
-              boxShadow: '0 4px 15px rgba(225, 48, 108, 0.3)'
+              boxShadow: '0 6px 20px rgba(193, 53, 132, 0.35)'
             }}
           >
             <InstagramIcon />
@@ -1176,7 +1286,7 @@ export default function Home() {
 
           <p style={{
             fontSize: '0.8rem',
-            color: '#8e8e8e'
+            color: '#8E8E8E'
           }}>
             FunCaption © 2025 — Built for creators 🔥
           </p>
