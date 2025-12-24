@@ -35,13 +35,11 @@ const targetGoals = [
   { id: 'saves', label: 'Save for Later', emoji: '🔖' }
 ]
 
-// Loading messages
-const loadingMessages = [
-  "Reading the vibe...",
-  "Mixing the magic...",
-  "Polishing your hook...",
-  "Adding the spark...",
-  "Almost there..."
+// Diamond loading messages (cycles every 0.5s)
+const diamondLoadingMessages = [
+  "ANALYSING TRENDS...",
+  "CODING VIRALITY...",
+  "FINALISING YOUR MILLIONS..."
 ]
 
 // Example subjects that cycle
@@ -78,7 +76,7 @@ export default function Home() {
   
   // Loading & Results
   const [loading, setLoading] = useState(false)
-  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0)
+  const [diamondMessageIndex, setDiamondMessageIndex] = useState(0)
   const [variants, setVariants] = useState([])
   const [copiedIndex, setCopiedIndex] = useState(null)
 
@@ -88,13 +86,15 @@ export default function Home() {
   // Region is hardcoded to "genz"
   const region = 'genz'
 
-  // Rotate loading messages
+  // Cycle diamond loading messages every 500ms
   useEffect(() => {
     let interval
     if (loading) {
       interval = setInterval(() => {
-        setLoadingMessageIndex(prev => (prev + 1) % loadingMessages.length)
-      }, 700)
+        setDiamondMessageIndex(prev => (prev + 1) % diamondLoadingMessages.length)
+      }, 500)
+    } else {
+      setDiamondMessageIndex(0)
     }
     return () => clearInterval(interval)
   }, [loading])
@@ -134,7 +134,6 @@ export default function Home() {
     if (!isDragging) return
     setIsDragging(false)
     
-    // Snap to nearest mood (7 items)
     const moodCount = moodOptions.length
     const anglePerMood = 360 / moodCount
     const normalizedRotation = ((wheelRotation % 360) + 360) % 360
@@ -142,7 +141,6 @@ export default function Home() {
     const snappedRotation = nearestIndex * anglePerMood
     setWheelRotation(snappedRotation)
     
-    // Calculate which mood is at the top
     const topMoodIndex = (moodCount - nearestIndex) % moodCount
     const selectedMoodItem = moodOptions[topMoodIndex]
     
@@ -188,7 +186,7 @@ export default function Home() {
 
     setLoading(true)
     setVariants([])
-    setLoadingMessageIndex(0)
+    setDiamondMessageIndex(0)
 
     try {
       const response = await fetch('/api/generate', {
@@ -228,14 +226,12 @@ export default function Home() {
     }
   }
 
-  // Get current mood info (from main or extended)
   const getCurrentMoodInfo = () => {
     const mainMood = moodOptions.find(m => m.id === selectedMood)
     if (mainMood) return mainMood
     return extendedMoods.find(m => m.id === selectedMood) || { emoji: '🔥', label: 'Fire' }
   }
 
-  // Separate variants by type
   const shortCaptions = variants.filter(v => v.type === 'short')
   const premiumCaptions = variants.filter(v => v.premium)
   const standardCaptions = variants.filter(v => !v.premium && v.type !== 'short')
@@ -270,10 +266,6 @@ export default function Home() {
           background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
         }
 
-        .instagram-gradient-alt {
-          background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D, #F56040, #F77737, #FCAF45, #FFDC80);
-        }
-
         .instagram-gradient-text {
           background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
           -webkit-background-clip: text;
@@ -293,7 +285,7 @@ export default function Home() {
           border-radius: 3px;
         }
 
-        /* Toggle Switch with Instagram Colors */
+        /* Toggle Switch */
         .toggle-switch {
           position: relative;
           width: 52px;
@@ -322,18 +314,117 @@ export default function Home() {
           left: 27px;
         }
 
-        /* Skeleton shimmer */
-        @keyframes shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-        .skeleton {
-          background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
-          background-size: 200% 100%;
-          animation: shimmer 1.5s infinite;
-          border-radius: 16px;
+        /* ============ DIAMOND LOADING OVERLAY ============ */
+        .loading-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(255, 255, 255, 0.85);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          animation: fadeInOverlay 0.3s ease;
         }
 
+        @keyframes fadeInOverlay {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        /* Neon Diamond */
+        .neon-diamond {
+          width: 120px;
+          height: 120px;
+          position: relative;
+          transform: rotate(45deg);
+          margin-bottom: 40px;
+          animation: diamondPulse 1.5s ease-in-out infinite;
+        }
+
+        .neon-diamond::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border: 3px solid transparent;
+          border-image: linear-gradient(45deg, #fdf497, #fd5949, #d6249f, #285AEB) 1;
+          box-shadow: 
+            0 0 15px rgba(253, 89, 73, 0.6),
+            0 0 30px rgba(214, 36, 159, 0.4),
+            0 0 45px rgba(40, 90, 235, 0.3),
+            inset 0 0 15px rgba(253, 89, 73, 0.2),
+            inset 0 0 30px rgba(214, 36, 159, 0.1);
+        }
+
+        .neon-diamond::after {
+          content: '';
+          position: absolute;
+          top: 8px;
+          left: 8px;
+          right: 8px;
+          bottom: 8px;
+          border: 1px solid rgba(214, 36, 159, 0.5);
+          box-shadow: 
+            0 0 10px rgba(253, 89, 73, 0.4),
+            inset 0 0 10px rgba(214, 36, 159, 0.2);
+        }
+
+        @keyframes diamondPulse {
+          0%, 100% {
+            transform: rotate(45deg) scale(1);
+            filter: brightness(1);
+          }
+          50% {
+            transform: rotate(45deg) scale(1.05);
+            filter: brightness(1.2);
+          }
+        }
+
+        /* Diamond inner glow animation */
+        .diamond-inner-glow {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 60px;
+          height: 60px;
+          background: radial-gradient(circle, rgba(214, 36, 159, 0.3) 0%, transparent 70%);
+          animation: innerGlow 1s ease-in-out infinite;
+        }
+
+        @keyframes innerGlow {
+          0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        /* Loading text styling */
+        .loading-text {
+          font-size: 0.85rem;
+          font-weight: 800;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: textPulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes textPulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
+
+        /* ============ OTHER ANIMATIONS ============ */
+        
         /* Magic button glow pulse */
         @keyframes magic-pulse {
           0%, 100% { 
@@ -350,10 +441,22 @@ export default function Home() {
           }
         }
 
-        /* Float animation */
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
+        /* Glow text animation */
+        @keyframes glow-text {
+          0%, 100% { 
+            text-shadow: 0 0 20px rgba(253, 89, 73, 0.5), 
+                        0 0 40px rgba(214, 36, 159, 0.3),
+                        0 0 60px rgba(40, 90, 235, 0.2);
+          }
+          50% { 
+            text-shadow: 0 0 30px rgba(253, 89, 73, 0.7), 
+                        0 0 50px rgba(214, 36, 159, 0.5),
+                        0 0 80px rgba(40, 90, 235, 0.3);
+          }
+        }
+
+        .glow-text {
+          animation: glow-text 2s ease-in-out infinite;
         }
 
         /* Spin animation */
@@ -404,7 +507,32 @@ export default function Home() {
         .mood-item:hover {
           transform: scale(1.15);
         }
+
+        /* Step number styling */
+        .step-number {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          font-size: 0.75rem;
+          font-weight: 800;
+          margin-right: 10px;
+        }
       `}</style>
+
+      {/* ============ DIAMOND LOADING OVERLAY ============ */}
+      {loading && (
+        <div className="loading-overlay">
+          <div className="neon-diamond">
+            <div className="diamond-inner-glow"></div>
+          </div>
+          <p className="loading-text">
+            {diamondLoadingMessages[diamondMessageIndex]}
+          </p>
+        </div>
+      )}
 
       <div style={{ 
         minHeight: '100vh',
@@ -414,25 +542,87 @@ export default function Home() {
         background: '#FAFAFA'
       }}>
         
-        {/* ========== HEADER ========== */}
+        {/* ========== HERO HEADER ========== */}
         <header style={{
           textAlign: 'center',
-          padding: '20px 0 28px'
+          padding: '24px 0 20px'
         }}>
+          {/* Title */}
           <h1 className="instagram-gradient-text" style={{
             fontSize: '2.4rem',
             fontWeight: '900',
-            marginBottom: '6px',
+            marginBottom: '16px',
             letterSpacing: '-0.03em'
           }}>
             FunCaption
           </h1>
-          <p style={{
-            fontSize: '0.9rem',
-            color: '#8E8E8E',
-            fontWeight: '500'
+
+          {/* Big Headline */}
+          <h2 className="instagram-gradient-text" style={{
+            fontSize: '1.6rem',
+            fontWeight: '900',
+            marginBottom: '24px',
+            letterSpacing: '0.02em',
+            textTransform: 'uppercase',
+            lineHeight: '1.3'
           }}>
-            AI-powered captions that stop the scroll ✨
+            YOUR NEXT MILLION<br/>ARE HERE
+          </h2>
+
+          {/* Steps */}
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            padding: '20px 24px',
+            marginBottom: '16px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+            border: '1px solid rgba(0,0,0,0.04)',
+            textAlign: 'left'
+          }}>
+            {/* Step 1 */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '12px'
+            }}>
+              <span className="instagram-gradient step-number" style={{ color: 'white' }}>1</span>
+              <span style={{ fontSize: '0.95rem', fontWeight: '600', color: '#262626' }}>
+                Type your topic.
+              </span>
+            </div>
+
+            {/* Step 2 */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '12px'
+            }}>
+              <span className="instagram-gradient step-number" style={{ color: 'white' }}>2</span>
+              <span style={{ fontSize: '0.95rem', fontWeight: '600', color: '#262626' }}>
+                Pick your vibe.
+              </span>
+            </div>
+
+            {/* Step 3 */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              <span className="instagram-gradient step-number" style={{ color: 'white' }}>3</span>
+              <span style={{ fontSize: '0.95rem', fontWeight: '600', color: '#262626' }}>
+                Copy the hook and go.
+              </span>
+            </div>
+          </div>
+
+          {/* Emphasized tagline */}
+          <p className="instagram-gradient-text glow-text" style={{
+            fontSize: '1.15rem',
+            fontWeight: '800',
+            marginBottom: '8px',
+            letterSpacing: '0.01em'
+          }}>
+            ✨ Your millions are waiting ✨
           </p>
         </header>
 
@@ -454,8 +644,8 @@ export default function Home() {
             color: '#262626',
             marginBottom: '16px'
           }}>
-            <span style={{ fontSize: '1.3rem' }}>📝</span>
-            What's the story?
+            <span style={{ fontSize: '1.3rem' }}>🎬</span>
+            What's the reel about?
           </label>
           
           <div style={{ position: 'relative' }}>
@@ -567,7 +757,7 @@ export default function Home() {
             Spin & Pick the Vibe
           </label>
 
-          {/* Spinnable Wheel - 7 items only */}
+          {/* Spinnable Wheel */}
           <div 
             ref={wheelRef}
             className="wheel-container"
@@ -597,7 +787,7 @@ export default function Home() {
               opacity: 0.25
             }}></div>
 
-            {/* Selection indicator triangle at top */}
+            {/* Selection indicator */}
             <div className="instagram-gradient" style={{
               position: 'absolute',
               top: '-14px',
@@ -634,7 +824,7 @@ export default function Home() {
               border: '3px solid #EFEFEF'
             }}></div>
 
-            {/* Rotating container with 7 mood items */}
+            {/* Rotating container */}
             <div style={{
               position: 'absolute',
               top: 0,
@@ -645,7 +835,7 @@ export default function Home() {
               transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
             }}>
               {moodOptions.map((mood, index) => {
-                const angle = (index * (360 / 7)) - 90 // 7 items
+                const angle = (index * (360 / 7)) - 90
                 const radian = (angle * Math.PI) / 180
                 const radius = 105
                 const x = Math.cos(radian) * radius
@@ -671,9 +861,7 @@ export default function Home() {
                       background: isSelected 
                         ? 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)'
                         : '#FFFFFF',
-                      border: isSelected 
-                        ? 'none' 
-                        : '2px solid #EFEFEF',
+                      border: isSelected ? 'none' : '2px solid #EFEFEF',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -691,7 +879,7 @@ export default function Home() {
               })}
             </div>
 
-            {/* Center Magic Button - Instagram Colors */}
+            {/* Center Magic Button */}
             <button
               onClick={handleGenerate}
               disabled={loading || !subject.trim()}
@@ -716,31 +904,18 @@ export default function Home() {
                 zIndex: 10
               }}
             >
-              {loading ? (
-                <div style={{
-                  width: '28px',
-                  height: '28px',
-                  border: '3px solid rgba(255,255,255,0.3)',
-                  borderTop: '3px solid white',
-                  borderRadius: '50%',
-                  animation: 'spin 0.8s linear infinite'
-                }}></div>
-              ) : (
-                <>
-                  <span style={{ fontSize: '1.5rem' }}>✨</span>
-                  <span style={{
-                    color: 'white',
-                    fontSize: '0.65rem',
-                    fontWeight: '800',
-                    textAlign: 'center',
-                    lineHeight: '1.2',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.03em'
-                  }}>
-                    Work your<br/>magic!
-                  </span>
-                </>
-              )}
+              <span style={{ fontSize: '1.5rem' }}>✨</span>
+              <span style={{
+                color: 'white',
+                fontSize: '0.65rem',
+                fontWeight: '800',
+                textAlign: 'center',
+                lineHeight: '1.2',
+                textTransform: 'uppercase',
+                letterSpacing: '0.03em'
+              }}>
+                Work your<br/>magic!
+              </span>
             </button>
           </div>
 
@@ -755,26 +930,17 @@ export default function Home() {
             border: '1px solid #EFEFEF'
           }}>
             <span style={{ fontSize: '1.4rem' }}>{currentMoodInfo.emoji}</span>
-            <span style={{
-              fontSize: '0.95rem',
-              fontWeight: '700',
-              color: '#262626'
-            }}>
+            <span style={{ fontSize: '0.95rem', fontWeight: '700', color: '#262626' }}>
               {currentMoodInfo.label}
             </span>
           </div>
 
-          {/* Spin hint */}
-          <p style={{
-            fontSize: '0.75rem',
-            color: '#C7C7C7',
-            marginTop: '14px'
-          }}>
+          <p style={{ fontSize: '0.75rem', color: '#C7C7C7', marginTop: '14px' }}>
             👆 Drag to spin • Tap to select
           </p>
         </div>
 
-        {/* ========== EXTENDED MOODS MODAL ========== */}
+        {/* ========== EXTENDED MOODS ========== */}
         {showExtendedMoods && (
           <div className="card-hover" style={{
             background: '#FFFFFF',
@@ -791,11 +957,7 @@ export default function Home() {
               alignItems: 'center',
               marginBottom: '16px'
             }}>
-              <p style={{
-                fontSize: '0.9rem',
-                fontWeight: '700',
-                color: '#262626'
-              }}>
+              <p style={{ fontSize: '0.9rem', fontWeight: '700', color: '#262626' }}>
                 🎭 More Moods
               </p>
               <button
@@ -956,33 +1118,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ========== LOADING STATE ========== */}
-        {loading && (
-          <div style={{
-            background: '#FFFFFF',
-            borderRadius: '24px',
-            padding: '32px 24px',
-            marginBottom: '20px',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
-            border: '1px solid rgba(0,0,0,0.04)',
-            textAlign: 'center'
-          }}>
-            <div style={{ marginBottom: '24px' }}>
-              <div className="skeleton" style={{ height: '80px', marginBottom: '12px' }}></div>
-              <div className="skeleton" style={{ height: '60px', marginBottom: '12px' }}></div>
-              <div className="skeleton" style={{ height: '40px', width: '60%', margin: '0 auto' }}></div>
-            </div>
-
-            <p className="instagram-gradient-text" style={{
-              fontSize: '1.1rem',
-              fontWeight: '700',
-              animation: 'float 2s ease-in-out infinite'
-            }}>
-              {loadingMessages[loadingMessageIndex]}
-            </p>
-          </div>
-        )}
-
         {/* ========== RESULTS ========== */}
         {variants.length > 0 && !loading && (
           <div style={{ marginBottom: '24px' }}>
@@ -1091,7 +1226,6 @@ export default function Home() {
                     animation: 'fadeIn 0.4s ease 0.1s both'
                   }}
                 >
-                  {/* Premium badge */}
                   <div className="instagram-gradient" style={{
                     position: 'absolute',
                     top: '14px',
@@ -1134,7 +1268,6 @@ export default function Home() {
                     {processedCaption}
                   </p>
 
-                  {/* Instagram follow CTA */}
                   <div style={{
                     background: '#FAFAFA',
                     padding: '14px',
@@ -1284,10 +1417,7 @@ export default function Home() {
             Follow @instaalgohacker
           </a>
 
-          <p style={{
-            fontSize: '0.8rem',
-            color: '#8E8E8E'
-          }}>
+          <p style={{ fontSize: '0.8rem', color: '#8E8E8E' }}>
             FunCaption © 2025 — Built for creators 🔥
           </p>
         </footer>
