@@ -35,11 +35,11 @@ const targetGoals = [
   { id: 'saves', label: 'Save for Later', emoji: '🔖' }
 ]
 
-// Diamond loading messages (cycles every 0.5s)
-const diamondLoadingMessages = [
-  "ANALYSING TRENDS...",
-  "CODING VIRALITY...",
-  "FINALISING YOUR MILLIONS..."
+// Loading messages - each shows ONCE
+const loadingSteps = [
+  "ANALYSING TRENDS",
+  "CODING VIRALITY",
+  "FINALISING YOUR MILLIONS"
 ]
 
 // Example subjects that cycle
@@ -76,28 +76,26 @@ export default function Home() {
   
   // Loading & Results
   const [loading, setLoading] = useState(false)
-  const [diamondMessageIndex, setDiamondMessageIndex] = useState(0)
+  const [loadingStep, setLoadingStep] = useState(0)
   const [variants, setVariants] = useState([])
   const [copiedIndex, setCopiedIndex] = useState(null)
 
   // Refs
   const wheelRef = useRef(null)
 
-  // Region is hardcoded to "genz"
+  // Region hardcoded to "genz"
   const region = 'genz'
 
-  // Cycle diamond loading messages every 500ms
+  // Loading steps - each shows once, 1.5s each
   useEffect(() => {
-    let interval
-    if (loading) {
-      interval = setInterval(() => {
-        setDiamondMessageIndex(prev => (prev + 1) % diamondLoadingMessages.length)
-      }, 500)
-    } else {
-      setDiamondMessageIndex(0)
+    let timeout
+    if (loading && loadingStep < loadingSteps.length - 1) {
+      timeout = setTimeout(() => {
+        setLoadingStep(prev => prev + 1)
+      }, 1500)
     }
-    return () => clearInterval(interval)
-  }, [loading])
+    return () => clearTimeout(timeout)
+  }, [loading, loadingStep])
 
   // Cycle through example subjects
   useEffect(() => {
@@ -185,8 +183,8 @@ export default function Home() {
     if (!subject.trim()) return
 
     setLoading(true)
+    setLoadingStep(0)
     setVariants([])
-    setDiamondMessageIndex(0)
 
     try {
       const response = await fetch('/api/generate', {
@@ -212,6 +210,7 @@ export default function Home() {
       console.error(err)
     } finally {
       setLoading(false)
+      setLoadingStep(0)
     }
   }
 
@@ -259,9 +258,10 @@ export default function Home() {
           background: #FAFAFA;
           min-height: 100vh;
           color: #262626;
+          overflow-x: hidden;
         }
 
-        /* EXACT Instagram Logo Gradient Colors */
+        /* Instagram Gradient */
         .instagram-gradient {
           background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
         }
@@ -273,18 +273,6 @@ export default function Home() {
           background-clip: text;
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-          width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-          background: linear-gradient(45deg, #F56040, #C13584, #833AB4);
-          border-radius: 3px;
-        }
-
         /* Toggle Switch */
         .toggle-switch {
           position: relative;
@@ -293,7 +281,7 @@ export default function Home() {
           background: #DBDBDB;
           border-radius: 14px;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: background 0.3s ease;
         }
         .toggle-switch.active {
           background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
@@ -307,182 +295,124 @@ export default function Home() {
           height: 22px;
           background: white;
           border-radius: 50%;
-          transition: all 0.3s ease;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+          transition: left 0.3s ease;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
         .toggle-switch.active::after {
           left: 27px;
         }
 
-        /* ============ DIAMOND LOADING OVERLAY ============ */
+        /* ========== LOADING OVERLAY - SIMPLE & EFFECTIVE ========== */
         .loading-overlay {
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
+          background: rgba(250, 250, 250, 0.95);
           z-index: 9999;
           display: flex;
           align-items: center;
           justify-content: center;
-          flex-direction: column;
-          animation: fadeInOverlay 0.3s ease;
+          animation: fadeIn 0.3s ease;
         }
 
-        @keyframes fadeInOverlay {
+        /* Diamond Container */
+        .diamond-container {
+          position: relative;
+          width: 160px;
+          height: 160px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* Neon Diamond - Thin Border */
+        .neon-diamond {
+          position: absolute;
+          width: 130px;
+          height: 130px;
+          transform: rotate(45deg);
+          border: 2px solid;
+          border-image: linear-gradient(135deg, #fdf497, #fd5949, #d6249f, #285AEB) 1;
+          animation: diamondGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes diamondGlow {
+          0%, 100% { 
+            box-shadow: 0 0 20px rgba(214, 36, 159, 0.4);
+            opacity: 1;
+          }
+          50% { 
+            box-shadow: 0 0 40px rgba(214, 36, 159, 0.6);
+            opacity: 0.9;
+          }
+        }
+
+        /* Text Inside Diamond */
+        .diamond-text {
+          position: relative;
+          z-index: 2;
+          text-align: center;
+          padding: 20px;
+        }
+
+        .loading-step-text {
+          font-size: 0.7rem;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #262626;
+          animation: textFadeIn 0.5s ease;
+        }
+
+        @keyframes textFadeIn {
+          from { opacity: 0; transform: translateY(5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dots animation */
+        .loading-dots::after {
+          content: '';
+          animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+          0%, 20% { content: ''; }
+          40% { content: '.'; }
+          60% { content: '..'; }
+          80%, 100% { content: '...'; }
+        }
+
+        /* ========== OTHER ANIMATIONS ========== */
+        
+        @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
         }
 
-        /* Neon Diamond */
-        .neon-diamond {
-          width: 120px;
-          height: 120px;
-          position: relative;
-          transform: rotate(45deg);
-          margin-bottom: 40px;
-          animation: diamondPulse 1.5s ease-in-out infinite;
-        }
-
-        .neon-diamond::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          border: 3px solid transparent;
-          border-image: linear-gradient(45deg, #fdf497, #fd5949, #d6249f, #285AEB) 1;
-          box-shadow: 
-            0 0 15px rgba(253, 89, 73, 0.6),
-            0 0 30px rgba(214, 36, 159, 0.4),
-            0 0 45px rgba(40, 90, 235, 0.3),
-            inset 0 0 15px rgba(253, 89, 73, 0.2),
-            inset 0 0 30px rgba(214, 36, 159, 0.1);
-        }
-
-        .neon-diamond::after {
-          content: '';
-          position: absolute;
-          top: 8px;
-          left: 8px;
-          right: 8px;
-          bottom: 8px;
-          border: 1px solid rgba(214, 36, 159, 0.5);
-          box-shadow: 
-            0 0 10px rgba(253, 89, 73, 0.4),
-            inset 0 0 10px rgba(214, 36, 159, 0.2);
-        }
-
-        @keyframes diamondPulse {
-          0%, 100% {
-            transform: rotate(45deg) scale(1);
-            filter: brightness(1);
-          }
-          50% {
-            transform: rotate(45deg) scale(1.05);
-            filter: brightness(1.2);
-          }
-        }
-
-        /* Diamond inner glow animation */
-        .diamond-inner-glow {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 60px;
-          height: 60px;
-          background: radial-gradient(circle, rgba(214, 36, 159, 0.3) 0%, transparent 70%);
-          animation: innerGlow 1s ease-in-out infinite;
-        }
-
-        @keyframes innerGlow {
-          0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-        }
-
-        /* Loading text styling */
-        .loading-text {
-          font-size: 0.85rem;
-          font-weight: 800;
-          letter-spacing: 0.15em;
-          text-transform: uppercase;
-          background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          animation: textPulse 0.5s ease-in-out infinite;
-        }
-
-        @keyframes textPulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.7; }
-        }
-
-        /* ============ OTHER ANIMATIONS ============ */
-        
-        /* Magic button glow pulse */
-        @keyframes magic-pulse {
-          0%, 100% { 
-            box-shadow: 0 4px 25px rgba(225, 48, 108, 0.5), 
-                        0 8px 40px rgba(193, 53, 132, 0.3),
-                        0 0 0 0 rgba(225, 48, 108, 0.4);
-            transform: scale(1);
-          }
-          50% { 
-            box-shadow: 0 6px 35px rgba(225, 48, 108, 0.6), 
-                        0 12px 50px rgba(193, 53, 132, 0.4),
-                        0 0 0 8px rgba(225, 48, 108, 0);
-            transform: scale(1.03);
-          }
-        }
-
-        /* Glow text animation */
-        @keyframes glow-text {
-          0%, 100% { 
-            text-shadow: 0 0 20px rgba(253, 89, 73, 0.5), 
-                        0 0 40px rgba(214, 36, 159, 0.3),
-                        0 0 60px rgba(40, 90, 235, 0.2);
-          }
-          50% { 
-            text-shadow: 0 0 30px rgba(253, 89, 73, 0.7), 
-                        0 0 50px rgba(214, 36, 159, 0.5),
-                        0 0 80px rgba(40, 90, 235, 0.3);
-          }
-        }
-
-        .glow-text {
-          animation: glow-text 2s ease-in-out infinite;
-        }
-
-        /* Spin animation */
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-
-        /* Fade in animation */
-        @keyframes fadeIn {
+        @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(15px); }
           to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Glow text - simplified */
+        .glow-text {
+          text-shadow: 0 0 20px rgba(214, 36, 159, 0.3);
+        }
+
         /* Example text fade */
         @keyframes exampleFade {
-          0%, 20% { opacity: 0; transform: translateY(5px); }
-          30%, 70% { opacity: 0.5; transform: translateY(0); }
-          80%, 100% { opacity: 0; transform: translateY(-5px); }
+          0%, 20% { opacity: 0; }
+          30%, 70% { opacity: 0.5; }
+          80%, 100% { opacity: 0; }
         }
 
         .example-text {
           animation: exampleFade 3s ease-in-out infinite;
         }
 
-        /* Wheel cursor */
+        /* Wheel */
         .wheel-container {
           cursor: grab;
           touch-action: none;
@@ -491,24 +421,40 @@ export default function Home() {
           cursor: grabbing;
         }
 
-        /* Card hover effect */
+        /* Card hover */
         .card-hover {
-          transition: all 0.3s ease;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .card-hover:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 30px rgba(0,0,0,0.08);
         }
 
-        /* Mood item hover */
+        /* Mood item */
         .mood-item {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .mood-item:hover {
-          transform: scale(1.15);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          will-change: transform;
         }
 
-        /* Step number styling */
+        /* Magic button pulse - simplified */
+        @keyframes simplePulse {
+          0%, 100% { 
+            box-shadow: 0 4px 20px rgba(214, 36, 159, 0.4);
+          }
+          50% { 
+            box-shadow: 0 6px 30px rgba(214, 36, 159, 0.5);
+          }
+        }
+
+        .magic-button {
+          animation: simplePulse 2s ease-in-out infinite;
+        }
+
+        .magic-button:disabled {
+          animation: none;
+        }
+
+        /* Step number */
         .step-number {
           display: inline-flex;
           align-items: center;
@@ -519,18 +465,25 @@ export default function Home() {
           font-size: 0.75rem;
           font-weight: 800;
           margin-right: 10px;
+          color: white;
         }
       `}</style>
 
-      {/* ============ DIAMOND LOADING OVERLAY ============ */}
+      {/* ========== LOADING OVERLAY ========== */}
       {loading && (
         <div className="loading-overlay">
-          <div className="neon-diamond">
-            <div className="diamond-inner-glow"></div>
+          <div className="diamond-container">
+            {/* Neon Diamond Border */}
+            <div className="neon-diamond"></div>
+            
+            {/* Text Inside */}
+            <div className="diamond-text">
+              <p className="loading-step-text" key={loadingStep}>
+                {loadingSteps[loadingStep]}
+                <span className="loading-dots"></span>
+              </p>
+            </div>
           </div>
-          <p className="loading-text">
-            {diamondLoadingMessages[diamondMessageIndex]}
-          </p>
         </div>
       )}
 
@@ -542,12 +495,11 @@ export default function Home() {
         background: '#FAFAFA'
       }}>
         
-        {/* ========== HERO HEADER ========== */}
+        {/* ========== HEADER ========== */}
         <header style={{
           textAlign: 'center',
           padding: '24px 0 20px'
         }}>
-          {/* Title */}
           <h1 className="instagram-gradient-text" style={{
             fontSize: '2.4rem',
             fontWeight: '900',
@@ -557,9 +509,8 @@ export default function Home() {
             FunCaption
           </h1>
 
-          {/* Big Headline */}
           <h2 className="instagram-gradient-text" style={{
-            fontSize: '1.6rem',
+            fontSize: '1.5rem',
             fontWeight: '900',
             marginBottom: '24px',
             letterSpacing: '0.02em',
@@ -575,51 +526,35 @@ export default function Home() {
             borderRadius: '20px',
             padding: '20px 24px',
             marginBottom: '16px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+            boxShadow: '0 2px 16px rgba(0,0,0,0.05)',
             border: '1px solid rgba(0,0,0,0.04)',
             textAlign: 'left'
           }}>
-            {/* Step 1 */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '12px'
-            }}>
-              <span className="instagram-gradient step-number" style={{ color: 'white' }}>1</span>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+              <span className="instagram-gradient step-number">1</span>
               <span style={{ fontSize: '0.95rem', fontWeight: '600', color: '#262626' }}>
                 Type your topic.
               </span>
             </div>
 
-            {/* Step 2 */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '12px'
-            }}>
-              <span className="instagram-gradient step-number" style={{ color: 'white' }}>2</span>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+              <span className="instagram-gradient step-number">2</span>
               <span style={{ fontSize: '0.95rem', fontWeight: '600', color: '#262626' }}>
                 Pick your vibe.
               </span>
             </div>
 
-            {/* Step 3 */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-              <span className="instagram-gradient step-number" style={{ color: 'white' }}>3</span>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span className="instagram-gradient step-number">3</span>
               <span style={{ fontSize: '0.95rem', fontWeight: '600', color: '#262626' }}>
                 Copy the hook and go.
               </span>
             </div>
           </div>
 
-          {/* Emphasized tagline */}
           <p className="instagram-gradient-text glow-text" style={{
             fontSize: '1.15rem',
             fontWeight: '800',
-            marginBottom: '8px',
             letterSpacing: '0.01em'
           }}>
             ✨ Your millions are waiting ✨
@@ -632,7 +567,7 @@ export default function Home() {
           borderRadius: '24px',
           padding: '24px',
           marginBottom: '20px',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+          boxShadow: '0 2px 16px rgba(0,0,0,0.05)',
           border: '1px solid rgba(0,0,0,0.04)'
         }}>
           <label style={{
@@ -654,31 +589,24 @@ export default function Home() {
               onChange={(e) => setSubject(e.target.value)}
               style={{
                 width: '100%',
-                minHeight: '110px',
+                minHeight: '100px',
                 background: '#FAFAFA',
                 border: '2px solid #EFEFEF',
                 borderRadius: '16px',
                 padding: '16px',
                 outline: 'none',
                 color: '#262626',
-                fontSize: '1.05rem',
+                fontSize: '1rem',
                 fontWeight: '500',
                 lineHeight: '1.6',
                 resize: 'none',
                 fontFamily: 'inherit',
-                transition: 'border-color 0.3s ease, box-shadow 0.3s ease'
+                transition: 'border-color 0.2s ease'
               }}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#C13584'
-                e.target.style.boxShadow = '0 0 0 3px rgba(193, 53, 132, 0.1)'
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#EFEFEF'
-                e.target.style.boxShadow = 'none'
-              }}
+              onFocus={(e) => e.target.style.borderColor = '#C13584'}
+              onBlur={(e) => e.target.style.borderColor = '#EFEFEF'}
             />
             
-            {/* Faded cycling example */}
             {!subject && (
               <div 
                 className="example-text"
@@ -689,9 +617,8 @@ export default function Home() {
                   right: '16px',
                   pointerEvents: 'none',
                   color: '#8E8E8E',
-                  fontSize: '1.05rem',
-                  fontWeight: '500',
-                  lineHeight: '1.6'
+                  fontSize: '1rem',
+                  fontWeight: '500'
                 }}
               >
                 {exampleSubjects[currentExample]}
@@ -699,7 +626,6 @@ export default function Home() {
             )}
           </div>
 
-          {/* Optional details */}
           <div style={{ marginTop: '16px' }}>
             <label style={{
               display: 'block',
@@ -725,7 +651,7 @@ export default function Home() {
                 fontSize: '0.95rem',
                 padding: '14px 16px',
                 fontFamily: 'inherit',
-                transition: 'border-color 0.3s ease'
+                transition: 'border-color 0.2s ease'
               }}
               onFocus={(e) => e.target.style.borderColor = '#C13584'}
               onBlur={(e) => e.target.style.borderColor = '#EFEFEF'}
@@ -733,13 +659,13 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ========== MOOD WHEEL CARD ========== */}
+        {/* ========== MOOD WHEEL ========== */}
         <div className="card-hover" style={{
           background: '#FFFFFF',
           borderRadius: '24px',
           padding: '24px',
           marginBottom: '20px',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+          boxShadow: '0 2px 16px rgba(0,0,0,0.05)',
           border: '1px solid rgba(0,0,0,0.04)',
           textAlign: 'center'
         }}>
@@ -757,7 +683,7 @@ export default function Home() {
             Spin & Pick the Vibe
           </label>
 
-          {/* Spinnable Wheel */}
+          {/* Fixed Wheel Container */}
           <div 
             ref={wheelRef}
             className="wheel-container"
@@ -776,27 +702,27 @@ export default function Home() {
             onTouchMove={handleWheelMove}
             onTouchEnd={handleWheelEnd}
           >
-            {/* Instagram gradient outer ring */}
+            {/* Outer ring */}
             <div className="instagram-gradient" style={{
               position: 'absolute',
-              top: '-6px',
-              left: '-6px',
-              right: '-6px',
-              bottom: '-6px',
+              top: '-4px',
+              left: '-4px',
+              right: '-4px',
+              bottom: '-4px',
               borderRadius: '50%',
-              opacity: 0.25
+              opacity: 0.2
             }}></div>
 
-            {/* Selection indicator */}
+            {/* Selector indicator */}
             <div className="instagram-gradient" style={{
               position: 'absolute',
-              top: '-14px',
+              top: '-12px',
               left: '50%',
               transform: 'translateX(-50%)',
-              width: '28px',
-              height: '28px',
+              width: '26px',
+              height: '26px',
               borderRadius: '50%',
-              boxShadow: '0 4px 15px rgba(193, 53, 132, 0.5)',
+              boxShadow: '0 3px 10px rgba(193, 53, 132, 0.4)',
               zIndex: 10,
               display: 'flex',
               alignItems: 'center',
@@ -805,14 +731,14 @@ export default function Home() {
               <div style={{
                 width: 0,
                 height: 0,
-                borderLeft: '7px solid transparent',
-                borderRight: '7px solid transparent',
-                borderTop: '10px solid white',
-                marginTop: '3px'
+                borderLeft: '6px solid transparent',
+                borderRight: '6px solid transparent',
+                borderTop: '8px solid white',
+                marginTop: '2px'
               }}></div>
             </div>
 
-            {/* White wheel background */}
+            {/* White background */}
             <div style={{
               position: 'absolute',
               top: 0,
@@ -821,10 +747,10 @@ export default function Home() {
               bottom: 0,
               borderRadius: '50%',
               background: '#FFFFFF',
-              border: '3px solid #EFEFEF'
+              border: '2px solid #EFEFEF'
             }}></div>
 
-            {/* Rotating container */}
+            {/* Rotating moods */}
             <div style={{
               position: 'absolute',
               top: 0,
@@ -832,12 +758,12 @@ export default function Home() {
               right: 0,
               bottom: 0,
               transform: `rotate(${wheelRotation}deg)`,
-              transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+              transition: isDragging ? 'none' : 'transform 0.4s ease-out'
             }}>
               {moodOptions.map((mood, index) => {
                 const angle = (index * (360 / 7)) - 90
                 const radian = (angle * Math.PI) / 180
-                const radius = 105
+                const radius = 100
                 const x = Math.cos(radian) * radius
                 const y = Math.sin(radian) * radius
                 const isSelected = selectedMood === mood.id || (mood.id === 'more' && showExtendedMoods)
@@ -854,9 +780,9 @@ export default function Home() {
                       position: 'absolute',
                       top: '50%',
                       left: '50%',
-                      transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${-wheelRotation}deg) scale(${isSelected ? 1.2 : 1})`,
-                      width: '52px',
-                      height: '52px',
+                      transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${-wheelRotation}deg) scale(${isSelected ? 1.15 : 1})`,
+                      width: '48px',
+                      height: '48px',
                       borderRadius: '50%',
                       background: isSelected 
                         ? 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)'
@@ -866,10 +792,10 @@ export default function Home() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.4rem',
+                      fontSize: '1.3rem',
                       boxShadow: isSelected 
-                        ? '0 6px 20px rgba(193, 53, 132, 0.4)' 
-                        : '0 2px 10px rgba(0,0,0,0.08)',
+                        ? '0 4px 15px rgba(193, 53, 132, 0.35)' 
+                        : '0 2px 8px rgba(0,0,0,0.06)',
                       zIndex: isSelected ? 5 : 1
                     }}
                   >
@@ -879,18 +805,18 @@ export default function Home() {
               })}
             </div>
 
-            {/* Center Magic Button */}
+            {/* Center Magic Button - ALWAYS CENTERED */}
             <button
               onClick={handleGenerate}
               disabled={loading || !subject.trim()}
-              className="instagram-gradient"
+              className={`instagram-gradient ${!loading && subject.trim() ? 'magic-button' : ''}`}
               style={{
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                width: '100px',
-                height: '100px',
+                width: '95px',
+                height: '95px',
                 borderRadius: '50%',
                 border: 'none',
                 cursor: loading || !subject.trim() ? 'not-allowed' : 'pointer',
@@ -898,28 +824,28 @@ export default function Home() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '3px',
-                animation: loading || !subject.trim() ? 'none' : 'magic-pulse 2s ease-in-out infinite',
+                gap: '2px',
                 opacity: !subject.trim() ? 0.5 : 1,
-                zIndex: 10
+                zIndex: 10,
+                transition: 'opacity 0.2s ease'
               }}
             >
-              <span style={{ fontSize: '1.5rem' }}>✨</span>
+              <span style={{ fontSize: '1.4rem' }}>✨</span>
               <span style={{
                 color: 'white',
-                fontSize: '0.65rem',
+                fontSize: '0.6rem',
                 fontWeight: '800',
                 textAlign: 'center',
                 lineHeight: '1.2',
                 textTransform: 'uppercase',
-                letterSpacing: '0.03em'
+                letterSpacing: '0.02em'
               }}>
                 Work your<br/>magic!
               </span>
             </button>
           </div>
 
-          {/* Selected mood display */}
+          {/* Selected mood */}
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -929,13 +855,13 @@ export default function Home() {
             borderRadius: '24px',
             border: '1px solid #EFEFEF'
           }}>
-            <span style={{ fontSize: '1.4rem' }}>{currentMoodInfo.emoji}</span>
+            <span style={{ fontSize: '1.3rem' }}>{currentMoodInfo.emoji}</span>
             <span style={{ fontSize: '0.95rem', fontWeight: '700', color: '#262626' }}>
               {currentMoodInfo.label}
             </span>
           </div>
 
-          <p style={{ fontSize: '0.75rem', color: '#C7C7C7', marginTop: '14px' }}>
+          <p style={{ fontSize: '0.75rem', color: '#C7C7C7', marginTop: '12px' }}>
             👆 Drag to spin • Tap to select
           </p>
         </div>
@@ -947,9 +873,9 @@ export default function Home() {
             borderRadius: '24px',
             padding: '20px',
             marginBottom: '20px',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+            boxShadow: '0 2px 16px rgba(0,0,0,0.05)',
             border: '1px solid rgba(0,0,0,0.04)',
-            animation: 'fadeIn 0.3s ease'
+            animation: 'fadeInUp 0.3s ease'
           }}>
             <div style={{
               display: 'flex',
@@ -967,7 +893,8 @@ export default function Home() {
                   border: 'none',
                   fontSize: '1.2rem',
                   cursor: 'pointer',
-                  color: '#8E8E8E'
+                  color: '#8E8E8E',
+                  padding: '4px'
                 }}
               >
                 ✕
@@ -986,8 +913,8 @@ export default function Home() {
                   onClick={() => selectExtendedMood(mood.id)}
                   className={selectedMood === mood.id ? 'instagram-gradient' : ''}
                   style={{
-                    padding: '10px 18px',
-                    borderRadius: '24px',
+                    padding: '10px 16px',
+                    borderRadius: '20px',
                     background: selectedMood === mood.id ? undefined : '#FAFAFA',
                     border: selectedMood === mood.id ? 'none' : '2px solid #EFEFEF',
                     color: selectedMood === mood.id ? 'white' : '#262626',
@@ -996,7 +923,7 @@ export default function Home() {
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
+                    gap: '6px',
                     transition: 'all 0.2s ease'
                   }}
                 >
@@ -1014,7 +941,7 @@ export default function Home() {
           borderRadius: '24px',
           padding: '20px',
           marginBottom: '20px',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+          boxShadow: '0 2px 16px rgba(0,0,0,0.05)',
           border: '1px solid rgba(0,0,0,0.04)'
         }}>
           <p style={{
@@ -1023,7 +950,7 @@ export default function Home() {
             color: '#8E8E8E',
             marginBottom: '16px',
             textTransform: 'uppercase',
-            letterSpacing: '0.06em'
+            letterSpacing: '0.05em'
           }}>
             🚀 Enhancing Features
           </p>
@@ -1042,8 +969,8 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', fontWeight: '600', color: '#262626' }}>
                 🎣 Scroll-Stopper Hook
               </p>
-              <p style={{ fontSize: '0.75rem', color: '#8E8E8E', marginTop: '3px' }}>
-                Include a viral opening line
+              <p style={{ fontSize: '0.75rem', color: '#8E8E8E', marginTop: '2px' }}>
+                Viral opening line
               </p>
             </div>
             <div 
@@ -1062,19 +989,15 @@ export default function Home() {
             }}>
               🎯 Target Goal
             </p>
-            <div style={{
-              display: 'flex',
-              gap: '8px',
-              flexWrap: 'wrap'
-            }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {targetGoals.map(goal => (
                 <button
                   key={goal.id}
                   onClick={() => toggleGoal(goal.id)}
                   className={selectedGoals.includes(goal.id) ? 'instagram-gradient' : ''}
                   style={{
-                    padding: '10px 16px',
-                    borderRadius: '20px',
+                    padding: '10px 14px',
+                    borderRadius: '18px',
                     background: selectedGoals.includes(goal.id) ? undefined : '#FAFAFA',
                     border: selectedGoals.includes(goal.id) ? 'none' : '2px solid #EFEFEF',
                     color: selectedGoals.includes(goal.id) ? 'white' : '#262626',
@@ -1083,7 +1006,7 @@ export default function Home() {
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '5px',
                     transition: 'all 0.2s ease'
                   }}
                 >
@@ -1107,8 +1030,8 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', fontWeight: '600', color: '#262626' }}>
                 #️⃣ Pro Tags
               </p>
-              <p style={{ fontSize: '0.75rem', color: '#8E8E8E', marginTop: '3px' }}>
-                Auto-generate trending hashtags
+              <p style={{ fontSize: '0.75rem', color: '#8E8E8E', marginTop: '2px' }}>
+                Trending hashtags
               </p>
             </div>
             <div 
@@ -1147,9 +1070,9 @@ export default function Home() {
                     borderRadius: '24px',
                     padding: '20px',
                     marginBottom: '16px',
-                    boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+                    boxShadow: '0 2px 16px rgba(0,0,0,0.05)',
                     border: '2px solid #FBBF24',
-                    animation: 'fadeIn 0.4s ease'
+                    animation: 'fadeInUp 0.4s ease'
                   }}
                 >
                   <div style={{
@@ -1158,7 +1081,7 @@ export default function Home() {
                     gap: '8px',
                     marginBottom: '14px'
                   }}>
-                    <span style={{ fontSize: '1.3rem' }}>⚡</span>
+                    <span style={{ fontSize: '1.2rem' }}>⚡</span>
                     <span style={{
                       fontSize: '0.75rem',
                       fontWeight: '800',
@@ -1171,7 +1094,7 @@ export default function Home() {
                   </div>
 
                   <p style={{
-                    fontSize: '1.05rem',
+                    fontSize: '1rem',
                     lineHeight: '1.7',
                     color: '#262626',
                     marginBottom: '16px',
@@ -1185,14 +1108,14 @@ export default function Home() {
                     style={{
                       width: '100%',
                       padding: '14px',
-                      borderRadius: '16px',
+                      borderRadius: '14px',
                       background: copiedIndex === `short-${i}` ? '#22C55E' : 'linear-gradient(45deg, #FBBF24, #F59E0B)',
                       border: 'none',
                       color: 'white',
                       fontSize: '0.9rem',
                       fontWeight: '700',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease'
+                      transition: 'background 0.2s ease'
                     }}
                   >
                     {copiedIndex === `short-${i}` ? '✓ Copied!' : '📋 Copy Caption'}
@@ -1217,26 +1140,25 @@ export default function Home() {
                     borderRadius: '24px',
                     padding: '20px',
                     marginBottom: '16px',
-                    boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+                    boxShadow: '0 2px 16px rgba(0,0,0,0.05)',
                     border: '3px solid transparent',
                     backgroundImage: 'linear-gradient(white, white), radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)',
                     backgroundOrigin: 'border-box',
                     backgroundClip: 'padding-box, border-box',
                     position: 'relative',
-                    animation: 'fadeIn 0.4s ease 0.1s both'
+                    animation: 'fadeInUp 0.4s ease 0.1s both'
                   }}
                 >
                   <div className="instagram-gradient" style={{
                     position: 'absolute',
-                    top: '14px',
-                    right: '14px',
-                    padding: '5px 12px',
-                    borderRadius: '12px',
-                    fontSize: '0.65rem',
+                    top: '12px',
+                    right: '12px',
+                    padding: '4px 10px',
+                    borderRadius: '10px',
+                    fontSize: '0.6rem',
                     fontWeight: '800',
                     color: 'white',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
+                    textTransform: 'uppercase'
                   }}>
                     ★ Premium
                   </div>
@@ -1247,7 +1169,7 @@ export default function Home() {
                     gap: '8px',
                     marginBottom: '14px'
                   }}>
-                    <span style={{ fontSize: '1.3rem' }}>✨</span>
+                    <span style={{ fontSize: '1.2rem' }}>✨</span>
                     <span className="instagram-gradient-text" style={{
                       fontSize: '0.75rem',
                       fontWeight: '800',
@@ -1259,7 +1181,7 @@ export default function Home() {
                   </div>
 
                   <p style={{
-                    fontSize: '1.05rem',
+                    fontSize: '1rem',
                     lineHeight: '1.8',
                     color: '#262626',
                     marginBottom: '16px',
@@ -1270,9 +1192,9 @@ export default function Home() {
 
                   <div style={{
                     background: '#FAFAFA',
-                    padding: '14px',
-                    borderRadius: '14px',
-                    marginBottom: '16px',
+                    padding: '12px',
+                    borderRadius: '12px',
+                    marginBottom: '14px',
                     textAlign: 'center'
                   }}>
                     <a
@@ -1283,14 +1205,14 @@ export default function Home() {
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '8px',
+                        gap: '6px',
                         textDecoration: 'none',
-                        fontSize: '0.85rem',
+                        fontSize: '0.8rem',
                         fontWeight: '700'
                       }}
                     >
                       <InstagramIcon />
-                      Follow for More Premium Tips
+                      Follow for More Tips
                     </a>
                   </div>
 
@@ -1300,17 +1222,17 @@ export default function Home() {
                     style={{
                       width: '100%',
                       padding: '14px',
-                      borderRadius: '16px',
+                      borderRadius: '14px',
                       background: copiedIndex === `premium-${i}` ? '#22C55E' : undefined,
                       border: 'none',
                       color: 'white',
                       fontSize: '0.9rem',
                       fontWeight: '700',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease'
+                      transition: 'background 0.2s ease'
                     }}
                   >
-                    {copiedIndex === `premium-${i}` ? '✓ Copied!' : '📋 Copy Premium Caption'}
+                    {copiedIndex === `premium-${i}` ? '✓ Copied!' : '📋 Copy Premium'}
                   </button>
                 </div>
               )
@@ -1332,9 +1254,9 @@ export default function Home() {
                     borderRadius: '24px',
                     padding: '20px',
                     marginBottom: '16px',
-                    boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+                    boxShadow: '0 2px 16px rgba(0,0,0,0.05)',
                     border: '1px solid #EFEFEF',
-                    animation: 'fadeIn 0.4s ease 0.2s both'
+                    animation: 'fadeInUp 0.4s ease 0.2s both'
                   }}
                 >
                   <div style={{
@@ -1343,20 +1265,19 @@ export default function Home() {
                     gap: '8px',
                     marginBottom: '14px'
                   }}>
-                    <span style={{ fontSize: '1.3rem' }}>📝</span>
+                    <span style={{ fontSize: '1.2rem' }}>📝</span>
                     <span style={{
                       fontSize: '0.75rem',
                       fontWeight: '800',
                       color: '#8E8E8E',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em'
+                      textTransform: 'uppercase'
                     }}>
                       {v.label || `Caption ${i + 1}`}
                     </span>
                   </div>
 
                   <p style={{
-                    fontSize: '1.05rem',
+                    fontSize: '1rem',
                     lineHeight: '1.7',
                     color: '#262626',
                     marginBottom: '16px',
@@ -1370,7 +1291,7 @@ export default function Home() {
                     style={{
                       width: '100%',
                       padding: '14px',
-                      borderRadius: '16px',
+                      borderRadius: '14px',
                       background: copiedIndex === `standard-${i}` ? '#22C55E' : '#FAFAFA',
                       border: copiedIndex === `standard-${i}` ? 'none' : '2px solid #EFEFEF',
                       color: copiedIndex === `standard-${i}` ? 'white' : '#262626',
@@ -1402,15 +1323,15 @@ export default function Home() {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '10px',
-              padding: '14px 28px',
-              borderRadius: '28px',
+              gap: '8px',
+              padding: '12px 24px',
+              borderRadius: '24px',
               color: 'white',
               textDecoration: 'none',
-              fontSize: '0.9rem',
+              fontSize: '0.85rem',
               fontWeight: '700',
-              marginBottom: '16px',
-              boxShadow: '0 6px 20px rgba(193, 53, 132, 0.35)'
+              marginBottom: '14px',
+              boxShadow: '0 4px 15px rgba(193, 53, 132, 0.3)'
             }}
           >
             <InstagramIcon />
@@ -1424,4 +1345,4 @@ export default function Home() {
       </div>
     </>
   )
-}
+  }
