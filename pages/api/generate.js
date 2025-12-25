@@ -1,11 +1,4 @@
-// ========== HUGGINGFACE INFERENCE SDK ==========
-import { InferenceClient } from "@huggingface/inference";
-
-// Initialize client (done once per cold start)
-const client = new InferenceClient(process.env.HF_TOKEN);
-
-// Model to use
-const MODEL = "jondurbin/airoboros-l2-13b-gpt4-m2.0";
+// ========== NO EXTERNAL PACKAGES NEEDED ==========
 
 // Mood to tone mapping
 const moodTones = {
@@ -68,8 +61,8 @@ export default async function handler(req, res) {
   const hookBoost = scrollStopperHook ? "Make first line a SCROLL-STOPPER." : "";
   const hashtagNote = proTags ? "3 trending hashtags." : "2 hashtags.";
 
-  // ========== COMBINED INPUT: PSYCHOLOGICAL LAWS + USER SUBJECT ==========
-  const inputs = `You are an elite Instagram caption writer using psychological triggers.
+  // Combined prompt
+  const prompt = `You are an elite Instagram caption writer using psychological triggers.
 
 PSYCHOLOGICAL LAWS:
 - Curiosity Gap: Leave something unsaid
@@ -100,46 +93,65 @@ JSON OUTPUT:`;
   let quickFireCaption = null;
   let closerThreadCaption = null;
 
-  // ========== HUGGINGFACE INFERENCE SDK CALL ==========
+  // ========== DIRECT FETCH - NO SDK NEEDED ==========
   try {
-    const result = await client.textGeneration({
-      model: MODEL,
-      inputs: inputs,
-      parameters: {
-        max_new_tokens: 200,
-        temperature: 0.8,
-        return_full_text: false
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/jondurbin/airoboros-l2-13b-gpt4-m2.0",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.HF_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          inputs: prompt,
+          parameters: {
+            max_new_tokens: 200,
+            temperature: 0.8,
+            return_full_text: false
+          }
+        })
       }
-    });
+    );
 
-    // Extract generated_text
-    const generatedText = result?.generated_text || "";
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Extract generated text
+      let generatedText = "";
+      if (Array.isArray(data) && data[0]?.generated_text) {
+        generatedText = data[0].generated_text;
+      } else if (data?.generated_text) {
+        generatedText = data.generated_text;
+      }
 
-    if (generatedText) {
-      try {
-        // Try direct JSON parse
-        const trimmed = generatedText.trim();
-        const parsed = JSON.parse(trimmed);
-        quickFireCaption = cleanCaption(parsed.quick);
-        closerThreadCaption = cleanCaption(parsed.closer);
-      } catch (parseErr) {
-        // Fallback: Find JSON in response
-        const jsonMatch = generatedText.match(/\{[\s\S]*"quick"[\s\S]*"closer"[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
+      if (generatedText) {
+        try {
+          // Try direct JSON parse
+          const parsed = JSON.parse(generatedText.trim());
           quickFireCaption = cleanCaption(parsed.quick);
           closerThreadCaption = cleanCaption(parsed.closer);
-        } else {
-          // Last resort: Regex extraction
-          const quickMatch = generatedText.match(/"quick"\s*:\s*"([^"]+)"/);
-          const closerMatch = generatedText.match(/"closer"\s*:\s*"([^"]+)"/);
-          if (quickMatch) quickFireCaption = cleanCaption(quickMatch[1]);
-          if (closerMatch) closerThreadCaption = cleanCaption(closerMatch[1]);
+        } catch (parseErr) {
+          // Fallback: Find JSON in response
+          const jsonMatch = generatedText.match(/\{[\s\S]*"quick"[\s\S]*"closer"[\s\S]*\}/);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            quickFireCaption = cleanCaption(parsed.quick);
+            closerThreadCaption = cleanCaption(parsed.closer);
+          } else {
+            // Last resort: Regex extraction
+            const quickMatch = generatedText.match(/"quick"\s*:\s*"([^"]+)"/);
+            const closerMatch = generatedText.match(/"closer"\s*:\s*"([^"]+)"/);
+            if (quickMatch) quickFireCaption = cleanCaption(quickMatch[1]);
+            if (closerMatch) closerThreadCaption = cleanCaption(closerMatch[1]);
+          }
         }
       }
+    } else {
+      console.error("API Error:", response.status);
     }
   } catch (err) {
-    console.error("Inference error:", err.message);
+    console.error("Fetch error:", err.message);
   }
 
   // ========== SMART FALLBACKS ==========
@@ -150,7 +162,7 @@ JSON OUTPUT:`;
     closerThreadCaption = generateFallbackCloser(subject, mood);
   }
 
-  // ========== CLEAN JSON RESPONSE ==========
+  // ========== CLEAN RESPONSE ==========
   return res.status(200).json({
     variants: [
       {
