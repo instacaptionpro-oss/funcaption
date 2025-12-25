@@ -1,4 +1,4 @@
-// ========== NO EXTERNAL PACKAGES NEEDED ==========
+// ========== STATELESS API - NO EXTERNAL PACKAGES ==========
 
 // Mood to tone mapping
 const moodTones = {
@@ -61,8 +61,8 @@ export default async function handler(req, res) {
   const hookBoost = scrollStopperHook ? "Make first line a SCROLL-STOPPER." : "";
   const hashtagNote = proTags ? "3 trending hashtags." : "2 hashtags.";
 
-  // Combined prompt
-  const prompt = `You are an elite Instagram caption writer using psychological triggers.
+  // System message with psychological laws
+  const systemMessage = `You are an elite Instagram caption writer using psychological triggers.
 
 PSYCHOLOGICAL LAWS:
 - Curiosity Gap: Leave something unsaid
@@ -71,84 +71,90 @@ PSYCHOLOGICAL LAWS:
 - Authority: Sound successful
 - Scarcity: "1% know this..."
 
-RULES:
+STRICT RULES:
 - Return ONLY valid JSON: {"quick": "...", "closer": "..."}
-- No explanations
+- No explanations, no markdown, no extra text
+- quick = max 10 words, 2 lines, ${hashtagNote}
+- closer = max 25 words, 4 lines, 2 hashtags`;
 
-QUICK FIRE (max 10 words, 2 lines, ${hashtagNote}):
-Example: "Lost 10kg. Found my first million. #fitness #wealth"
-
-CLOSER THREAD (max 25 words, 4 lines, 2 hashtags):
-Example: "I traded my 9-5 for a 5 AM lift. Now I'm leaner, richer, free.\\nYour move.\\n#viral #success"
-
-NOW GENERATE FOR:
+  // User message with topic
+  const userMessage = `Generate captions for:
 Topic: ${subject}
 ${cleanDetails ? `Context: ${cleanDetails}` : ""}
 Tone: ${tone}
 ${hookBoost}
 ${ctaStyle}
 
-JSON OUTPUT:`;
+Examples:
+quick: "Lost 10kg. Found my first million. #fitness #wealth"
+closer: "I traded my 9-5 for a 5 AM lift. Now I'm leaner, richer, free.
+Your move.
+#viral #success"
+
+Return JSON only:`;
 
   let quickFireCaption = null;
   let closerThreadCaption = null;
 
-  // ========== DIRECT FETCH - NO SDK NEEDED ==========
+  // ========== TRY HUGGINGFACE API ==========
   try {
-    const response = await fetch(
-      "https://api-inference.huggingface.co/models/jondurbin/airoboros-l2-13b-gpt4-m2.0",
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${process.env.HF_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          inputs: prompt,
-          parameters: {
-            max_new_tokens: 200,
+    const HF_TOKEN = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_KEY;
+    
+    if (HF_TOKEN) {
+      // Using chat completions endpoint
+      const response = await fetch(
+        "https://router.huggingface.co/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${HF_TOKEN}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "mistralai/Mistral-7B-Instruct-v0.2",
+            messages: [
+              { role: "system", content: systemMessage },
+              { role: "user", content: userMessage }
+            ],
+            max_tokens: 200,
             temperature: 0.8,
-            return_full_text: false
-          }
-        })
-      }
-    );
+            stream: false
+          })
+        }
+      );
 
-    if (response.ok) {
-      const data = await response.json();
-      
-      // Extract generated text
-      let generatedText = "";
-      if (Array.isArray(data) && data[0]?.generated_text) {
-        generatedText = data[0].generated_text;
-      } else if (data?.generated_text) {
-        generatedText = data.generated_text;
-      }
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Extract content from chat completion response
+        const content = data?.choices?.[0]?.message?.content || "";
 
-      if (generatedText) {
-        try {
-          // Try direct JSON parse
-          const parsed = JSON.parse(generatedText.trim());
-          quickFireCaption = cleanCaption(parsed.quick);
-          closerThreadCaption = cleanCaption(parsed.closer);
-        } catch (parseErr) {
-          // Fallback: Find JSON in response
-          const jsonMatch = generatedText.match(/\{[\s\S]*"quick"[\s\S]*"closer"[\s\S]*\}/);
-          if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[0]);
+        if (content) {
+          try {
+            // Try direct JSON parse
+            const parsed = JSON.parse(content.trim());
             quickFireCaption = cleanCaption(parsed.quick);
             closerThreadCaption = cleanCaption(parsed.closer);
-          } else {
-            // Last resort: Regex extraction
-            const quickMatch = generatedText.match(/"quick"\s*:\s*"([^"]+)"/);
-            const closerMatch = generatedText.match(/"closer"\s*:\s*"([^"]+)"/);
-            if (quickMatch) quickFireCaption = cleanCaption(quickMatch[1]);
-            if (closerMatch) closerThreadCaption = cleanCaption(closerMatch[1]);
+          } catch (parseErr) {
+            // Fallback: Find JSON in response
+            const jsonMatch = content.match(/\{[\s\S]*"quick"[\s\S]*"closer"[\s\S]*\}/);
+            if (jsonMatch) {
+              const parsed = JSON.parse(jsonMatch[0]);
+              quickFireCaption = cleanCaption(parsed.quick);
+              closerThreadCaption = cleanCaption(parsed.closer);
+            } else {
+              // Last resort: Regex extraction
+              const quickMatch = content.match(/"quick"\s*:\s*"([^"]+)"/);
+              const closerMatch = content.match(/"closer"\s*:\s*"([^"]+)"/);
+              if (quickMatch) quickFireCaption = cleanCaption(quickMatch[1]);
+              if (closerMatch) closerThreadCaption = cleanCaption(closerMatch[1]);
+            }
           }
         }
+      } else {
+        const errorText = await response.text();
+        console.error("API Error:", response.status, errorText);
       }
-    } else {
-      console.error("API Error:", response.status);
     }
   } catch (err) {
     console.error("Fetch error:", err.message);
