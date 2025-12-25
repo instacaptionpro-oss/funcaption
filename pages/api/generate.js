@@ -1,4 +1,4 @@
-// ========== NO FS IMPORTS - STATELESS API ==========
+// ========== STATELESS API - NO FS IMPORTS ==========
 
 // Mood to tone mapping
 const moodTones = {
@@ -24,10 +24,41 @@ const moodTones = {
 
 // Target goal to CTA mapping
 const goalToCTA = {
-  comments: "End with challenge/question: 'Your move.', 'What's your excuse?'",
-  shares: "Make it relatable: 'Tag someone who needs this.'",
-  saves: "Sound like wisdom: 'Remember this.', 'Save for later.'"
+  comments: "End with challenge: 'Your move.', 'What's your excuse?'",
+  shares: "Make relatable: 'Tag someone who needs this.'",
+  saves: "Sound like wisdom: 'Remember this.'"
 };
+
+// ========== SYSTEM PROMPT (Psychological Laws + Instructions) ==========
+const SYSTEM_PROMPT = `You are an elite Instagram caption writer who creates viral hooks using psychological triggers.
+
+PSYCHOLOGICAL LAWS TO USE:
+- Curiosity Gap: Leave something unsaid, create intrigue
+- Loss Aversion: Show what they're losing by not acting
+- Social Proof: "Everyone does X, but elite do Y"
+- Contrast Principle: Before vs After, Old vs New
+- Scarcity: "1% know this...", "Nobody tells you..."
+- Authority: Sound like you've already made it
+- Identity: Speak to who they want to become
+
+STRICT OUTPUT RULES:
+1. Respond ONLY with valid JSON
+2. No explanations, no markdown, no extra text
+3. Format: {"quick": "caption here", "closer": "caption here"}
+
+QUICK FIRE RULES:
+- MAXIMUM 10 words
+- MAXIMUM 2 lines
+- 2-3 hashtags at end
+- Punch to the face energy
+- Example: "Lost 10kg. Found my first million. #fitness #wealth"
+
+CLOSER THREAD RULES:
+- MAXIMUM 25 words
+- MAXIMUM 4 lines
+- Structure: Hook → Result → Short CTA (2-3 words)
+- Exactly 2 hashtags at end
+- Example: "I traded my 9-5 for a 5 AM lift. Now I'm leaner, richer, free.\\nYour move.\\n#viral #success"`;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -48,116 +79,92 @@ export default async function handler(req, res) {
   }
 
   const HF_API_KEY = process.env.HUGGINGFACE_API_KEY;
-  const MODEL = "jondurbin/airoboros-l2-13b-gpt4-m2.0"; // UPGRADED MODEL
-  const HF_URL = "https://api-inference.huggingface.co/models/" + MODEL;
+  const MODEL = "jondurbin/airoboros-l2-13b-gpt4-m2.0";
+  const HF_URL = "https://router.huggingface.co/v1/chat/completions";
 
-  // Clean inputs
-  const cleanDetails = details?.trim() || "";
+  // Get tone and build context
   const tone = moodTones[mood] || "confident, punchy, impactful";
+  const cleanDetails = details?.trim() || "";
   
-  // Build CTA style
-  let ctaStyle = "End with a powerful 2-3 word statement.";
+  // Build CTA style from target goals
+  let ctaStyle = "End with powerful 2-3 word statement.";
   if (targetGoals?.length > 0) {
     ctaStyle = targetGoals.map(g => goalToCTA[g]).filter(Boolean).join(" ");
   }
 
-  // Extra instructions
-  const hookBoost = scrollStopperHook ? "Make opening line an absolute SCROLL-STOPPER." : "";
-  const hashtagCount = proTags ? "3 trending hashtags" : "2 hashtags";
+  // Build user message
+  const hookBoost = scrollStopperHook ? "Make the first line an absolute SCROLL-STOPPER." : "";
+  const hashtagNote = proTags ? "Include 3 trending hashtags." : "Include 2 hashtags.";
 
-  // ========== SINGLE CONSOLIDATED PROMPT ==========
-  const consolidatedPrompt = `You are an elite Instagram caption writer. Generate viral hooks using psychological triggers.
-
-TOPIC: ${subject}
+  const userMessage = `TOPIC: ${subject}
 ${cleanDetails ? `CONTEXT: ${cleanDetails}` : ""}
 TONE: ${tone}
 ${hookBoost}
+${hashtagNote}
+CTA STYLE: ${ctaStyle}
 
-PSYCHOLOGICAL TRIGGERS TO USE:
-- Curiosity Gap (leave something unsaid)
-- Loss Aversion (show what they're missing)
-- Contrast (before vs after)
-- Authority (sound like you've made it)
-- Scarcity ("1% know this...")
-
-TASK: Generate exactly 2 hooks in JSON format.
-
-HOOK 1 - "quick" (Quick Fire):
-- MAXIMUM 10 words
-- MAXIMUM 2 lines  
-- ${hashtagCount}
-- Punch to the face energy
-- Example: "Lost 10kg. Found my first million. #fitness #wealth"
-
-HOOK 2 - "closer" (Closer Thread):
-- MAXIMUM 25 words
-- MAXIMUM 4 lines
-- Structure: Hook → Result → Short CTA
-- 2 hashtags only
-- ${ctaStyle}
-- Example: "I traded my 9-5 for a 5 AM lift. Now I'm leaner, richer, free.\\nYour move.\\n#viral #success"
-
-RESPOND ONLY WITH THIS JSON FORMAT:
-{"quick": "your quick fire caption here", "closer": "your closer thread caption here"}
-
-NO EXPLANATIONS. ONLY JSON.`;
+Generate the two hooks now. Return ONLY JSON: {"quick": "...", "closer": "..."}`;
 
   let quickFireCaption = null;
   let closerThreadCaption = null;
 
-  // ========== SINGLE API CALL ==========
+  // ========== SINGLE API CALL WITH MESSAGES FORMAT ==========
   try {
     if (HF_API_KEY) {
       const response = await fetch(HF_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${HF_API_KEY}`,
-          "x-use-cache": "true" // PREVENT REDUNDANT MODEL LOADING
+          "Authorization": `Bearer ${HF_API_KEY}`
         },
         body: JSON.stringify({
-          inputs: consolidatedPrompt,
-          parameters: {
-            max_new_tokens: 220,      // OPTIMIZED TOKEN LIMIT
-            temperature: 0.85,         // ELITE/SAVAGE PERSONALITY
-            return_full_text: false,   // DON'T RETURN PROMPT
-            do_sample: true
-          }
-        }),
+          model: MODEL,
+          messages: [
+            {
+              role: "system",
+              content: SYSTEM_PROMPT
+            },
+            {
+              role: "user", 
+              content: userMessage
+            }
+          ],
+          max_tokens: 200,
+          temperature: 0.85,
+          stream: false
+        })
       });
 
       if (response.ok) {
         const data = await response.json();
         
-        // Extract generated text
-        let generatedText = "";
-        if (Array.isArray(data) && data[0]?.generated_text) {
-          generatedText = data[0].generated_text;
-        } else if (data?.generated_text) {
-          generatedText = data.generated_text;
-        } else if (typeof data === "string") {
-          generatedText = data;
-        }
-
-        // Parse JSON from response
-        if (generatedText) {
+        // ========== EXTRACT ONLY choices[0].message.content ==========
+        const content = data?.choices?.[0]?.message?.content;
+        
+        if (content) {
           try {
-            // Find JSON in response
-            const jsonMatch = generatedText.match(/\{[\s\S]*"quick"[\s\S]*"closer"[\s\S]*\}/);
+            // Try direct JSON parse
+            const parsed = JSON.parse(content.trim());
+            quickFireCaption = cleanCaption(parsed.quick);
+            closerThreadCaption = cleanCaption(parsed.closer);
+          } catch (parseErr) {
+            // Fallback: Extract JSON from response
+            const jsonMatch = content.match(/\{[\s\S]*"quick"[\s\S]*"closer"[\s\S]*\}/);
             if (jsonMatch) {
               const parsed = JSON.parse(jsonMatch[0]);
               quickFireCaption = cleanCaption(parsed.quick);
               closerThreadCaption = cleanCaption(parsed.closer);
+            } else {
+              // Last resort: regex extraction
+              const quickMatch = content.match(/"quick"\s*:\s*"([^"]+)"/);
+              const closerMatch = content.match(/"closer"\s*:\s*"([^"]+)"/);
+              if (quickMatch) quickFireCaption = cleanCaption(quickMatch[1]);
+              if (closerMatch) closerThreadCaption = cleanCaption(closerMatch[1]);
             }
-          } catch (parseErr) {
-            // Fallback: try to extract manually
-            const quickMatch = generatedText.match(/"quick"\s*:\s*"([^"]+)"/);
-            const closerMatch = generatedText.match(/"closer"\s*:\s*"([^"]+)"/);
-            
-            if (quickMatch) quickFireCaption = cleanCaption(quickMatch[1]);
-            if (closerMatch) closerThreadCaption = cleanCaption(closerMatch[1]);
           }
         }
+      } else {
+        console.error("API Error:", response.status, response.statusText);
       }
     }
   } catch (err) {
@@ -172,7 +179,7 @@ NO EXPLANATIONS. ONLY JSON.`;
     closerThreadCaption = generateFallbackCloser(subject, mood);
   }
 
-  // ========== SANITIZED RESPONSE - ONLY ESSENTIAL DATA ==========
+  // ========== RETURN ONLY ESSENTIAL DATA ==========
   return res.status(200).json({
     variants: [
       {
@@ -195,13 +202,13 @@ NO EXPLANATIONS. ONLY JSON.`;
 function cleanCaption(text) {
   if (!text) return null;
   return text
-    .replace(/\\n/g, '\n')           // Convert escaped newlines
-    .replace(/^["']|["']$/g, '')     // Remove wrapping quotes
+    .replace(/\\n/g, '\n')
+    .replace(/^["']|["']$/g, '')
     .replace(/^(Caption:|Hook:|Quick Fire:|Closer Thread:)/gi, '')
     .trim();
 }
 
-// ========== FALLBACK GENERATORS ==========
+// ========== FALLBACK: QUICK FIRE ==========
 function generateFallbackQuick(subject, mood) {
   const templates = {
     fire: `${subject}? That's where empires are built.\n\n#elite #mindset`,
@@ -213,11 +220,20 @@ function generateFallbackQuick(subject, mood) {
     love: `${subject} changed how I see everything.\n\n#love #life`,
     sad: `${subject} broke me. Then rebuilt me.\n\n#healing #strength`,
     confident: `${subject}? I make it look easy.\n\n#built #different`,
-    default: `${subject}. No excuses. Just results.\n\n#grind #success`
+    aesthetic: `${subject}. Poetry in motion.\n\n#aesthetic #vibes`,
+    happy: `${subject} is my therapy.\n\n#blessed #grateful`,
+    alone: `${subject}. Just me. No distractions.\n\n#solo #focused`,
+    breakup: `${subject} reminded me of my worth.\n\n#movingon #stronger`,
+    romantic: `${subject} with you. That's the dream.\n\n#love #forever`,
+    poetic: `${subject}. Where words fail, feelings speak.\n\n#poetry #soul`,
+    sarcastic: `${subject}. Because normal is boring.\n\n#different #mood`,
+    nostalgic: `${subject}. Some things never change.\n\n#memories #feels`,
+    rebellious: `${subject}. Rules were made to break.\n\n#rebel #free`
   };
-  return templates[mood] || templates.default;
+  return templates[mood] || `${subject}. No excuses. Just results.\n\n#grind #success`;
 }
 
+// ========== FALLBACK: CLOSER THREAD ==========
 function generateFallbackCloser(subject, mood) {
   const templates = {
     fire: `Everyone talks about ${subject}. Few actually do it.\nI chose action over excuses.\nYour move.\n\n#discipline #elite`,
@@ -229,7 +245,15 @@ function generateFallbackCloser(subject, mood) {
     love: `${subject} showed me what matters.\nNot money. Not fame.\nJust this moment.\n\n#love #life`,
     sad: `${subject} broke something in me.\nBut broken things heal stronger.\nWatch me.\n\n#healing #comeback`,
     confident: `${subject}? Made it look effortless.\nIt wasn't. I just never complained.\nBuilt different.\n\n#elite #mindset`,
-    default: `${subject} changed everything.\nNot overnight. But permanently.\nBest decision ever.\n\n#growth #success`
+    aesthetic: `${subject} isn't just a vibe.\nIt's a lifestyle I chose.\nNo regrets.\n\n#aesthetic #living`,
+    happy: `${subject} brings me pure joy.\nNo filter needed.\nThis is real.\n\n#happiness #authentic`,
+    alone: `${subject} alone taught me more than crowds ever did.\nSolitude is power.\nTry it.\n\n#solo #growth`,
+    breakup: `${subject} after heartbreak hits different.\nI'm not healing. I'm upgrading.\nWatch closely.\n\n#glow #revenge`,
+    romantic: `${subject} with the right person?\nThat's not a moment. That's a lifetime.\nFound it.\n\n#love #soulmate`,
+    poetic: `${subject} speaks when words can't.\nFeel it. Don't explain it.\nArt lives here.\n\n#poetry #deep`,
+    sarcastic: `${subject} because apparently I love chaos.\nNo regrets though.\nWouldn't have it any other way.\n\n#mood #chaos`,
+    nostalgic: `${subject} takes me back every time.\nSome feelings never fade.\nThey just wait.\n\n#memories #throwback`,
+    rebellious: `${subject} because I was told not to.\nRules are suggestions.\nI make my own.\n\n#rebel #freedom`
   };
-  return templates[mood] || templates.default;
+  return templates[mood] || `${subject} changed everything.\nNot overnight. But permanently.\nBest decision ever.\n\n#growth #success`;
 }
