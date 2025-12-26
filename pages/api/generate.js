@@ -45,10 +45,11 @@ export default async function handler(req, res) {
   const hashtagNote = proTags ? "3 trending hashtags." : "2 hashtags.";
 
   // THE PERSONA PROMPT
-  const systemMessage = `You are an elite Instagram writer. Rules: 
+  const systemMessage = `You are a Savage 2025 Instagram ghostwriter. Rules: 
 1. Return ONLY JSON: {"quick": "...", "closer": "..."}
 2. No chatter. 
-3. Style: Savage, viral, high-status.`;
+3. Style: Savage, viral, high-status.
+4. Avoid AI-isms like delve, unlock, or tapestry.`;
 
   const userMessage = `Topic: ${subject}. Context: ${cleanDetails}. Tone: ${tone}. ${hookBoost}. ${ctaStyle}. Tags: ${hashtagNote}`;
 
@@ -59,9 +60,9 @@ export default async function handler(req, res) {
     const HF_TOKEN = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_KEY;
     
     if (HF_TOKEN) {
-      // DIRECT INFERENCE ENDPOINT (Bypasses "Chat Model" Errors)
+      // Updated to use OpenAI SDK via Hugging Face Router v1
       const response = await fetch(
-        `https://api-inference.huggingface.co/models/jondurbin/airoboros-l2-13b-gpt4-m2.0`,
+        `https://router.huggingface.co/v1/chat/completions`,
         {
           method: "POST",
           headers: {
@@ -69,19 +70,21 @@ export default async function handler(req, res) {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            inputs: `### Instruction: ${systemMessage}\n${userMessage}\n### Response:`,
-            parameters: {
-              max_new_tokens: 250,
-              temperature: 0.8,
-              stop: ["###"]
-            }
+            model: "openai/gpt-oss-120b:groq",
+            messages: [
+              { role: "system", content: systemMessage },
+              { role: "user", content: userMessage }
+            ],
+            temperature: 0.9,
+            max_tokens: 150,
+            reasoning: { effort: "low" } // Kill thinking (reasoning) for instant responses
           })
         }
       );
 
       if (response.ok) {
         const data = await response.json();
-        const content = Array.isArray(data) ? data[0].generated_text : data.generated_text;
+        const content = data.choices[0]?.message?.content;
         
         console.log(`[API SUCCESS] Savage content ready for: ${subject}`);
 
