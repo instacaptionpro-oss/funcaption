@@ -60,7 +60,7 @@ export default async function handler(req, res) {
     const HF_TOKEN = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_KEY;
     
     if (HF_TOKEN) {
-      // Updated to use OpenAI SDK via Hugging Face Router v1
+      // Updated to use OpenAI SDK via Hugging Face Router v1 with correct format
       const response = await fetch(
         `https://router.huggingface.co/v1/chat/completions`,
         {
@@ -77,31 +77,39 @@ export default async function handler(req, res) {
             ],
             temperature: 0.9,
             max_tokens: 150,
-            reasoning: { effort: "low" } // Kill thinking (reasoning) for instant responses
+            reasoning: { effort: "low" }
           })
         }
       );
 
       if (response.ok) {
         const data = await response.json();
-        const content = data.choices[0]?.message?.content;
+        const content = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : null;
         
         console.log(`[API SUCCESS] Savage content ready for: ${subject}`);
 
         if (content) {
+          // Try to extract JSON from the response
           const jsonMatch = content.match(/\{[\s\S]*\}/);
           if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[0]);
-            quickFireCaption = cleanCaption(parsed.quick);
-            closerThreadCaption = cleanCaption(parsed.closer);
+            try {
+              const parsed = JSON.parse(jsonMatch[0]);
+              quickFireCaption = cleanCaption(parsed.quick);
+              closerThreadCaption = cleanCaption(parsed.closer);
+            } catch (parseError) {
+              console.error("JSON Parse Error:", parseError);
+            }
           }
         }
       } else {
-        console.error("Inference Error:", response.status);
+        const errorText = await response.text();
+        console.error("Inference Error:", response.status, errorText);
+        return res.status(response.status).json({ error: `API Error: ${errorText}` });
       }
     }
   } catch (err) {
     console.error("Logic Error:", err.message);
+    return res.status(500).json({ error: `Server Error: ${err.message}` });
   }
 
   // FAILSAFE FALLBACKS (If API is slow or fails)
@@ -123,4 +131,4 @@ export default async function handler(req, res) {
 function cleanCaption(text) {
   if (!text) return null;
   return text.replace(/\\n/g, '\n').replace(/^["']|["']$/g, '').trim();
-}
+          }
