@@ -57,8 +57,8 @@ export default async function handler(req, res) {
   let closerThreadCaption = null;
 
   try {
-    // Use the Hugging Face API key from environment variables
-    const HF_TOKEN = process.env.HUGGINGFACE_API_KEY || "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";
+    // Use your new Hugging Face API key
+    const HF_TOKEN = process.env.HUGGINGFACE_API_KEY || "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";
     const MODEL_ID = process.env.HUGGINGFACE_MODEL || "openai/gpt-oss-120b:groq";
     
     console.log("Using API token present:", !!HF_TOKEN);
@@ -155,4 +155,4 @@ export default async function handler(req, res) {
 function cleanCaption(text) {
   if (!text) return null;
   return text.replace(/\\n/g, '\n').replace(/^["']|["']$/g, '').trim();
-          }
+}
