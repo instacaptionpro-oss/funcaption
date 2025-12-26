@@ -70,6 +70,7 @@ export default async function handler(req, res) {
     }
 
     // Updated to use OpenAI SDK via Hugging Face Router v1 with correct format
+    // REMOVED unsupported 'reasoning' parameter
     const response = await fetch(
       `https://router.huggingface.co/v1/chat/completions`,
       {
@@ -85,8 +86,8 @@ export default async function handler(req, res) {
             { role: "user", content: userMessage }
           ],
           temperature: 0.9,
-          max_tokens: 150,
-          reasoning: { effort: "low" } // Kill thinking (reasoning) for instant responses
+          max_tokens: 150
+          // Removed: reasoning: { effort: "low" } - this parameter is unsupported
         })
       }
     );
@@ -155,4 +156,4 @@ export default async function handler(req, res) {
 function cleanCaption(text) {
   if (!text) return null;
   return text.replace(/\\n/g, '\n').replace(/^["']|["']$/g, '').trim();
-      }
+}
