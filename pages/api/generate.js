@@ -1,4 +1,4 @@
-// ========== SAVAGE ENGINE v2.0 - HOOK GENERATION MODE ==========
+// ========== SAVAGE ENGINE v2.0 - SINGLE CALL HOOK GENERATION ==========
 
 import { OpenAI } from "openai";
 
@@ -42,43 +42,35 @@ export default async function handler(req, res) {
 
   const tone = moodTones[mood] || "confident, punchy, impactful";
   const cleanDetails = details?.trim() || "";
-  
-  // Handle Target Goals (CTA)
-  let ctaStyle = "";
-  if (targetGoals && Array.isArray(targetGoals) && targetGoals.length > 0) {
-    ctaStyle = targetGoals.map(g => goalToCTA[g]).filter(Boolean).join(" ");
-  } else {
-    ctaStyle = "End with powerful 2-3 word statement.";
-  }
-  
-  // Handle Scroll-Stopper Hook
+  let ctaStyle = targetGoals?.length > 0 ? targetGoals.map(g => goalToCTA[g]).filter(Boolean).join(" ") : "End with powerful 2-3 word statement.";
   const hookBoost = scrollStopperHook ? "Make first line a SCROLL-STOPPER." : "";
-  
-  // Handle Pro Tags
   const hashtagNote = proTags ? "3 trending hashtags." : "2 hashtags.";
 
-  // OPTIMIZED PROMPT FOR INSTAGRAM HOOKS
-  const systemMessage = `You are a elite Instagram hook writer. Create viral content that stops scrolls.
-Rules: 
-1. Return ONLY valid JSON: {"quick": "...", "closer": "..."}
-2. No explanations or extra text.
-3. quick: 1-2 lines hook (max 80 chars)
-4. closer: 2-4 lines thread (max 200 chars)
-5. Style: ${tone}, savage, high-status`;
+  // SINGLE PROMPT THAT GETS BOTH RESULTS AT ONCE
+  const systemMessage = `Role: World-class social media hook writer.
+Core Task: Generate scroll-stopping, first-person hooks for Instagram/TikTok.
+Critical Rules:
+- ALWAYS use first-person perspective (I/me/my). This is non-negotiable.
+- NEVER use generic AI phrases: "unlock potential," "journey of," "dive into," "elevate your," etc.
+- Match the requested Mood perfectly: "Aesthetic" = visual & elegant, "Attitude" = bold & confident.
+- Format exactly:
+  • "Quick Fire": 1-2 lines, punchy, immediate.
+  • "Close Thread": 2-4 lines, narrative, conclusive.
+- Output ONLY the hook text. No explanations. Make it like send ai this once and add hastag and say it to not give instructions to user genarte like user should feel that by using this i will leval up`;
 
-  // Build user message with all enhancing features
-  const userMessage = `Create Instagram hooks for: ${subject}
+  const userMessage = `Create both hooks in ONE response:
+Topic: ${subject}
 Context: ${cleanDetails}
-${hookBoost ? hookBoost + "\n" : ""}
-${ctaStyle ? ctaStyle + "\n" : ""}
-Include ${hashtagNote}
-Return ONLY JSON format.`;
+Tone: ${tone}
+${hookBoost}
+${ctaStyle}
+Include ${hashtagNote}`;
 
   let quickFireCaption = null;
   let closerThreadCaption = null;
 
   try {
-    // Use OpenAI SDK with Hugging Face Router
+    // Use OpenAI SDK with Hugging Face Router - SINGLE CALL
     const HF_TOKEN = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_KEY;
     const MODEL_ID = process.env.HUGGINGFACE_MODEL || "openai/gpt-oss-120b:groq";
     
@@ -92,6 +84,7 @@ Return ONLY JSON format.`;
       apiKey: HF_TOKEN,
     });
 
+    // SINGLE API CALL TO GET BOTH RESULTS
     const chatCompletion = await client.chat.completions.create({
       model: MODEL_ID,
       messages: [
@@ -104,16 +97,16 @@ Return ONLY JSON format.`;
           content: userMessage,
         },
       ],
-      temperature: 0.85,
+      temperature: 0.9,
       max_tokens: 200,
-      stop: ["\n\n\n", "###"]
+      stop: ["\n\n\n"]
     });
 
     const content = chatCompletion.choices[0]?.message?.content;
     
     if (content) {
-      // Extract JSON more reliably
-      const jsonMatch = content.match(/\{[^{}]*\}/);  // Simpler JSON matching
+      // Extract both Quick Fire and Close Thread from single response
+      const jsonMatch = content.match(/\{[^{}]*\}/);
       if (jsonMatch) {
         try {
           const parsed = JSON.parse(jsonMatch[0]);
@@ -121,14 +114,16 @@ Return ONLY JSON format.`;
           closerThreadCaption = cleanCaption(parsed.closer);
         } catch (parseError) {
           console.error("JSON Parse Error:", parseError);
-          // Fallback extraction if JSON fails
-          quickFireCaption = extractQuickHook(content);
-          closerThreadCaption = extractCloserThread(content);
+          // Fallback extraction from plain text
+          const sections = extractHooksFromText(content);
+          quickFireCaption = sections.quick;
+          closerThreadCaption = sections.closer;
         }
       } else {
-        // Manual extraction if no JSON found
-        quickFireCaption = extractQuickHook(content);
-        closerThreadCaption = extractCloserThread(content);
+        // Extract from plain text response
+        const sections = extractHooksFromText(content);
+        quickFireCaption = sections.quick;
+        closerThreadCaption = sections.closer;
       }
     }
 
@@ -153,24 +148,23 @@ Return ONLY JSON format.`;
   });
 }
 
-// Helper functions for better extraction
+// Helper functions
 function cleanCaption(text) {
   if (!text) return null;
   return text.replace(/\\n/g, '\n').replace(/^["']|["']$/g, '').trim();
 }
 
-function extractQuickHook(content) {
-  if (!content) return null;
-  // Try to find something that looks like a hook
-  const lines = content.split('\n').filter(line => line.trim().length > 0);
-  return lines[0] ? lines[0].substring(0, 80) + (lines[0].length > 80 ? '...' : '') : null;
-}
-
-function extractCloserThread(content) {
-  if (!content) return null;
-  const lines = content.split('\n').filter(line => line.trim().length > 0);
-  const threadLines = lines.slice(0, 4); // Take up to 4 lines
-  return threadLines.join('\n').substring(0, 200);
+function extractHooksFromText(content) {
+  if (!content) return { quick: null, closer: null };
+  
+  // Look for Quick Fire and Close Thread sections
+  const quickMatch = content.match(/Quick Fire[:\n\s]*([^\n]+(?:\n[^\n]+)?)/i);
+  const closerMatch = content.match(/Close Thread[:\n\s]*([\s\S]*?)(?:\n\n|$)/i);
+  
+  return {
+    quick: quickMatch ? quickMatch[1].trim() : content.split('\n')[0] || null,
+    closer: closerMatch ? closerMatch[1].trim() : content || null
+  };
 }
 
 // Better fallback generators
@@ -196,4 +190,4 @@ function generateFallbackCloser(subject, mood) {
     motivation: `${subject} separates dreamers from builders.\nWhich one are you?\nYour answer determines everything.`
   };
   return threads[mood] || `Most chase ${subject}.\nFew understand it.\nNone execute like me.\n#success #grind`;
-                  }
+}
