@@ -57,67 +57,79 @@ export default async function handler(req, res) {
   let closerThreadCaption = null;
 
   try {
-    // Use the correct environment variables
-    const HF_TOKEN = process.env.ADMIN_SECRET_KEY || process.env.HF_TOKEN;
+    // Access the actual token value from the environment variable
+    const HF_TOKEN = process.env.FC_ADMIN_2025_SECRET_KEY;
     const MODEL_ID = process.env.HUGGINGFACE_MODEL || "openai/gpt-oss-120b:groq";
     
-    if (HF_TOKEN) {
-      // Updated to use OpenAI SDK via Hugging Face Router v1 with correct format
-      const response = await fetch(
-        `https://router.huggingface.co/v1/chat/completions`,
-        {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${HF_TOKEN}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            model: MODEL_ID,
-            messages: [
-              { role: "system", content: systemMessage },
-              { role: "user", content: userMessage }
-            ],
-            temperature: 0.9,
-            max_tokens: 150,
-            reasoning: { effort: "low" } // Kill thinking (reasoning) for instant responses
-          })
-        }
-      );
+    console.log("Using API token present:", !!HF_TOKEN);
+    console.log("Using model:", MODEL_ID);
+    
+    if (!HF_TOKEN) {
+      console.error("No API token found - FC_ADMIN_2025_SECRET_KEY not set");
+      return res.status(500).json({ error: "API token not configured. Please set FC_ADMIN_2025_SECRET_KEY environment variable" });
+    }
 
-      if (response.ok) {
-        const data = await response.json();
-        const content = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : null;
-        
-        console.log(`[API SUCCESS] Savage content ready for: ${subject}`, data);
+    // Updated to use OpenAI SDK via Hugging Face Router v1 with correct format
+    const response = await fetch(
+      `https://router.huggingface.co/v1/chat/completions`,
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${HF_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: MODEL_ID,
+          messages: [
+            { role: "system", content: systemMessage },
+            { role: "user", content: userMessage }
+          ],
+          temperature: 0.9,
+          max_tokens: 150,
+          reasoning: { effort: "low" } // Kill thinking (reasoning) for instant responses
+        })
+      }
+    );
 
-        if (content) {
-          // Try to extract JSON from the response
-          const jsonMatch = content.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            try {
-              const parsed = JSON.parse(jsonMatch[0]);
-              quickFireCaption = cleanCaption(parsed.quick);
-              closerThreadCaption = cleanCaption(parsed.closer);
-            } catch (parseError) {
-              console.error("JSON Parse Error:", parseError);
-              // Fallback: use the raw content if JSON parsing fails
-              quickFireCaption = content.substring(0, 100) + "...";
-              closerThreadCaption = content;
-            }
-          } else {
-            // If no JSON found, use the raw content
+    console.log("Response status:", response.status);
+    
+    if (response.ok) {
+      const data = await response.json();
+      const content = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : null;
+      
+      console.log(`[API SUCCESS] Savage content ready for: ${subject}`);
+
+      if (content) {
+        // Try to extract JSON from the response
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            const parsed = JSON.parse(jsonMatch[0]);
+            quickFireCaption = cleanCaption(parsed.quick);
+            closerThreadCaption = cleanCaption(parsed.closer);
+          } catch (parseError) {
+            console.error("JSON Parse Error:", parseError);
+            // Fallback: use the raw content if JSON parsing fails
             quickFireCaption = content.substring(0, 100) + "...";
             closerThreadCaption = content;
           }
+        } else {
+          // If no JSON found, use the raw content
+          quickFireCaption = content.substring(0, 100) + "...";
+          closerThreadCaption = content;
         }
-      } else {
-        const errorText = await response.text();
-        console.error("Inference Error:", response.status, errorText);
-        return res.status(response.status).json({ error: `API Error: ${response.status} - ${errorText}` });
       }
     } else {
-      console.error("No API token found");
-      return res.status(500).json({ error: "API token not configured" });
+      const errorText = await response.text();
+      console.error("Inference Error:", response.status, errorText);
+      return res.status(response.status).json({ 
+        error: `API Error: ${response.status} - ${errorText}`,
+        debug: {
+          tokenPresent: !!HF_TOKEN,
+          model: MODEL_ID,
+          responseStatus: response.status
+        }
+      });
     }
   } catch (err) {
     console.error("Logic Error:", err.message);
