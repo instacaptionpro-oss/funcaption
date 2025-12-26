@@ -42,8 +42,19 @@ export default async function handler(req, res) {
 
   const tone = moodTones[mood] || "confident, punchy, impactful";
   const cleanDetails = details?.trim() || "";
-  let ctaStyle = targetGoals?.length > 0 ? targetGoals.map(g => goalToCTA[g]).filter(Boolean).join(" ") : "End with powerful 2-3 word statement.";
+  
+  // Handle Target Goals (CTA)
+  let ctaStyle = "";
+  if (targetGoals && Array.isArray(targetGoals) && targetGoals.length > 0) {
+    ctaStyle = targetGoals.map(g => goalToCTA[g]).filter(Boolean).join(" ");
+  } else {
+    ctaStyle = "End with powerful 2-3 word statement.";
+  }
+  
+  // Handle Scroll-Stopper Hook
   const hookBoost = scrollStopperHook ? "Make first line a SCROLL-STOPPER." : "";
+  
+  // Handle Pro Tags
   const hashtagNote = proTags ? "3 trending hashtags." : "2 hashtags.";
 
   // OPTIMIZED PROMPT FOR INSTAGRAM HOOKS
@@ -55,10 +66,11 @@ Rules:
 4. closer: 2-4 lines thread (max 200 chars)
 5. Style: ${tone}, savage, high-status`;
 
+  // Build user message with all enhancing features
   const userMessage = `Create Instagram hooks for: ${subject}
 Context: ${cleanDetails}
-${hookBoost}
-${ctaStyle}
+${hookBoost ? hookBoost + "\n" : ""}
+${ctaStyle ? ctaStyle + "\n" : ""}
 Include ${hashtagNote}
 Return ONLY JSON format.`;
 
@@ -184,4 +196,4 @@ function generateFallbackCloser(subject, mood) {
     motivation: `${subject} separates dreamers from builders.\nWhich one are you?\nYour answer determines everything.`
   };
   return threads[mood] || `Most chase ${subject}.\nFew understand it.\nNone execute like me.\n#success #grind`;
-                                   }
+                  }
