@@ -57,16 +57,16 @@ export default async function handler(req, res) {
   let closerThreadCaption = null;
 
   try {
-    // Access the actual token value from the environment variable
-    const HF_TOKEN = process.env.FC_ADMIN_2025_SECRET_KEY;
+    // Use the Hugging Face API key from environment variables
+    const HF_TOKEN = process.env.HUGGINGFACE_API_KEY || "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";
     const MODEL_ID = process.env.HUGGINGFACE_MODEL || "openai/gpt-oss-120b:groq";
     
     console.log("Using API token present:", !!HF_TOKEN);
     console.log("Using model:", MODEL_ID);
     
     if (!HF_TOKEN) {
-      console.error("No API token found - FC_ADMIN_2025_SECRET_KEY not set");
-      return res.status(500).json({ error: "API token not configured. Please set FC_ADMIN_2025_SECRET_KEY environment variable" });
+      console.error("No API token found");
+      return res.status(500).json({ error: "API token not configured" });
     }
 
     // Updated to use OpenAI SDK via Hugging Face Router v1 with correct format
@@ -155,4 +155,4 @@ export default async function handler(req, res) {
 function cleanCaption(text) {
   if (!text) return null;
   return text.replace(/\\n/g, '\n').replace(/^["']|["']$/g, '').trim();
-}
+          }
