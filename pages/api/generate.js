@@ -1,32 +1,32 @@
-// ========== SAVAGE ENGINE v2.0 - SINGLE CALL HOOK GENERATION ==========
+// ========== SAVAGE ENGINE v2.0 - HOOK GENERATION ==========
 
 import { OpenAI } from "openai";
 
 const moodTones = {
-  funny: "witty, sarcastic, unexpected punchline",
-  fire: "aggressive, confident, alpha energy",
-  aesthetic: "poetic, visual, dreamy but punchy",
+  funny: "witty, playful, viral",
+  fire: "aggressive, confident, alpha",
+  aesthetic: "poetic, visual, dreamy",
   deep: "philosophical, thought-provoking",
   poetic: "rhythmic, metaphorical, lyrical",
   motivation: "inspirational, energizing, powerful",
-  attitude: "cocky, unapologetic, boss energy",
+  attitude: "cocky, unapologetic, bold",
   love: "romantic, genuine, heartfelt",
-  breakup: "raw, moving on, stronger now",
-  savage: "brutal honesty, no filter, cuts deep",
+  breakup: "raw, moving on, stronger",
+  savage: "brutal honesty, no filter",
   sad: "melancholic, relatable pain",
   happy: "joyful, grateful, infectious",
-  alone: "peaceful solitude, powerful independence",
+  alone: "peaceful solitude, independent",
   confident: "self-assured, quiet power",
   romantic: "passionate, intimate",
   sarcastic: "dry humor, clever irony",
-  nostalgic: "bittersweet, emotional depth",
+  nostalgic: "bittersweet, emotional",
   rebellious: "rule-breaker, bold, defiant"
 };
 
 const goalToCTA = {
-  comments: "End with challenge: 'Your move.'",
-  shares: "Make relatable: 'Tag someone.'",
-  saves: "Sound like wisdom: 'Remember this.'"
+  comments: "End with: 'Your move.'",
+  shares: "Make relatable: 'Tag someone'",
+  saves: "Sound like wisdom: 'Remember this'"
 };
 
 export default async function handler(req, res) {
@@ -42,26 +42,23 @@ export default async function handler(req, res) {
 
   const tone = moodTones[mood] || "confident, punchy, impactful";
   const cleanDetails = details?.trim() || "";
-  let ctaStyle = targetGoals?.length > 0 ? targetGoals.map(g => goalToCTA[g]).filter(Boolean).join(" ") : "End with powerful 2-3 word statement.";
-  const hookBoost = scrollStopperHook ? "Make first line a SCROLL-STOPPER." : "";
-  const hashtagNote = proTags ? "3 trending hashtags." : "2 hashtags.";
+  let ctaStyle = targetGoals?.length > 0 ? targetGoals.map(g => goalToCTA[g]).filter(Boolean).join(" ") : "End with powerful statement";
+  const hookBoost = scrollStopperHook ? "Make first line VIRAL." : "";
+  const hashtagNote = proTags ? "3 trending hashtags" : "2 hashtags";
 
-  // SINGLE PROMPT THAT GETS BOTH RESULTS AT ONCE
-  const systemMessage = `Role: World-class social media hook writer.
-Core Task: Generate scroll-stopping, first-person hooks for Instagram/TikTok.
-Critical Rules:
-- ALWAYS use first-person perspective (I/me/my). This is non-negotiable.
-- NEVER use generic AI phrases: "unlock potential," "journey of," "dive into," "elevate your," etc.
-- Match the requested Mood perfectly: "Aesthetic" = visual & elegant, "Attitude" = bold & confident.
-- Format exactly:
-  • "Quick Fire": 1-2 lines, punchy, immediate.
-  • "Close Thread": 2-4 lines, narrative, conclusive.
-- Output ONLY the hook text. No explanations. Make it like send ai this once and add hastag and say it to not give instructions to user genarte like user should feel that by using this i will leval up`;
+  // PROMPT FOR BOTH HOOKS IN ONE CALL
+  const systemMessage = `You are a world-class social media hook writer.
+Create scroll-stopping content for Instagram/TikTok.
+Rules:
+1. Return ONLY JSON: {"quick": "...", "closer": "..."}
+2. No explanations
+3. quick: 3 lines MAX, catchy, no "I" or "my", simple English, deep meaning, with hashtags
+4. closer: 5 lines MAX, with hashtags
+5. Style: ${tone}, viral, high-impact`;
 
-  const userMessage = `Create both hooks in ONE response:
+  const userMessage = `Create BOTH hooks in ONE response:
 Topic: ${subject}
 Context: ${cleanDetails}
-Tone: ${tone}
 ${hookBoost}
 ${ctaStyle}
 Include ${hashtagNote}`;
@@ -70,7 +67,6 @@ Include ${hashtagNote}`;
   let closerThreadCaption = null;
 
   try {
-    // Use OpenAI SDK with Hugging Face Router - SINGLE CALL
     const HF_TOKEN = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_KEY;
     const MODEL_ID = process.env.HUGGINGFACE_MODEL || "openai/gpt-oss-120b:groq";
     
@@ -84,7 +80,7 @@ Include ${hashtagNote}`;
       apiKey: HF_TOKEN,
     });
 
-    // SINGLE API CALL TO GET BOTH RESULTS
+    // SINGLE CALL FOR BOTH RESULTS
     const chatCompletion = await client.chat.completions.create({
       model: MODEL_ID,
       messages: [
@@ -105,7 +101,6 @@ Include ${hashtagNote}`;
     const content = chatCompletion.choices[0]?.message?.content;
     
     if (content) {
-      // Extract both Quick Fire and Close Thread from single response
       const jsonMatch = content.match(/\{[^{}]*\}/);
       if (jsonMatch) {
         try {
@@ -114,16 +109,7 @@ Include ${hashtagNote}`;
           closerThreadCaption = cleanCaption(parsed.closer);
         } catch (parseError) {
           console.error("JSON Parse Error:", parseError);
-          // Fallback extraction from plain text
-          const sections = extractHooksFromText(content);
-          quickFireCaption = sections.quick;
-          closerThreadCaption = sections.closer;
         }
-      } else {
-        // Extract from plain text response
-        const sections = extractHooksFromText(content);
-        quickFireCaption = sections.quick;
-        closerThreadCaption = sections.closer;
       }
     }
 
@@ -148,46 +134,32 @@ Include ${hashtagNote}`;
   });
 }
 
-// Helper functions
 function cleanCaption(text) {
   if (!text) return null;
   return text.replace(/\\n/g, '\n').replace(/^["']|["']$/g, '').trim();
 }
 
-function extractHooksFromText(content) {
-  if (!content) return { quick: null, closer: null };
-  
-  // Look for Quick Fire and Close Thread sections
-  const quickMatch = content.match(/Quick Fire[:\n\s]*([^\n]+(?:\n[^\n]+)?)/i);
-  const closerMatch = content.match(/Close Thread[:\n\s]*([\s\S]*?)(?:\n\n|$)/i);
-  
-  return {
-    quick: quickMatch ? quickMatch[1].trim() : content.split('\n')[0] || null,
-    closer: closerMatch ? closerMatch[1].trim() : content || null
-  };
-}
-
-// Better fallback generators
+// Simple fallback generators
 function generateFallbackQuick(subject, mood) {
   const hooks = {
-    funny: `${subject}? More like ${subject} jokes! 😂`,
-    fire: `${subject} while others sleep. That's the difference. 🔥`,
-    aesthetic: `${subject} in its purest form ✨`,
-    deep: `They don't understand ${subject} like I do 🧠`,
-    savage: `Everyone talks about ${subject}. I own it. 🐍`,
-    motivation: `${subject} is my warm-up. Ready? 🚀`
+    funny: `When ${subject} hits different 😂\nReality check unlocked\nTag your friend who needs this\n#funny #viral`,
+    fire: `${subject} level: UNMATCHED 🔥\nBuilt different energy\nWatch me work\n#grind #success`,
+    aesthetic: `${subject} in its element ✨\nPure visual poetry\nFeel the moment\n#aesthetic #art`,
+    deep: `What ${subject} taught me 🧠\nSurface is illusion\nDepth is truth\n#deep #thoughts`,
+    savage: `${subject} truth drops 🐍\nNo sugar coating\nJust facts\n#savage #real`,
+    motivation: `${subject} is my language 🚀\nDreams to reality\nNo shortcuts taken\n#motivation # grind`
   };
-  return hooks[mood] || `${subject}. Built different. #mindset`;
+  return hooks[mood] || `${subject} changed everything\nSimple but powerful\nLevel up time\n#mindset #growth`;
 }
 
 function generateFallbackCloser(subject, mood) {
   const threads = {
-    funny: `${subject}?\n- Wake up\n- Do it\n- Flex results\n- Repeat\nSimple.`,
-    fire: `${subject} isn't about trying hard.\nIt's about making it look easy.\nWatch me work.`,
-    aesthetic: `${subject} captured perfectly.\nSome call it luck.\nI call it intentional.`,
-    deep: `${subject} taught me one thing:\nSurface level wins fade.\nReal depth lasts forever.`,
-    savage: `Everyone has an opinion on ${subject}.\nMine? I don't ask permission.\nI deliver results.`,
-    motivation: `${subject} separates dreamers from builders.\nWhich one are you?\nYour answer determines everything.`
+    funny: `When ${subject} goes wrong:\n- Expectations vs Reality\n- People lose their minds\n- I just laugh it off\n- Life lesson learned\n#funny #relatable`,
+    fire: `${subject} mastery:\n- See opportunity\n- Take massive action\n- Deliver results\n- Move to next level\n- That's how champions built\n#grind #success`,
+    aesthetic: `My ${subject} moment:\n- Perfect timing\n- Raw emotion captured\n- No filters needed\n- Pure authenticity\n- Art in motion\n#aesthetic #art`,
+    deep: `The ${subject} revelation:\n- Everyone chases surface\n- I went deeper\n- Found hidden truth\n- Everything changed\n- Wisdom earned\n#deep #enlightenment`,
+    savage: `${subject} reality check:\n- They make excuses\n- I make progress\n- Results don't lie\n- Comparison is theft\n- Your move.\n#savage #truth`,
+    motivation: `My ${subject} journey:\n- Started from nothing\n- Stayed consistent daily\n- Built momentum\n- Made impact\n- Still climbing higher\n#motivation #growth`
   };
-  return threads[mood] || `Most chase ${subject}.\nFew understand it.\nNone execute like me.\n#success #grind`;
+  return threads[mood] || `About ${subject}:\n- Most people fake it\n- I make it real\n- Difference is obvious\n- Execution matters\n- Watch me work\n#mindset #success`;
 }
