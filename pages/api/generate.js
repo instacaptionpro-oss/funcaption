@@ -57,7 +57,9 @@ export default async function handler(req, res) {
   let closerThreadCaption = null;
 
   try {
-    const HF_TOKEN = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_KEY;
+    // Use the correct environment variables
+    const HF_TOKEN = process.env.ADMIN_SECRET_KEY || process.env.HF_TOKEN;
+    const MODEL_ID = process.env.HUGGINGFACE_MODEL || "openai/gpt-oss-120b:groq";
     
     if (HF_TOKEN) {
       // Updated to use OpenAI SDK via Hugging Face Router v1 with correct format
@@ -70,14 +72,14 @@ export default async function handler(req, res) {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            model: "openai/gpt-oss-120b:groq",
+            model: MODEL_ID,
             messages: [
               { role: "system", content: systemMessage },
               { role: "user", content: userMessage }
             ],
             temperature: 0.9,
             max_tokens: 150,
-            reasoning: { effort: "low" }
+            reasoning: { effort: "low" } // Kill thinking (reasoning) for instant responses
           })
         }
       );
@@ -86,7 +88,7 @@ export default async function handler(req, res) {
         const data = await response.json();
         const content = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : null;
         
-        console.log(`[API SUCCESS] Savage content ready for: ${subject}`);
+        console.log(`[API SUCCESS] Savage content ready for: ${subject}`, data);
 
         if (content) {
           // Try to extract JSON from the response
@@ -98,14 +100,24 @@ export default async function handler(req, res) {
               closerThreadCaption = cleanCaption(parsed.closer);
             } catch (parseError) {
               console.error("JSON Parse Error:", parseError);
+              // Fallback: use the raw content if JSON parsing fails
+              quickFireCaption = content.substring(0, 100) + "...";
+              closerThreadCaption = content;
             }
+          } else {
+            // If no JSON found, use the raw content
+            quickFireCaption = content.substring(0, 100) + "...";
+            closerThreadCaption = content;
           }
         }
       } else {
         const errorText = await response.text();
         console.error("Inference Error:", response.status, errorText);
-        return res.status(response.status).json({ error: `API Error: ${errorText}` });
+        return res.status(response.status).json({ error: `API Error: ${response.status} - ${errorText}` });
       }
+    } else {
+      console.error("No API token found");
+      return res.status(500).json({ error: "API token not configured" });
     }
   } catch (err) {
     console.error("Logic Error:", err.message);
@@ -131,4 +143,4 @@ export default async function handler(req, res) {
 function cleanCaption(text) {
   if (!text) return null;
   return text.replace(/\\n/g, '\n').replace(/^["']|["']$/g, '').trim();
-          }
+}
