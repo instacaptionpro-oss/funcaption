@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
+import { OpenAI } from "openai";
 
-const RoastChat = ({ subject, mood, onClose }) => {
+const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
   const [messages, setMessages] = useState([
-    { id: 1, text: "Alright, let's roast! What do you want to talk about?", sender: 'ai' }
+    { id: 1, text: initialRoast || "Let's get roasted! What do you want to talk about?", sender: 'ai' }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -30,27 +31,61 @@ const RoastChat = ({ subject, mood, onClose }) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/roast-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          message: inputValue, 
-          subject, 
-          mood,
-          context: messages.slice(-3) // Last 3 messages for context
-        })
+      const HF_TOKEN = process.env.HF_TOKEN;
+      const ROAST_MODEL = process.env.ROAST_MODEL || "meta-llama/Llama-3.3-70B-Instruct:groq";
+      
+      if (!HF_TOKEN) {
+        throw new Error("API token not configured");
+      }
+
+      const client = new OpenAI({
+        baseURL: "https://router.huggingface.co/v1",
+        apiKey: HF_TOKEN,
       });
 
-      const data = await response.json();
+      // Build context from recent messages
+      const context = messages.slice(-3).map(msg => 
+        `${msg.sender}: ${msg.text}`
+      ).join('\n');
+
+      const chatCompletion = await client.chat.completions.create({
+        model: ROAST_MODEL,
+        messages: [
+          {
+            role: "system",
+            content: `You are a brutal roaster in a chat. Rules:
+1. Roast the user's messages savagely
+2. Use explicit language and harsh truths
+3. Be creative and witty, not just mean
+4. Reference their subject (${subject}) and mood (${mood}) when relevant
+5. Keep responses 1-2 lines max
+6. No mercy - they asked for this!
+7. Make every roast personal and cutting`
+          },
+          {
+            role: "user",
+            content: `Previous conversation:\n${context}\n\nUser says: "${inputValue}"\nRoast them mercilessly:`
+          }
+        ],
+        temperature: 0.95,
+        max_tokens: 80
+      });
+
+      const content = chatCompletion.choices[0]?.message?.content;
       
+      if (!content) {
+        throw new Error("No response from AI");
+      }
+
       const aiMessage = {
         id: Date.now() + 1,
-        text: data.roast,
+        text: content.trim(),
         sender: 'ai'
       };
 
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
+      console.error("Roast chat error:", error);
       const errorMessage = {
         id: Date.now() + 1,
         text: "Even my roasting capabilities are insulted by your request!",
