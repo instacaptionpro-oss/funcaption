@@ -48,6 +48,7 @@ export default function Home() {
   const [showRoastChat, setShowRoastChat] = useState(false);
   const [chatSubject, setChatSubject] = useState('');
   const [chatMood, setChatMood] = useState('');
+  const [chatInitialRoast, setChatInitialRoast] = useState('');
   const [copied, setCopied] = useState(false);
 
   // Cycle through example subjects
@@ -107,9 +108,10 @@ export default function Home() {
       setAura({
         score: Math.floor(Math.random() * 60),
         roast: "Your energy is so weak, even ghosts avoid you.",
+        subjectInsight: "Interesting choice, very telling...",
         rarity: "npc",
         title: "NPC",
-        challenge: "YOUR AURA IS SO DARK THAT GOOGLE MAPS CAN'T FIND IT"
+        challenge: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT."
       });
     } finally {
       setLoading(false);
@@ -137,6 +139,7 @@ export default function Home() {
   const handleRoastChat = () => {
     setChatSubject(subject);
     setChatMood(selectedMood);
+    setChatInitialRoast(aura.roast);
     setShowRoastChat(true);
   };
 
@@ -511,7 +514,7 @@ export default function Home() {
             <div style={{
               display: 'flex',
               gap: '15px',
-              width: '300px'
+              width: '320px'
             }}>
               <button
                 onClick={handleRoastChat}
@@ -571,6 +574,7 @@ export default function Home() {
           <RoastChat 
             subject={chatSubject}
             mood={chatMood}
+            initialRoast={chatInitialRoast}
             onClose={() => setShowRoastChat(false)}
           />
         )}
@@ -587,4 +591,4 @@ export default function Home() {
       </div>
     </>
   );
-    }
+              }
