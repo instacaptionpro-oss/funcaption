@@ -3,7 +3,7 @@ import { OpenAI } from "openai";
 
 const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
   const [messages, setMessages] = useState([
-    { id: 1, text: initialRoast || "Let's get roasted! What do you want to talk about?", sender: 'ai' }
+    { id: 1, text: initialRoast || "Let's get roasted! Say something...", sender: 'ai' }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -27,6 +27,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const userInput = inputValue; // Store user input before clearing
     setInputValue('');
     setIsLoading(true);
 
@@ -43,9 +44,10 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         apiKey: HF_TOKEN,
       });
 
-      // Build context from recent messages
-      const context = messages.slice(-3).map(msg => 
-        `${msg.sender}: ${msg.text}`
+      // Get last few messages for context
+      const recentMessages = messages.slice(-4); // Last 4 messages for context
+      const context = recentMessages.map(msg => 
+        `${msg.sender === 'user' ? 'User' : 'AI'}: ${msg.text}`
       ).join('\n');
 
       const chatCompletion = await client.chat.completions.create({
@@ -53,21 +55,23 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         messages: [
           {
             role: "system",
-            content: `You are a brutal roaster in a chat. Rules:
-1. Roast the user's messages savagely
-2. Use explicit language and harsh truths
-3. Be creative and witty, not just mean
-4. Reference their subject (${subject}) and mood (${mood}) when relevant
-5. Keep responses 1-2 lines max
-6. No mercy - they asked for this!
-7. Make every roast personal and cutting`
+            content: `You are a brutal roaster responding to a specific user message. Rules:
+1. Respond ONLY to the USER'S LATEST MESSAGE: "${userInput}"
+2. Roast them savagely but keep it SHORT (2-3 lines max)
+3. Use explicit language and harsh truths when appropriate
+4. Be creative and witty, not just mean
+5. Reference their original subject (${subject}) and mood (${mood}) if relevant
+6. Make every roast personal and cutting
+7. NEVER repeat previous responses
+8. Focus on what they just said: "${userInput}"
+9. Keep responses CONCISE and PUNCHY`
           },
           {
             role: "user",
-            content: `Previous conversation:\n${context}\n\nUser says: "${inputValue}"\nRoast them mercilessly:`
+            content: `Recent chat context:\n${context}\n\nUSER'S LATEST MESSAGE: "${userInput}"\nRoast this specific message brutally:`
           }
         ],
-        temperature: 0.95,
+        temperature: 0.95, // Higher temperature for more varied responses
         max_tokens: 80
       });
 
@@ -88,13 +92,27 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
       console.error("Roast chat error:", error);
       const errorMessage = {
         id: Date.now() + 1,
-        text: "Even my roasting capabilities are insulted by your request!",
+        text: getRandomErrorMessage(),
         sender: 'ai'
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getRandomErrorMessage = () => {
+    const errors = [
+      "Pathetic. Next.",
+      "Is that the best you can do?",
+      "Weak sauce. Try again.",
+      "Not even worth roasting properly.",
+      "Boring. Come back when you're interesting.",
+      "This is why you're average.",
+      "Do better or leave.",
+      "That's your best shot? Sad."
+    ];
+    return errors[Math.floor(Math.random() * errors.length)];
   };
 
   const handleKeyPress = (e) => {
@@ -111,7 +129,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
       left: '0',
       right: '0',
       bottom: '0',
-      background: 'rgba(0,0,0,0.9)',
+      background: 'rgba(0,0,0,0.95)',
       zIndex: '10000',
       display: 'flex',
       flexDirection: 'column'
@@ -119,7 +137,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
       {/* Header */}
       <div style={{
         padding: '15px 20px',
-        background: 'linear-gradient(90deg, #FF4500, #FF0000)',
+        background: 'linear-gradient(90deg, #8B0000, #FF0000)',
         color: 'white',
         display: 'flex',
         justifyContent: 'space-between',
@@ -157,7 +175,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
               maxWidth: '80%',
               background: message.sender === 'user' 
                 ? 'linear-gradient(135deg, #1E90FF, #4169E1)' 
-                : 'linear-gradient(135deg, #FF4500, #8B0000)',
+                : 'linear-gradient(135deg, #8B0000, #FF4500)',
               color: 'white',
               padding: '12px 16px',
               borderRadius: message.sender === 'user' ? '20px 5px 20px 20px' : '5px 20px 20px 20px',
@@ -172,14 +190,14 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         {isLoading && (
           <div style={{
             alignSelf: 'flex-start',
-            background: 'linear-gradient(135deg, #FF4500, #8B0000)',
+            background: 'linear-gradient(135deg, #8B0000, #FF4500)',
             color: 'white',
             padding: '12px 16px',
             borderRadius: '5px 20px 20px 20px',
             boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
           }}>
             <p style={{ margin: '0', fontSize: '1rem' }}>
-              Crafting the perfect roast...
+              🔥 Crafting personalized roast...
             </p>
           </div>
         )}
@@ -189,7 +207,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
       {/* Input Area */}
       <div style={{
         padding: '15px',
-        background: 'rgba(30, 30, 30, 0.9)',
+        background: 'rgba(20, 20, 20, 0.95)',
         borderTop: '1px solid #444'
       }}>
         <div style={{
@@ -205,8 +223,8 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
               flex: '1',
               padding: '12px',
               borderRadius: '20px',
-              border: '2px solid #FF4500',
-              background: '#222',
+              border: '2px solid #8B0000',
+              background: '#333',
               color: 'white',
               fontSize: '1rem',
               outline: 'none',
@@ -220,13 +238,13 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
             disabled={isLoading || !inputValue.trim()}
             style={{
               padding: '12px 20px',
-              background: isLoading ? '#666' : 'linear-gradient(135deg, #FF4500, #FF0000)',
+              background: isLoading ? '#666' : 'linear-gradient(135deg, #8B0000, #FF0000)',
               color: 'white',
               border: 'none',
               borderRadius: '20px',
               fontWeight: '700',
               cursor: isLoading ? 'not-allowed' : 'pointer',
-              boxShadow: '0 4px 15px rgba(255, 69, 0, 0.3)'
+              boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)'
             }}
           >
             {isLoading ? '🔥' : 'SEND'}
