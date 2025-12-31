@@ -33,8 +33,7 @@ export default async function handler(req, res) {
           content: `You are a brutally honest roaster. Generate ONLY JSON:
 {
   "score": number (0-100),
-  "roast": "harsh, witty roast (2-3 lines max, can use bad words)",
-  "subject_insight": "1-line insight about the subject"
+  "roast": "harsh, witty roast (2-3 lines max, can use bad words)"
 }
 Rules:
 1. Be savage but creative
@@ -48,7 +47,7 @@ Rules:
         }
       ],
       temperature: 0.9,
-      max_tokens: 120
+      max_tokens: 100
     });
 
     const content = chatCompletion.choices[0]?.message?.content;
@@ -92,7 +91,6 @@ Rules:
       aura: {
         score: result.score,
         roast: result.roast,
-        subjectInsight: result.subject_insight,
         rarity,
         title,
         challenge
@@ -106,7 +104,6 @@ Rules:
       fallback: {
         score: Math.floor(Math.random() * 60),
         roast: "Your energy is so weak, even ghosts avoid you.",
-        subjectInsight: "Interesting choice, very telling...",
         rarity: "npc",
         title: "NPC",
         challenge: "YOUR AURA IS SO DARK THAT GOOGLE MAPS CAN'T FIND IT"
