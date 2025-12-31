@@ -15,7 +15,7 @@ const AuraCard = ({ aura }) => {
         };
       case 'epic':
         return {
-          background: 'linear-gradient(1 35deg, #4B0082 0%, #00BFFF 100%)',
+          background: 'linear-gradient(135deg, #4B0082 0%, #00BFFF 100%)',
           border: '3px solid #00BFFF',
           accent: '#00BFFF',
           header: "DARE TO MATCH MY SCORE? TRY IT, LOSERS.",
@@ -50,6 +50,28 @@ const AuraCard = ({ aura }) => {
   };
 
   const tier = getTierData(aura.rarity);
+
+  // Danger sticker component
+  const DangerSticker = () => (
+    <div style={{
+      position: 'absolute',
+      top: '10px',
+      right: '10px',
+      width: '30px',
+      height: '30px',
+      background: 'rgba(255, 0, 0, 0.8)',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '1.2rem',
+      boxShadow: '0 0 10px rgba(255, 0, 0, 0.5)',
+      transform: 'rotate(15deg)',
+      border: '2px solid white'
+    }}>
+      ⚠️
+    </div>
+  );
 
   return (
     <div style={{
@@ -91,33 +113,71 @@ const AuraCard = ({ aura }) => {
         {aura.rarity.toUpperCase()}
       </h2>
 
-      {/* 3. VIBE Section (DeepSeek Compliment) */}
-      <div style={{ margin: '15px 0', fontSize: '0.9rem', opacity: 0.9 }}>
-        <span style={{ color: tier.accent }}>VIBE:</span> {aura.subjectInsight}
-      </div>
-
-      {/* 4. Score (Centerpiece) */}
+      {/* 3. Score (Centerpiece) */}
       <div style={{
         fontSize: '5rem',
         fontWeight: '900',
-        margin: '10px 0',
+        margin: '20px 0',
         textShadow: `0 0 20px ${tier.accent}`
       }}>
         {aura.score}
       </div>
 
-      {/* 5. The Roast (Savage AI Switch) - SMALLER and more savage */}
+      {/* 4. The Roast (Savage AI Switch) - SMALLER and more savage */}
       <div style={{
         marginTop: 'auto',
         background: 'rgba(0,0,0,0.4)',
         padding: '15px',
         borderRadius: '10px',
         border: `1px solid ${tier.accent}`,
-        fontSize: '0.9rem', // Smaller font
-        lineHeight: '1.2'   // Tighter line height
+        fontSize: '0.9rem',
+        lineHeight: '1.2'
       }}>
         {aura.roast}
       </div>
+
+      {/* 5. NPC Enhancement with Danger Stickers for NPC/Noob tiers */}
+      {(aura.rarity === 'npc' || aura.rarity === 'noob') && (
+        <>
+          <DangerSticker />
+          <div style={{
+            position: 'absolute',
+            bottom: '70px',
+            left: '10px',
+            width: '25px',
+            height: '25px',
+            background: 'rgba(255, 0, 0, 0.8)',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1rem',
+            boxShadow: '0 0 8px rgba(255, 0, 0, 0.5)',
+            transform: 'rotate(-10deg)',
+            border: '2px solid white'
+          }}>
+            ⚠️
+          </div>
+          <div style={{
+            position: 'absolute',
+            bottom: '100px',
+            right: '15px',
+            width: '20px',
+            height: '20px',
+            background: 'rgba(255, 0, 0, 0.8)',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '0.8rem',
+            boxShadow: '0 0 6px rgba(255, 0, 0, 0.5)',
+            transform: 'rotate(5deg)',
+            border: '2px solid white'
+          }}>
+            ⚠️
+          </div>
+        </>
+      )}
 
       {/* 6. Footer */}
       <div style={{
