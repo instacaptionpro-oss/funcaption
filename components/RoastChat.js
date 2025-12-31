@@ -44,29 +44,27 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         apiKey: HF_TOKEN,
       });
 
-      // USE EXACT SAME PROMPT STRUCTURE AS AURA CARD GENERATION
+      // SIMPLIFIED PROMPT - NO JSON REQUIRED
       const chatCompletion = await client.chat.completions.create({
         model: ROAST_MODEL,
         messages: [
           {
             role: "system",
-            content: `You are a brutally honest roaster. Generate ONLY JSON:
-{
-  "roast": "harsh, witty roast (2-3 lines max, can use bad words)"
-}
-Rules:
-1. Be savage but creative
+            content: `You are a brutally honest roaster. Rules:
+1. Roast the user's message savagely
 2. Use explicit language when appropriate
-3. No censorship - be brutally honest
-4. Make it sting but be witty`
+3. Be creative and witty, not just mean
+4. Keep responses 2-3 lines max
+5. Reference subject (${subject}) and mood (${mood}) when relevant
+6. Make it personal and cutting`
           },
           {
             role: "user",
-            content: `Subject: ${subject}, Mood: ${mood}. User says: "${userInput}". Generate brutal assessment.`
+            content: `User says: "${userInput}". Roast them brutally:`
           }
         ],
-        temperature: 0.9,
-        max_tokens: 100
+        temperature: 0.95,
+        max_tokens: 80
       });
 
       const content = chatCompletion.choices[0]?.message?.content;
@@ -75,22 +73,9 @@ Rules:
         throw new Error("No response from AI");
       }
 
-      // Extract roast from JSON response (same as aura card)
-      const jsonMatch = content.match(/\{[^{}]*\}/);
-      let roastText = "Pathetic attempt. Try harder.";
-      
-      if (jsonMatch) {
-        try {
-          const parsed = JSON.parse(jsonMatch[0]);
-          roastText = parsed.roast || roastText;
-        } catch (parseError) {
-          roastText = content.trim();
-        }
-      }
-
       const aiMessage = {
         id: Date.now() + 1,
-        text: roastText,
+        text: content.trim(),
         sender: 'ai'
       };
 
@@ -99,13 +84,29 @@ Rules:
       console.error("Roast chat error:", error);
       const errorMessage = {
         id: Date.now() + 1,
-        text: "Even my roasting capabilities are insulted by your request!",
+        text: getRandomRoast(),
         sender: 'ai'
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getRandomRoast = () => {
+    const roasts = [
+      "Pathetic attempt. Try harder.",
+      "Is that the best you can do?",
+      "Weak sauce. Next!",
+      "Not even worth roasting properly.",
+      "Boring. Come back when you're interesting.",
+      "This is why you're average.",
+      "Do better or leave.",
+      "That's your best shot? Sad.",
+      "Even my disappointment is disappointed in you.",
+      "Try again when you're not embarrassing yourself."
+    ];
+    return roasts[Math.floor(Math.random() * roasts.length)];
   };
 
   const handleKeyPress = (e) => {
