@@ -134,9 +134,9 @@ export default function Home() {
     }
   };
 
-  const handleRoastChat = (subject, mood) => {
+  const handleRoastChat = () => {
     setChatSubject(subject);
-    setChatMood(mood);
+    setChatMood(selectedMood);
     setShowRoastChat(true);
   };
 
@@ -498,23 +498,58 @@ export default function Home() {
             </div>
           </>
         ) : (
-          /* Aura Card Display */
+          /* Aura Card Display with External Buttons */
           <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             gap: '20px'
           }}>
-            <AuraCard 
-              aura={aura} 
-              subject={subject}
-              mood={selectedMood}
-              onRoastChat={handleRoastChat}
-              onTryAgain={() => {
-                setAura(null);
-                setSubject('');
-              }}
-            />
+            <AuraCard aura={aura} />
+            
+            {/* Action Buttons Outside Card */}
+            <div style={{
+              display: 'flex',
+              gap: '15px',
+              width: '300px'
+            }}>
+              <button
+                onClick={handleRoastChat}
+                style={{
+                  flex: 1,
+                  padding: '14px',
+                  background: 'rgba(255,255,255,0.2)',
+                  color: '#ffffff',
+                  border: '2px solid #ffffff',
+                  borderRadius: '14px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  fontSize: '1rem'
+                }}
+              >
+                💬 More Roasting
+              </button>
+              <button
+                onClick={() => {
+                  setAura(null);
+                  setSubject('');
+                }}
+                style={{
+                  flex: 1,
+                  padding: '14px',
+                  background: 'linear-gradient(45deg, #FF4500, #FF0000)',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '14px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  boxShadow: '0 5px 20px rgba(255, 69, 0, 0.3)'
+                }}
+              >
+                🔄 Try Again
+              </button>
+            </div>
             
             {copied && (
               <div style={{
@@ -552,4 +587,4 @@ export default function Home() {
       </div>
     </>
   );
-      }
+    }
