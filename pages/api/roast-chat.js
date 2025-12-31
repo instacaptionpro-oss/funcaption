@@ -12,7 +12,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    const HF_TOKEN = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_KEY;
+    const HF_TOKEN = process.env.HF_TOKEN;
+    const ROAST_MODEL = process.env.ROAST_MODEL || "meta-llama/Llama-3.3-70B-Instruct:groq";
+    
     if (!HF_TOKEN) {
       return res.status(500).json({ error: "API token not configured" });
     }
@@ -28,7 +30,7 @@ export default async function handler(req, res) {
     ).join('\n') || '';
 
     const chatCompletion = await client.chat.completions.create({
-      model: "meta-llama/Llama-3.3-70B-Instruct:groq",
+      model: ROAST_MODEL,
       messages: [
         {
           role: "system",
