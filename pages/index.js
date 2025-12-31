@@ -29,13 +29,13 @@ const extendedMoods = [
   { id: 'rebellious', emoji: '⚡', label: 'Rebellious' }
 ];
 
+// Example subjects for Noob/Mid tiers
 const exampleSubjects = [
-  "Trying to be an influencer",
-  "My morning routine",
-  "My relationship status",
-  "My career choices",
-  "My weekend plans",
-  "My fitness journey"
+  "Why I'm always late",
+  "My terrible cooking skills",
+  "My obsession with K-dramas",
+  "My weird sleep schedule",
+  "My inability to adult properly"
 ];
 
 export default function Home() {
@@ -46,6 +46,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [aura, setAura] = useState(null);
   const [showRoastChat, setShowRoastChat] = useState(false);
+  const [chatSubject, setChatSubject] = useState('');
+  const [chatMood, setChatMood] = useState('');
   const [copied, setCopied] = useState(false);
 
   // Cycle through example subjects
@@ -69,6 +71,14 @@ export default function Home() {
   const selectExtendedMood = (moodId) => {
     setSelectedMood(moodId);
     setShowExtendedMoods(false);
+  };
+
+  const useExampleSubject = (exampleSubject) => {
+    setSubject(exampleSubject);
+    // Auto-select Noob/Mid tier moods for example subjects
+    const noobMoods = ['funny', 'sad', 'alone'];
+    const randomMood = noobMoods[Math.floor(Math.random() * noobMoods.length)];
+    setSelectedMood(randomMood);
   };
 
   const generateAura = async (e) => {
@@ -97,7 +107,6 @@ export default function Home() {
       setAura({
         score: Math.floor(Math.random() * 60),
         roast: "Your energy is so weak, even ghosts avoid you.",
-        subjectInsight: "Interesting choice, very telling...",
         rarity: "npc",
         title: "NPC",
         challenge: "YOUR AURA IS SO DARK THAT GOOGLE MAPS CAN'T FIND IT"
@@ -123,6 +132,12 @@ export default function Home() {
         console.log('Sharing failed:', err);
       }
     }
+  };
+
+  const handleRoastChat = (subject, mood) => {
+    setChatSubject(subject);
+    setChatMood(mood);
+    setShowRoastChat(true);
   };
 
   const getCurrentMoodInfo = () => {
@@ -269,6 +284,42 @@ export default function Home() {
                     {exampleSubjects[currentExample]}
                   </div>
                 )}
+              </div>
+
+              {/* Example Subjects for Noob/Mid */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  color: '#a0a0a0',
+                  marginBottom: '12px'
+                }}>
+                  Quick Examples (Noob/Mid Tier):
+                </label>
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '8px'
+                }}>
+                  {exampleSubjects.slice(0, 3).map((example, index) => (
+                    <button
+                      key={index}
+                      onClick={() => useExampleSubject(example)}
+                      style={{
+                        padding: '8px 12px',
+                        borderRadius: '12px',
+                        background: 'rgba(65, 105, 225, 0.2)',
+                        border: '1px solid rgba(100, 149, 237, 0.5)',
+                        color: '#a0a0ff',
+                        fontSize: '0.8rem',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {example}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Mood Selection */}
@@ -441,7 +492,7 @@ export default function Home() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '1.2rem' }}>4️⃣</span>
-                  <span>Share to Instagram Stories</span>
+                  <span>Chat for more roasting!</span>
                 </div>
               </div>
             </div>
@@ -456,8 +507,13 @@ export default function Home() {
           }}>
             <AuraCard 
               aura={aura} 
-              onShare={handleShare}
-              onRoastChat={() => setShowRoastChat(true)}
+              subject={subject}
+              mood={selectedMood}
+              onRoastChat={handleRoastChat}
+              onTryAgain={() => {
+                setAura(null);
+                setSubject('');
+              }}
             />
             
             {copied && (
@@ -472,33 +528,14 @@ export default function Home() {
                 ✓ Copied to clipboard! Paste in Instagram Stories
               </div>
             )}
-            
-            <button
-              onClick={() => {
-                setAura(null);
-                setSubject('');
-              }}
-              style={{
-                padding: '12px 24px',
-                borderRadius: '12px',
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                color: '#ffffff',
-                fontSize: '0.9rem',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}
-            >
-              ← Try Again
-            </button>
           </div>
         )}
 
         {/* Roast Chat Modal */}
         {showRoastChat && (
           <RoastChat 
-            subject={subject}
-            mood={selectedMood}
+            subject={chatSubject}
+            mood={chatMood}
             onClose={() => setShowRoastChat(false)}
           />
         )}
@@ -515,4 +552,4 @@ export default function Home() {
       </div>
     </>
   );
-          }
+    }   
