@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const AuraCard = ({ aura, onRoastChat, onTryAgain }) => {
+const AuraCard = ({ aura, subject, mood, onRoastChat, onTryAgain }) => {
   const [isAnimating, setIsAnimating] = useState(false);
 
   // Color schemes based on 60-30-10 rule
@@ -55,7 +55,7 @@ const AuraCard = ({ aura, onRoastChat, onTryAgain }) => {
   const handleRoastChat = () => {
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 300);
-    onRoastChat();
+    onRoastChat(subject, mood); // Pass subject and mood to chat
   };
 
   return (
@@ -182,4 +182,45 @@ const AuraCard = ({ aura, onRoastChat, onTryAgain }) => {
             fontSize: '0.9rem'
           }}
         >
-          <|fim_middle|>
+          💬 More Roasting
+        </button>
+        <button
+          onClick={onTryAgain}
+          style={{
+            flex: 1,
+            padding: '12px',
+            background: colors.accent,
+            color: colors.primary,
+            border: 'none',
+            borderRadius: '12px',
+            fontWeight: '700',
+            cursor: 'pointer',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
+          }}
+        >
+          🔄 Try Again
+        </button>
+      </div>
+
+      {/* Hashtag */}
+      <div style={{
+        position: 'absolute',
+        bottom: '10px',
+        left: '0',
+        right: '0',
+        textAlign: 'center'
+      }}>
+        <p style={{
+          fontSize: '0.8rem',
+          color: colors.textColor,
+          opacity: '0.8',
+          margin: '0'
+        }}>
+          #AuraScore #{aura.title}Vibes
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default AuraCard;
