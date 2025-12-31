@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const AuraCard = ({ aura, onShare, onRoastChat }) => {
+const AuraCard = ({ aura, onRoastChat, onTryAgain }) => {
   const [isAnimating, setIsAnimating] = useState(false);
 
   // Color schemes based on 60-30-10 rule
@@ -52,10 +52,10 @@ const AuraCard = ({ aura, onShare, onRoastChat }) => {
 
   const colors = getColorScheme(aura.rarity);
 
-  const handleShare = () => {
+  const handleRoastChat = () => {
     setIsAnimating(true);
-    setTimeout(() => setIsAnimating(false), 1000);
-    onShare();
+    setTimeout(() => setIsAnimating(false), 300);
+    onRoastChat();
   };
 
   return (
@@ -68,48 +68,37 @@ const AuraCard = ({ aura, onShare, onRoastChat }) => {
       boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
       background: colors.bgGradient,
       border: `3px solid ${colors.primary}`,
-      transform: isAnimating ? 'scale(0.95)' : 'scale(1)',
-      transition: 'transform 0.3s ease'
+      transform: isAnimating ? 'scale(0.98)' : 'scale(1)',
+      transition: 'transform 0.2s ease'
     }}>
-      {/* Decorative elements */}
-      <div style={{
-        position: 'absolute',
-        top: '20px',
-        left: '20px',
-        right: '20px',
-        height: '5px',
-        background: `linear-gradient(90deg, ${colors.secondary}, ${colors.accent})`,
-        borderRadius: '10px'
-      }}></div>
-
       {/* Challenge Header */}
       <div style={{
-        padding: '40px 20px 20px',
+        padding: '30px 20px 15px',
         textAlign: 'center'
       }}>
         <h2 style={{
-          fontSize: '1.2rem',
+          fontSize: '0.9rem',
           fontWeight: '800',
           color: colors.textColor,
           textTransform: 'uppercase',
-          letterSpacing: '2px',
-          margin: '0 0 10px',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+          letterSpacing: '1px',
+          margin: '0 0 5px',
+          textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
         }}>
           {aura.challenge}
         </h2>
       </div>
 
-      {/* Title Badge */}
+      {/* Tier Badge */}
       <div style={{
         position: 'absolute',
         top: '20px',
         right: '20px',
         background: colors.accent,
         color: colors.primary,
-        padding: '8px 15px',
-        borderRadius: '20px',
-        fontSize: '0.9rem',
+        padding: '6px 12px',
+        borderRadius: '15px',
+        fontSize: '0.8rem',
         fontWeight: '800',
         boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
       }}>
@@ -120,11 +109,11 @@ const AuraCard = ({ aura, onShare, onRoastChat }) => {
       <div style={{
         display: 'flex',
         justifyContent: 'center',
-        margin: '20px 0'
+        margin: '15px 0'
       }}>
         <div style={{
-          width: '150px',
-          height: '150px',
+          width: '140px',
+          height: '140px',
           borderRadius: '50%',
           background: `conic-gradient(${colors.primary} 0% ${aura.score}%, ${colors.secondary} ${aura.score}% 100%)`,
           display: 'flex',
@@ -133,8 +122,8 @@ const AuraCard = ({ aura, onShare, onRoastChat }) => {
           boxShadow: '0 0 30px rgba(0,0,0,0.5)'
         }}>
           <div style={{
-            width: '130px',
-            height: '130px',
+            width: '120px',
+            height: '120px',
             borderRadius: '50%',
             background: 'rgba(0,0,0,0.8)',
             display: 'flex',
@@ -142,7 +131,7 @@ const AuraCard = ({ aura, onShare, onRoastChat }) => {
             justifyContent: 'center'
           }}>
             <span style={{
-              fontSize: '3rem',
+              fontSize: '2.5rem',
               fontWeight: '900',
               color: colors.primary,
               textShadow: `0 0 10px ${colors.accent}`
@@ -151,22 +140,6 @@ const AuraCard = ({ aura, onShare, onRoastChat }) => {
             </span>
           </div>
         </div>
-      </div>
-
-      {/* Subject Insight */}
-      <div style={{
-        padding: '0 20px',
-        textAlign: 'center',
-        margin: '10px 0'
-      }}>
-        <p style={{
-          fontSize: '1rem',
-          color: colors.textColor,
-          fontStyle: 'italic',
-          margin: '0'
-        }}>
-          "{aura.subjectInsight}"
-        </p>
       </div>
 
       {/* Roast Content */}
@@ -178,11 +151,12 @@ const AuraCard = ({ aura, onShare, onRoastChat }) => {
         border: `1px solid ${colors.secondary}`
       }}>
         <p style={{
-          fontSize: '1.1rem',
+          fontSize: '1rem',
           color: colors.textColor,
           textAlign: 'center',
           margin: '0',
-          lineHeight: '1.4'
+          lineHeight: '1.4',
+          fontWeight: '500'
         }}>
           {aura.roast}
         </p>
@@ -195,23 +169,7 @@ const AuraCard = ({ aura, onShare, onRoastChat }) => {
         gap: '10px'
       }}>
         <button
-          onClick={handleShare}
-          style={{
-            flex: 1,
-            padding: '12px',
-            background: colors.accent,
-            color: colors.primary,
-            border: 'none',
-            borderRadius: '12px',
-            fontWeight: '700',
-            cursor: 'pointer',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
-          }}
-        >
-          📤 Share to Story
-        </button>
-        <button
-          onClick={onRoastChat}
+          onClick={handleRoastChat}
           style={{
             flex: 1,
             padding: '12px',
@@ -220,32 +178,8 @@ const AuraCard = ({ aura, onShare, onRoastChat }) => {
             border: `2px solid ${colors.textColor}`,
             borderRadius: '12px',
             fontWeight: '700',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            fontSize: '0.9rem'
           }}
         >
-          💬 Roast Me
-        </button>
-      </div>
-
-      {/* Hashtag */}
-      <div style={{
-        position: 'absolute',
-        bottom: '10px',
-        left: '0',
-        right: '0',
-        textAlign: 'center'
-      }}>
-        <p style={{
-          fontSize: '0.8rem',
-          color: colors.textColor,
-          opacity: '0.8',
-          margin: '0'
-        }}>
-          #AuraScore #{aura.title}Vibes
-        </p>
-      </div>
-    </div>
-  );
-};
-
-export default AuraCard;
+          <|fim_middle|>
