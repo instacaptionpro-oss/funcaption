@@ -27,7 +27,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const userInput = inputValue; // Store user input before clearing
+    const userInput = inputValue;
     setInputValue('');
     setIsLoading(true);
 
@@ -44,35 +44,29 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         apiKey: HF_TOKEN,
       });
 
-      // Get last few messages for context
-      const recentMessages = messages.slice(-4); // Last 4 messages for context
-      const context = recentMessages.map(msg => 
-        `${msg.sender === 'user' ? 'User' : 'AI'}: ${msg.text}`
-      ).join('\n');
-
+      // USE EXACT SAME PROMPT STRUCTURE AS AURA CARD GENERATION
       const chatCompletion = await client.chat.completions.create({
         model: ROAST_MODEL,
         messages: [
           {
             role: "system",
-            content: `You are a brutal roaster responding to a specific user message. Rules:
-1. Respond ONLY to the USER'S LATEST MESSAGE: "${userInput}"
-2. Roast them savagely but keep it SHORT (2-3 lines max)
-3. Use explicit language and harsh truths when appropriate
-4. Be creative and witty, not just mean
-5. Reference their original subject (${subject}) and mood (${mood}) if relevant
-6. Make every roast personal and cutting
-7. NEVER repeat previous responses
-8. Focus on what they just said: "${userInput}"
-9. Keep responses CONCISE and PUNCHY`
+            content: `You are a brutally honest roaster. Generate ONLY JSON:
+{
+  "roast": "harsh, witty roast (2-3 lines max, can use bad words)"
+}
+Rules:
+1. Be savage but creative
+2. Use explicit language when appropriate
+3. No censorship - be brutally honest
+4. Make it sting but be witty`
           },
           {
             role: "user",
-            content: `Recent chat context:\n${context}\n\nUSER'S LATEST MESSAGE: "${userInput}"\nRoast this specific message brutally:`
+            content: `Subject: ${subject}, Mood: ${mood}. User says: "${userInput}". Generate brutal assessment.`
           }
         ],
-        temperature: 0.95, // Higher temperature for more varied responses
-        max_tokens: 80
+        temperature: 0.9,
+        max_tokens: 100
       });
 
       const content = chatCompletion.choices[0]?.message?.content;
@@ -81,9 +75,22 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         throw new Error("No response from AI");
       }
 
+      // Extract roast from JSON response (same as aura card)
+      const jsonMatch = content.match(/\{[^{}]*\}/);
+      let roastText = "Pathetic attempt. Try harder.";
+      
+      if (jsonMatch) {
+        try {
+          const parsed = JSON.parse(jsonMatch[0]);
+          roastText = parsed.roast || roastText;
+        } catch (parseError) {
+          roastText = content.trim();
+        }
+      }
+
       const aiMessage = {
         id: Date.now() + 1,
-        text: content.trim(),
+        text: roastText,
         sender: 'ai'
       };
 
@@ -92,27 +99,13 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
       console.error("Roast chat error:", error);
       const errorMessage = {
         id: Date.now() + 1,
-        text: getRandomErrorMessage(),
+        text: "Even my roasting capabilities are insulted by your request!",
         sender: 'ai'
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const getRandomErrorMessage = () => {
-    const errors = [
-      "Pathetic. Next.",
-      "Is that the best you can do?",
-      "Weak sauce. Try again.",
-      "Not even worth roasting properly.",
-      "Boring. Come back when you're interesting.",
-      "This is why you're average.",
-      "Do better or leave.",
-      "That's your best shot? Sad."
-    ];
-    return errors[Math.floor(Math.random() * errors.length)];
   };
 
   const handleKeyPress = (e) => {
@@ -197,7 +190,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
             boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
           }}>
             <p style={{ margin: '0', fontSize: '1rem' }}>
-              🔥 Crafting personalized roast...
+              🔥 Crafting roast...
             </p>
           </div>
         )}
