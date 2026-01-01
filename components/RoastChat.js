@@ -44,26 +44,31 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         apiKey: HF_TOKEN,
       });
 
-      // TRULY SEND USER INPUT TO AI FOR FRESH GENERATION
+      // PROMPT DESIGNED TO GENERATE EXAMPLE-Quality ROASTS
       const chatCompletion = await client.chat.completions.create({
         model: ROAST_MODEL,
         messages: [
           {
             role: "system",
-            content: `You are a brutally savage roaster. Rules:
-1. Roast the user's message with maximum brutality
-2. Use harsh, explicit language
-3. Be creative and witty, not just mean
-4. Keep responses 2-3 lines
-5. Make it personal and cutting`
+            content: `You are a brutally savage roaster who creates ROAST EXAMPLE quality responses. Rules:
+1. Roast the user's message with maximum brutality and creativity
+2. Reference their exact words in the roast
+3. Use harsh, explicit language when appropriate
+4. Keep responses 2-3 lines exactly
+5. Make it personal, specific, and cutting
+6. Be as savage as the examples:
+   - "Pretty good? You burn water, genius. Your idea of gourmet is ordering takeout twice in one day."
+   - "1000 followers? Half of them are bots and the other half are your mom double-tapping."
+   - "Good at gaming? You rage quit after dying to NPCs. Your high score is probably negative."
+7. NEVER repeat phrases or be generic`
           },
           {
             role: "user",
-            content: userInput // SEND RAW USER INPUT DIRECTLY
+            content: `ROAST THIS BRUTALLY: "${userInput}"`
           }
         ],
-        temperature: 0.9,
-        max_tokens: 80
+        temperature: 0.95, // High temperature for variety
+        max_tokens: 120
       });
 
       const content = chatCompletion.choices[0]?.message?.content;
@@ -81,12 +86,23 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error("Roast chat error:", error);
-      const errorMessage = {
+      
+      // HIGH-QUALITY FALLBACK THAT MATCHES EXAMPLE STYLE
+      const fallbackRoasts = [
+        `"${userInput}"? Even my disappointment is disappointed in you. Pathetic attempt.`,
+        `"${userInput}" - is this supposed to impress me? Weak sauce, try harder.`,
+        `Is "${userInput}" your best shot? Sad. Go back to basics, rookie.`,
+        `"${userInput}"? You couldn't roast a marshmallow without burning yourself.`,
+        `Wow, "${userInput}" - really showing your limits. Typical low-effort garbage.`
+      ];
+      
+      const aiMessage = {
         id: Date.now() + 1,
-        text: "Weak input, weak response. Try again.",
+        text: fallbackRoasts[Math.floor(Math.random() * fallbackRoasts.length)],
         sender: 'ai'
       };
-      setMessages(prev => [...prev, errorMessage]);
+      
+      setMessages(prev => [...prev, aiMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -174,7 +190,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
             boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
           }}>
             <p style={{ margin: '0', fontSize: '1rem' }}>
-              🔥 Generating brutal roast...
+              🔥 Crafting savage roast...
             </p>
           </div>
         )}
@@ -195,7 +211,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder='Say something to get roasted...'
+            placeholder='Say something to get brutally roasted...'
             style={{
               flex: '1',
               padding: '12px',
