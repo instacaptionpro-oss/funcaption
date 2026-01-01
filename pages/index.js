@@ -29,13 +29,18 @@ const extendedMoods = [
   { id: 'rebellious', emoji: '⚡', label: 'Rebellious' }
 ];
 
-// Example subjects for Noob/Mid tiers
+// Enhanced example subjects with targeted outcomes
 const exampleSubjects = [
+  // Normal examples (should lead to NPC/Noob)
   "Why I'm always late",
-  "My terrible cooking skills",
+  "My terrible cooking skills", 
   "My obsession with K-dramas",
-  "My weird sleep schedule",
-  "My inability to adult properly"
+  
+  // Mid-tier example (should lead to Mid tier with funny mood)
+  "My inconsistent workout routine",
+  
+  // Epic-tier example (should lead to Epic/Legendary with fire mood)  
+  "My breakthrough business idea"
 ];
 
 export default function Home() {
@@ -54,7 +59,7 @@ export default function Home() {
   // Cycle through example subjects
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentExample(prev => (prev + 1) % exampleSubjects.length);
+      setCurrentExample(prev => (prev + 1) % 3); // Only cycle through first 3 normal examples
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -74,12 +79,26 @@ export default function Home() {
     setShowExtendedMoods(false);
   };
 
+  // Enhanced example subject handler with targeted mood selection
   const useExampleSubject = (exampleSubject) => {
     setSubject(exampleSubject);
-    // Auto-select Noob/Mid tier moods for example subjects
-    const noobMoods = ['funny', 'sad', 'alone'];
-    const randomMood = noobMoods[Math.floor(Math.random() * noobMoods.length)];
-    setSelectedMood(randomMood);
+    
+    // Auto-select appropriate mood based on example for targeted tiers
+    let selectedMood;
+    
+    if (exampleSubject === "My inconsistent workout routine") {
+      // This should lead to Mid tier with funny mood
+      selectedMood = 'funny';
+    } else if (exampleSubject === "My breakthrough business idea") {
+      // This should lead to Epic tier with fire mood  
+      selectedMood = 'fire';
+    } else {
+      // Normal examples lead to NPC/Noob
+      const noobMoods = ['funny', 'sad', 'alone'];
+      selectedMood = noobMoods[Math.floor(Math.random() * noobMoods.length)];
+    }
+    
+    setSelectedMood(selectedMood);
   };
 
   const generateAura = async (e) => {
@@ -289,7 +308,7 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Example Subjects for Noob/Mid */}
+              {/* Enhanced Example Subjects Section */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{
                   display: 'block',
@@ -298,30 +317,100 @@ export default function Home() {
                   color: '#a0a0a0',
                   marginBottom: '12px'
                 }}>
-                  Quick Examples (Noob/Mid Tier):
+                  Try These Examples:
                 </label>
                 <div style={{
                   display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '8px'
+                  flexDirection: 'column',
+                  gap: '10px'
                 }}>
-                  {exampleSubjects.slice(0, 3).map((example, index) => (
+                  {/* Normal Examples (NPC/Noob tier) */}
+                  <div>
+                    <div style={{
+                      fontSize: '0.8rem',
+                      color: '#666666',
+                      marginBottom: '5px'
+                    }}>
+                      🎯 For Low Scores (NPC/Noob):
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '8px'
+                    }}>
+                      {exampleSubjects.slice(0, 3).map((example, index) => (
+                        <button
+                          key={index}
+                          onClick={() => useExampleSubject(example)}
+                          style={{
+                            padding: '8px 12px',
+                            borderRadius: '12px',
+                            background: 'rgba(65, 105, 225, 0.2)',
+                            border: '1px solid rgba(100, 149, 237, 0.5)',
+                            color: '#a0a0ff',
+                            fontSize: '0.8rem',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {example}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Mid-tier Example */}
+                  <div>
+                    <div style={{
+                      fontSize: '0.8rem',
+                      color: '#666666',
+                      marginBottom: '5px'
+                    }}>
+                      ⚡ For Mid Scores (Funny mood):
+                    </div>
                     <button
-                      key={index}
-                      onClick={() => useExampleSubject(example)}
+                      onClick={() => useExampleSubject("My inconsistent workout routine")}
                       style={{
-                        padding: '8px 12px',
+                        width: '100%',
+                        padding: '10px 12px',
                         borderRadius: '12px',
-                        background: 'rgba(65, 105, 225, 0.2)',
-                        border: '1px solid rgba(100, 149, 237, 0.5)',
-                        color: '#a0a0ff',
+                        background: 'rgba(255, 140, 0, 0.2)',
+                        border: '1px solid rgba(255, 140, 0, 0.5)',
+                        color: '#ffa500',
                         fontSize: '0.8rem',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        textAlign: 'left'
                       }}
                     >
-                      {example}
+                      My inconsistent workout routine
                     </button>
-                  ))}
+                  </div>
+
+                  {/* Epic-tier Example */}
+                  <div>
+                    <div style={{
+                      fontSize: '0.8rem',
+                      color: '#666666',
+                      marginBottom: '5px'
+                    }}>
+                      🔥 For High Scores (Fire mood):
+                    </div>
+                    <button
+                      onClick={() => useExampleSubject("My breakthrough business idea")}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '12px',
+                        background: 'rgba(255, 215, 0, 0.2)',
+                        border: '1px solid rgba(255, 215, 0, 0.5)',
+                        color: '#ffd700',
+                        fontSize: '0.8rem',
+                        cursor: 'pointer',
+                        textAlign: 'left'
+                      }}
+                    >
+                      My breakthrough business idea
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -591,4 +680,4 @@ export default function Home() {
       </div>
     </>
   );
-              }
+            }
