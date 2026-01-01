@@ -1,196 +1,170 @@
 import { useState } from 'react';
 
 const AuraCard = ({ aura }) => {
-  // Logic to determine the style and the specific "Bait" header text
+  // Enhanced Tier Data with specific professional color palettes
   const getTierData = (rarity) => {
     const r = rarity.toLowerCase();
     switch (r) {
       case 'legendary':
         return {
-          background: 'linear-gradient(135deg, #FFD700 0%, #000000 100%)',
-          border: '3px solid #FFD700',
+          background: 'linear-gradient(180deg, #1a1a1a 0%, #000 100%)',
           accent: '#FFD700',
+          glow: '0 0 40px rgba(255, 215, 0, 0.3)',
           header: "DARE TO MATCH MY SCORE? TRY IT, LOSERS.",
-          icon: "👑"
+          label: "ROYAL STATUS",
+          texture: "radial-gradient(circle at top right, rgba(255,215,0,0.1), transparent)"
         };
       case 'epic':
         return {
-          background: 'linear-gradient(135deg, #4B0082 0%, #00BFFF 100%)',
-          border: '3px solid #00BFFF',
-          accent: '#00BFFF',
+          background: 'linear-gradient(180deg, #0f0a1e 0%, #000 100%)',
+          accent: '#BF00FF',
+          glow: '0 0 40px rgba(191, 0, 255, 0.3)',
           header: "DARE TO MATCH MY SCORE? TRY IT, LOSERS.",
-          icon: "⚡"
+          label: "ELITE ENTITY",
+          texture: "linear-gradient(45deg, rgba(191,0,255,0.05) 25%, transparent 25%)"
         };
       case 'mid':
         return {
-          background: 'linear-gradient(135deg, #2F4F4F 0%, #000000 100%)',
-          border: '3px solid #4F4F4F',
-          accent: '#888888',
+          background: 'linear-gradient(180deg, #1c1c1c 0%, #000 100%)',
+          accent: '#00FFCC',
+          glow: '0 0 20px rgba(0, 255, 204, 0.15)',
           header: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.",
-          icon: "😐"
+          label: "AVERAGE CIVILIAN",
+          texture: "none"
         };
       case 'noob':
         return {
-          background: 'linear-gradient(135deg, #FF4500 0%, #000000 100%)',
-          border: '3px solid #FF4500',
+          background: 'linear-gradient(180deg, #1a0f00 0%, #000 100%)',
           accent: '#FF4500',
+          glow: '0 0 30px rgba(255, 69, 0, 0.2)',
           header: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.",
-          icon: "⚠️"
+          label: "TRAINEE HUMAN",
+          texture: "repeating-linear-gradient(45deg, rgba(255,69,0,0.05), rgba(255,69,0,0.05) 10px, transparent 10px, transparent 20px)"
         };
       case 'npc':
       default:
         return {
-          background: 'linear-gradient(135deg, #8B0000 0%, #000000 100%)',
-          border: '3px solid #FF0000',
+          background: 'linear-gradient(180deg, #120000 0%, #000 100%)',
           accent: '#FF0000',
+          glow: '0 0 50px rgba(255, 0, 0, 0.4)',
           header: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.",
-          icon: "💀"
+          label: "SYSTEM ERROR / NPC",
+          texture: "url('https://www.transparenttextures.com/patterns/carbon-fibre.png')"
         };
     }
   };
 
   const tier = getTierData(aura.rarity);
 
-  // Danger sticker component
-  const DangerSticker = () => (
-    <div style={{
-      position: 'absolute',
-      top: '10px',
-      right: '10px',
-      width: '30px',
-      height: '30px',
-      background: 'rgba(255, 0, 0, 0.8)',
-      borderRadius: '50%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: '1.2rem',
-      boxShadow: '0 0 10px rgba(255, 0, 0, 0.5)',
-      transform: 'rotate(15deg)',
-      border: '2px solid white'
-    }}>
-      ⚠️
-    </div>
-  );
-
   return (
     <div style={{
       position: 'relative',
-      width: '320px',
-      minHeight: '580px',
-      borderRadius: '15px',
+      width: '350px',
+      minHeight: '620px',
+      borderRadius: '30px', // More rounded for modern look
       overflow: 'hidden',
       background: tier.background,
-      border: tier.border,
       color: '#FFFFFF',
-      fontFamily: '"Impact", sans-serif',
+      fontFamily: '"Inter", sans-serif', // Use Inter for professional look, Impact only for Score
       display: 'flex',
       flexDirection: 'column',
-      padding: '20px',
+      padding: '25px',
       textAlign: 'center',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.8)'
+      border: `1px solid rgba(255,255,255,0.1)`,
+      boxShadow: tier.glow,
     }}>
+      {/* Background Texture Overlay */}
+      <div style={{ position: 'absolute', inset: 0, background: tier.texture, opacity: 0.3, pointerEvents: 'none' }} />
       
-      {/* 1. The Header (BAIT) */}
+      {/* 1. Header (The Bait) */}
       <div style={{
-        fontSize: '1rem',
-        fontWeight: 'bold',
-        marginBottom: '15px',
+        fontSize: '0.65rem',
+        fontWeight: '900',
+        letterSpacing: '4px',
+        marginBottom: '20px',
         color: tier.accent,
-        textTransform: 'uppercase'
+        textTransform: 'uppercase',
+        opacity: 0.9
       }}>
         {tier.header}
       </div>
 
-      {/* 2. Rarity Icon & Name */}
-      <div style={{ fontSize: '2rem', marginBottom: '5px' }}>{tier.icon}</div>
-      <h2 style={{ 
-        fontSize: '1.8rem', 
-        margin: '0', 
-        letterSpacing: '3px',
-        textShadow: `0 0 10px ${tier.accent}`
-      }}>
-        {aura.rarity.toUpperCase()}
-      </h2>
-
-      {/* 3. Score (Centerpiece) */}
+      {/* 2. PROOF SECTION (The Instagram "Scan") */}
       <div style={{
-        fontSize: '5rem',
-        fontWeight: '900',
-        margin: '20px 0',
-        textShadow: `0 0 20px ${tier.accent}`
+        background: 'rgba(255, 255, 255, 0.03)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '15px',
+        padding: '12px',
+        textAlign: 'left',
+        marginBottom: '20px',
+        backdropFilter: 'blur(10px)'
       }}>
-        {aura.score}
+        <div style={{ fontSize: '0.6rem', color: tier.accent, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '4px' }}>Target: @{aura.username || 'unknown'}</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: '500' }}>
+          <span>Followers: {aura.followers || 'N/A'}</span>
+          <span style={{ opacity: 0.5 }}>Scan: Stable</span>
+        </div>
       </div>
 
-      {/* 4. The Roast (Savage AI Switch) - SMALLER and more savage */}
+      {/* 3. Score Centerpiece */}
+      <div style={{ margin: '10px 0' }}>
+        <div style={{ fontSize: '0.7rem', tracking: '3px', opacity: 0.5, fontWeight: 'bold' }}>AURA LEVEL</div>
+        <div style={{
+          fontSize: '7rem',
+          fontWeight: '900',
+          fontFamily: '"Impact", sans-serif',
+          lineHeight: '1',
+          background: `linear-gradient(to bottom, #fff 40%, ${tier.accent} 100%)`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          filter: `drop-shadow(0 0 15px ${tier.accent}66)`
+        }}>
+          {aura.score}
+        </div>
+        <div style={{ 
+            fontSize: '1.2rem', 
+            fontWeight: '900', 
+            color: tier.accent, 
+            marginTop: '-10px',
+            fontStyle: 'italic',
+            letterSpacing: '2px'
+        }}>
+          {tier.label}
+        </div>
+      </div>
+
+      {/* 4. Vibe/Insight */}
+      <div style={{ fontSize: '0.85rem', margin: '20px 0', padding: '0 10px', opacity: 0.8, fontWeight: '300' }}>
+        <strong style={{ color: tier.accent }}>VIBE:</strong> {aura.subjectInsight}
+      </div>
+
+      {/* 5. The Savage Roast (The Final Blow) */}
       <div style={{
         marginTop: 'auto',
-        background: 'rgba(0,0,0,0.4)',
-        padding: '15px',
-        borderRadius: '10px',
-        border: `1px solid ${tier.accent}`,
-        fontSize: '0.9rem',
-        lineHeight: '1.2'
+        background: 'rgba(0, 0, 0, 0.5)',
+        padding: '18px',
+        borderRadius: '20px',
+        border: `1px solid rgba(255,255,255,0.05)`,
+        fontSize: '1rem',
+        fontWeight: '500',
+        lineHeight: '1.4',
+        boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)'
       }}>
-        {aura.roast}
+        "{aura.roast}"
       </div>
 
-      {/* 5. NPC Enhancement with Danger Stickers for NPC/Noob tiers */}
-      {(aura.rarity === 'npc' || aura.rarity === 'noob') && (
-        <>
-          <DangerSticker />
-          <div style={{
-            position: 'absolute',
-            bottom: '70px',
-            left: '10px',
-            width: '25px',
-            height: '25px',
-            background: 'rgba(255, 0, 0, 0.8)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '1rem',
-            boxShadow: '0 0 8px rgba(255, 0, 0, 0.5)',
-            transform: 'rotate(-10deg)',
-            border: '2px solid white'
-          }}>
-            ⚠️
-          </div>
-          <div style={{
-            position: 'absolute',
-            bottom: '100px',
-            right: '15px',
-            width: '20px',
-            height: '20px',
-            background: 'rgba(255, 0, 0, 0.8)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '0.8rem',
-            boxShadow: '0 0 6px rgba(255, 0, 0, 0.5)',
-            transform: 'rotate(5deg)',
-            border: '2px solid white'
-          }}>
-            ⚠️
-          </div>
-        </>
-      )}
-
-      {/* 6. Footer */}
+      {/* 6. Professional Footer */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: '15px',
-        fontSize: '0.8rem'
+        marginTop: '20px',
+        fontSize: '0.6rem',
+        opacity: 0.4,
+        letterSpacing: '1px'
       }}>
-        <div style={{ width: '45px', height: '45px', background: '#FFF', padding: '2px' }}>
-          {/* QR Component would go here */}
-        </div>
-        <span style={{ opacity: 0.7 }}>aura-roast.com</span>
+        <span>ENCRYPTED RESULTS</span>
+        <span style={{ fontWeight: 'bold' }}>AURA-ROAST.COM</span>
       </div>
     </div>
   );
