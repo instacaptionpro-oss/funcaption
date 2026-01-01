@@ -27,7 +27,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const userInput = inputValue;
+    const userInput = inputValue; // Store the actual user input
     setInputValue('');
     setIsLoading(true);
 
@@ -44,26 +44,26 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         apiKey: HF_TOKEN,
       });
 
-      // SIMPLIFIED PROMPT - NO JSON REQUIRED
+      // FOCUS ON USER INPUT RESPONSE
       const chatCompletion = await client.chat.completions.create({
         model: ROAST_MODEL,
         messages: [
           {
             role: "system",
-            content: `You are a brutally honest roaster. Rules:
-1. Roast the user's message savagely
-2. Use explicit language when appropriate
-3. Be creative and witty, not just mean
-4. Keep responses 2-3 lines max
-5. Reference subject (${subject}) and mood (${mood}) when relevant
-6. Make it personal and cutting`
+            content: `You are a brutal roaster responding to what the user just said. 
+Rules:
+1. Respond directly to: "${userInput}"
+2. Roast them savagely about what they said
+3. Keep it 2-3 lines max
+4. Be creative and cutting
+5. Reference original topic (${subject}) if relevant`
           },
           {
             role: "user",
-            content: `User says: "${userInput}". Roast them brutally:`
+            content: `"${userInput}" - Roast this specifically:`
           }
         ],
-        temperature: 0.95,
+        temperature: 0.9,
         max_tokens: 80
       });
 
@@ -84,7 +84,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
       console.error("Roast chat error:", error);
       const errorMessage = {
         id: Date.now() + 1,
-        text: getRandomRoast(),
+        text: getSnarkyResponse(userInput),
         sender: 'ai'
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -93,20 +93,16 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
     }
   };
 
-  const getRandomRoast = () => {
-    const roasts = [
-      "Pathetic attempt. Try harder.",
-      "Is that the best you can do?",
-      "Weak sauce. Next!",
-      "Not even worth roasting properly.",
-      "Boring. Come back when you're interesting.",
-      "This is why you're average.",
-      "Do better or leave.",
-      "That's your best shot? Sad.",
-      "Even my disappointment is disappointed in you.",
-      "Try again when you're not embarrassing yourself."
+  // CREATE RESPONSES BASED ON USER INPUT
+  const getSnarkyResponse = (userInput) => {
+    const responses = [
+      `"${userInput}"? Pathetic.`,
+      `Is "${userInput}" supposed to impress me?`,
+      `"${userInput}" - typical low-effort garbage.`,
+      `Wow, "${userInput}" - really showing your limits.`,
+      `"${userInput}"? Even my disappointment is disappointed.`
     ];
-    return roasts[Math.floor(Math.random() * roasts.length)];
+    return responses[Math.floor(Math.random() * responses.length)];
   };
 
   const handleKeyPress = (e) => {
@@ -191,7 +187,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
             boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
           }}>
             <p style={{ margin: '0', fontSize: '1rem' }}>
-              🔥 Crafting roast...
+              🔥 Roasting your pathetic input...
             </p>
           </div>
         )}
@@ -212,7 +208,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Say something to get roasted..."
+            placeholder='Say something stupid...'
             style={{
               flex: '1',
               padding: '12px',
