@@ -27,7 +27,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const userInput = inputValue; // Store the actual user input
+    const userInput = inputValue;
     setInputValue('');
     setIsLoading(true);
 
@@ -44,23 +44,22 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         apiKey: HF_TOKEN,
       });
 
-      // FOCUS ON USER INPUT RESPONSE
+      // TRULY SEND USER INPUT TO AI FOR FRESH GENERATION
       const chatCompletion = await client.chat.completions.create({
         model: ROAST_MODEL,
         messages: [
           {
             role: "system",
-            content: `You are a brutal roaster responding to what the user just said. 
-Rules:
-1. Respond directly to: "${userInput}"
-2. Roast them savagely about what they said
-3. Keep it 2-3 lines max
-4. Be creative and cutting
-5. Reference original topic (${subject}) if relevant`
+            content: `You are a brutally savage roaster. Rules:
+1. Roast the user's message with maximum brutality
+2. Use harsh, explicit language
+3. Be creative and witty, not just mean
+4. Keep responses 2-3 lines
+5. Make it personal and cutting`
           },
           {
             role: "user",
-            content: `"${userInput}" - Roast this specifically:`
+            content: userInput // SEND RAW USER INPUT DIRECTLY
           }
         ],
         temperature: 0.9,
@@ -84,25 +83,13 @@ Rules:
       console.error("Roast chat error:", error);
       const errorMessage = {
         id: Date.now() + 1,
-        text: getSnarkyResponse(userInput),
+        text: "Weak input, weak response. Try again.",
         sender: 'ai'
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // CREATE RESPONSES BASED ON USER INPUT
-  const getSnarkyResponse = (userInput) => {
-    const responses = [
-      `"${userInput}"? Pathetic.`,
-      `Is "${userInput}" supposed to impress me?`,
-      `"${userInput}" - typical low-effort garbage.`,
-      `Wow, "${userInput}" - really showing your limits.`,
-      `"${userInput}"? Even my disappointment is disappointed.`
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
   };
 
   const handleKeyPress = (e) => {
@@ -187,7 +174,7 @@ Rules:
             boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
           }}>
             <p style={{ margin: '0', fontSize: '1rem' }}>
-              🔥 Roasting your pathetic input...
+              🔥 Generating brutal roast...
             </p>
           </div>
         )}
@@ -208,7 +195,7 @@ Rules:
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder='Say something stupid...'
+            placeholder='Say something to get roasted...'
             style={{
               flex: '1',
               padding: '12px',
