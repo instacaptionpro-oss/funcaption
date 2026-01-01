@@ -1,7 +1,6 @@
-          import React from 'react';
+import React from 'react';
 
 const AuraCard = ({ aura }) => {
-  // Destructuring the dynamic content from your AI
   const { score, rarity, roast } = aura;
 
   const theme = {
@@ -14,7 +13,7 @@ const AuraCard = ({ aura }) => {
   return (
     <div style={{
       width: '350px',
-      minHeight: '600px',
+      minHeight: '620px',
       background: theme.background,
       borderRadius: '35px',
       border: theme.cardBorder,
@@ -28,16 +27,28 @@ const AuraCard = ({ aura }) => {
       position: 'relative',
       overflow: 'hidden'
     }}>
-      {/* Texture Overlay */}
+      
+      {/* GLITCH LAYER 1: Noise Texture */}
       <div style={{
         position: 'absolute',
         top: 0, left: 0, right: 0, bottom: 0,
-        opacity: 0.15,
-        backgroundImage: 'url("https://www.transparenttextures.com/patterns/asfalt-dark.png")',
-        pointerEvents: 'none'
+        opacity: 0.12,
+        backgroundImage: 'url("https://www.transparenttextures.com/patterns/carbon-fibre.png")',
+        pointerEvents: 'none',
+        zIndex: 0
       }} />
 
-      {/* 1. THE TOP WARNING (CORRECTED TEXT) */}
+      {/* GLITCH LAYER 2: Red Digital Artifacts (Scanlines) */}
+      <div style={{
+        position: 'absolute',
+        top: 0, left: 0, right: 0, bottom: 0,
+        background: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(255, 49, 49, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03))',
+        backgroundSize: '100% 4px, 3px 100%',
+        pointerEvents: 'none',
+        zIndex: 0
+      }} />
+
+      {/* 1. THE TOP WARNING */}
       <h1 style={{
         color: theme.accentRed,
         fontSize: '1.9rem',
@@ -47,7 +58,8 @@ const AuraCard = ({ aura }) => {
         textTransform: 'uppercase',
         marginTop: '10px',
         letterSpacing: '-1px',
-        zIndex: 1
+        zIndex: 1,
+        textShadow: '2px 2px 0px rgba(0,0,0,1)'
       }}>
         FUTURE SO DARK THAT EVEN<br/>GOOGLE MAPS CANT FIND IT.
       </h1>
@@ -63,7 +75,7 @@ const AuraCard = ({ aura }) => {
         justifyContent: 'center',
         border: '3px solid white',
         margin: '35px 0',
-        boxShadow: '0 0 15px rgba(255,255,255,0.2)',
+        boxShadow: '0 0 20px rgba(255, 49, 49, 0.6)',
         zIndex: 1
       }}>
         <img 
@@ -80,18 +92,19 @@ const AuraCard = ({ aura }) => {
         </div>
         
         <div style={{
-          fontSize: '8rem',
+          fontSize: '8.5rem',
           fontWeight: '900',
           color: theme.accentRed,
           lineHeight: '1',
           margin: '0',
-          fontFamily: 'Impact, sans-serif'
+          fontFamily: 'Impact, sans-serif',
+          filter: 'drop-shadow(0px 0px 10px rgba(255, 49, 49, 0.3))'
         }}>
           {score}
         </div>
 
         <div style={{
-          fontSize: '1.6rem',
+          fontSize: '1.7rem',
           fontWeight: '900',
           fontStyle: 'italic',
           color: theme.accentRed,
@@ -111,8 +124,9 @@ const AuraCard = ({ aura }) => {
         padding: '20px',
         marginTop: 'auto',
         textAlign: 'left',
-        background: 'rgba(0,0,0,0.4)',
-        zIndex: 1
+        background: 'rgba(0,0,0,0.6)',
+        zIndex: 1,
+        backdropFilter: 'blur(5px)'
       }}>
         <div style={{ color: theme.accentRed, fontSize: '1.1rem', fontWeight: '900', marginBottom: '6px' }}>
           "THE SAVAGE ROAST
