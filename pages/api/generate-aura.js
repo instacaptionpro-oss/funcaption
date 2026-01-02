@@ -28,8 +28,8 @@ export default async function handler(req, res) {
     let targetRange = "random";
     if (subject === "My inconsistent workout routine" && mood === "funny") {
       targetRange = "mid"; // 75-89
-    } else if (subject === "My breakthrough business idea" && mood === "fire") {
-      targetRange = "epic"; // 90-100
+    } else if (subject === "My terrible cooking skills" && mood === "funny") {
+      targetRange = "noob"; // 40-74
     }
 
     // CUSTOM PROMPT FOR SPECIFIC TIERS
@@ -48,8 +48,8 @@ Rules:
     // ADD TIER-SPECIFIC INSTRUCTIONS
     if (targetRange === "mid") {
       systemPrompt += `\n5. IMPORTANT: Generate a score between 75-89 for MID tier`;
-    } else if (targetRange === "epic") {
-      systemPrompt += `\n5. IMPORTANT: Generate a score between 90-100 for EPIC/LEGENDARY tier`;
+    } else if (targetRange === "noob") {
+      systemPrompt += `\n5. IMPORTANT: Generate a score between 40-74 for NOOB tier`;
     }
 
     const chatCompletion = await client.chat.completions.create({
@@ -85,8 +85,8 @@ Rules:
     let finalScore = result.score;
     if (targetRange === "mid" && (finalScore < 75 || finalScore > 89)) {
       finalScore = 75 + Math.floor(Math.random() * 15); // 75-89
-    } else if (targetRange === "epic" && (finalScore < 90 || finalScore > 100)) {
-      finalScore = 90 + Math.floor(Math.random() * 11); // 90-100
+    } else if (targetRange === "noob" && (finalScore < 40 || finalScore > 74)) {
+      finalScore = 40 + Math.floor(Math.random() * 35); // 40-74
     }
     
     // Determine rarity based on FINAL score
@@ -130,12 +130,13 @@ Rules:
     let randomScore;
     if (subject === "My inconsistent workout routine" && mood === "funny") {
       randomScore = 75 + Math.floor(Math.random() * 15); // 75-89 for Mid
-    } else if (subject === "My breakthrough business idea" && mood === "fire") {
-      randomScore = 90 + Math.floor(Math.random() * 11); // 90-100 for Epic
+    } else if (subject === "My terrible cooking skills" && mood === "funny") {
+      randomScore = 40 + Math.floor(Math.random() * 35); // 40-74 for Noob
     } else {
       randomScore = Math.floor(Math.random() * 101);
     }
     
+    // Determine rarity based on score
     let rarity, title, challenge;
     if (randomScore >= 95) {
       rarity = "legendary";
@@ -170,4 +171,4 @@ Rules:
       }
     });
   }
-}
+  }
