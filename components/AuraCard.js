@@ -1,172 +1,136 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const AuraCard = ({ aura }) => {
-  const [glitchOffset, setGlitchOffset] = useState(0);
+  const syncValue = aura.sync || 15;
 
-  // Sync Score Logic: If not provided, we calculate a mock one for the demo
-  const syncValue = aura.sync || Math.floor(Math.random() * 40) + 10; 
-
-  const getTierData = (rarity) => {
+  const getTierLayout = (rarity) => {
     switch (rarity.toLowerCase()) {
       case 'legendary':
         return {
-          bg: 'linear-gradient(135deg, #1a1a1a 0%, #000 100%)',
-          border: '2px solid #FFD700',
+          type: 'PREMIUM',
+          bg: 'linear-gradient(145deg, #111 0%, #000 100%)',
           accent: '#FFD700',
-          shadow: '0 0 30px rgba(255, 215, 0, 0.4)',
-          header: "SYSTEM BREAKER: LEGENDARY STATUS",
-          tag: "GLITCH IN REALITY",
-          noiseOpacity: 0.15
+          border: 'double 4px transparent',
+          customStyle: {
+            backgroundImage: 'linear-gradient(#000, #000), radial-gradient(circle at top left, #FFD700, #AA8900)',
+            backgroundOrigin: 'border-box',
+            backgroundClip: 'padding-box, border-box',
+            boxShadow: '0 0 40px rgba(255, 215, 0, 0.2)'
+          },
+          label: "ROYALTY_STATUS",
+          showScanlines: false,
+          glitchAmount: 0
+        };
+      case 'glitch':
+        return {
+          type: 'ANOMALY',
+          bg: '#000',
+          accent: '#00ffff',
+          border: '1px solid #00ffff',
+          customStyle: {
+            boxShadow: 'inset 0 0 20px rgba(0, 255, 255, 0.2), 0 0 15px rgba(0, 255, 255, 0.4)',
+            clipPath: 'polygon(0% 5%, 5% 0%, 100% 0%, 100% 95%, 95% 100%, 0% 100%)' // Angled corners
+          },
+          label: "ERROR: REALITY_CHECK",
+          showScanlines: true,
+          glitchAmount: 3
         };
       case 'npc':
       default:
         return {
-          bg: 'linear-gradient(135deg, #150000 0%, #000 100%)',
-          border: '2px solid #ff3131',
+          type: 'SYSTEM',
+          bg: '#0a0000',
           accent: '#ff3131',
-          shadow: '0 0 25px rgba(255, 49, 49, 0.3)',
-          header: "FUTURE SO DARK EVEN GOOGLE MAPS CAN'T FIND IT",
-          tag: "DEFAULT ENTITY (NPC)",
-          noiseOpacity: 0.2
+          border: '2px solid #ff3131',
+          customStyle: {
+            borderStyle: 'dashed',
+            opacity: 0.9
+          },
+          label: "DEFAULT_ENTITY_ID",
+          showScanlines: true,
+          glitchAmount: 1
         };
     }
   };
 
-  const theme = getTierData(aura.rarity);
+  const style = getTierLayout(aura.rarity);
 
   return (
-    <div className="aura-container" style={{
+    <div className={`card-frame ${style.type}`} style={{
+      width: '320px',
+      height: '580px',
+      background: style.bg,
+      color: 'white',
+      padding: '20px',
       position: 'relative',
-      width: '340px',
-      height: '620px',
-      background: theme.bg,
-      border: theme.border,
-      borderRadius: '2px', // Sharp edges look more "tech"
-      boxShadow: theme.shadow,
-      overflow: 'hidden',
-      fontFamily: '"JetBrains Mono", "Courier New", monospace',
       display: 'flex',
       flexDirection: 'column',
-      padding: '24px',
-      color: 'white'
+      fontFamily: '"JetBrains Mono", monospace',
+      ...style.customStyle
     }}>
-      {/* 1. DIGITAL OVERLAYS (THE PEAK STUFF) */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-        opacity: theme.noiseOpacity,
-        pointerEvents: 'none'
-      }} />
+      {/* 1. TIER-SPECIFIC OVERLAYS */}
+      {style.showScanlines && <div className="scanlines" />}
       
-      {/* Scanline Effect */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))',
-        backgroundSize: '100% 4px, 3px 100%',
-        pointerEvents: 'none',
-        zIndex: 10
-      }} />
-
-      {/* 2. HEADER STRIP */}
-      <div style={{
-        fontSize: '0.65rem',
-        textAlign: 'left',
-        borderBottom: `1px solid ${theme.accent}`,
-        paddingBottom: '8px',
-        marginBottom: '20px',
-        color: theme.accent,
-        display: 'flex',
-        justifyContent: 'space-between'
-      }}>
-        <span>ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
-        <span style={{ fontWeight: 'bold' }}>LIVE_DECRYPT_02.01.26</span>
+      {/* 2. HEADER: Each tier has a unique metadata layout */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: style.accent }}>
+        <span>{style.label}</span>
+        <span>{aura.rarity === 'legendary' ? '★★★' : 'REV_0.2'}</span>
       </div>
 
-      <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: '4px', textAlign: 'left' }}>
-        {theme.header}
-      </div>
-
-      {/* 3. RARITY TAG */}
-      <div style={{
-        background: theme.accent,
-        color: 'black',
-        fontSize: '0.8rem',
-        fontWeight: '900',
-        padding: '4px 10px',
-        alignSelf: 'flex-start',
-        transform: 'skew(-15deg)',
-        marginBottom: '30px'
-      }}>
-        <span style={{ transform: 'skew(15deg)', display: 'inline-block' }}>{theme.tag}</span>
-      </div>
-
-      {/* 4. MAIN SCORE (MASSIVE) */}
-      <div style={{ position: 'relative', margin: '20px 0' }}>
+      {/* 3. SCORE: Dynamic shadow per tier */}
+      <div style={{ margin: '40px 0', textAlign: 'center' }}>
         <h1 style={{
-          fontSize: '9rem',
+          fontSize: '7rem',
           margin: 0,
-          lineHeight: 0.8,
           fontWeight: '900',
-          textAlign: 'center',
           color: 'white',
-          textShadow: `4px 0px ${theme.accent}, -4px 0px #00ffff`
+          textShadow: aura.rarity === 'glitch' 
+            ? `3px 3px #ff00ff, -3px -3px #00ffff` // RGB Split for Glitch
+            : `0 0 20px ${style.accent}` // Glow for others
         }}>
           {aura.score}
         </h1>
-        <div style={{ fontSize: '1rem', color: theme.accent, fontWeight: 'bold' }}>AURA POINTS</div>
+        <div style={{ letterSpacing: '4px', fontSize: '0.8rem', opacity: 0.7 }}>AURA_POINTS</div>
       </div>
 
-      {/* 5. SYNCHRONIZATION METER */}
-      <div style={{ margin: '30px 0', textAlign: 'left' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', marginBottom: '6px' }}>
-          <span>SYNCHRONIZATION</span>
-          <span>{syncValue}%</span>
-        </div>
-        <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', width: '100%' }}>
-          <div style={{ height: '100%', width: `${syncValue}%`, background: theme.accent, boxShadow: `0 0 10px ${theme.accent}` }} />
+      {/* 4. SYNC METER: Distinct visual for each */}
+      <div style={{ marginBottom: '20px' }}>
+        <div style={{ fontSize: '0.6rem', marginBottom: '4px', textAlign: 'left' }}>SYNCHRONIZATION</div>
+        <div style={{ height: '2px', background: 'rgba(255,255,255,0.1)' }}>
+          <div style={{ 
+            height: '100%', 
+            width: `${syncValue}%`, 
+            background: style.accent,
+            boxShadow: `0 0 8px ${style.accent}`
+          }} />
         </div>
       </div>
 
-      {/* 6. SAVAGE ROAST BLOCK */}
+      {/* 5. ROAST BOX: Unique border per tier */}
       <div style={{
         flex: 1,
-        borderLeft: `2px solid ${theme.accent}`,
-        paddingLeft: '15px',
+        padding: '15px',
+        fontSize: '0.9rem',
         textAlign: 'left',
-        fontSize: '0.95rem',
-        lineHeight: '1.4',
-        marginTop: '10px',
-        fontStyle: 'italic',
-        color: '#eee'
+        background: 'rgba(255,255,255,0.03)',
+        borderLeft: `3px solid ${style.accent}`,
+        fontStyle: aura.rarity === 'npc' ? 'normal' : 'italic'
       }}>
         {aura.roast}
       </div>
 
-      {/* 7. FOOTER */}
-      <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <div style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: '0.6rem', color: '#666' }}>VERIFIED BY</div>
-          <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>AURA_ENGINE_V1</div>
-        </div>
-        <div style={{ fontSize: '0.7rem', color: theme.accent }}>WWW.AURAMETER.COM</div>
-      </div>
-
-      {/* ANIMATION STYLES */}
+      {/* CSS For Unique Effects */}
       <style jsx>{`
-        @keyframes shine {
-          from { left: -100%; }
-          to { left: 100%; }
+        .scanlines {
+          position: absolute; inset: 0; pointer-events: none; z-index: 5;
+          background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+          background-size: 100% 4px;
         }
-        .aura-container::after {
-          content: "";
-          position: absolute;
-          top: 0; left: 0; width: 100%; height: 100%;
-          background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                      linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 255, 0, 0.05));
-          background-size: 100% 2px, 2px 100%;
-          pointer-events: none;
+        .ANOMALY { animation: jitter 0.2s infinite; }
+        @keyframes jitter {
+          0% { transform: translate(0); }
+          50% { transform: translate(1px, -1px); }
+          100% { transform: translate(0); }
         }
       `}</style>
     </div>
