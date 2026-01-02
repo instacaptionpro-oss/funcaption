@@ -27,9 +27,9 @@ export default async function handler(req, res) {
     // DETERMINE TARGET SCORE RANGE BASED ON EXAMPLE SUBJECTS
     let targetRange = "random";
     if (subject === "My inconsistent workout routine" && mood === "funny") {
-      targetRange = "mid"; // 75-89
+      targetRange = "mid"; // 50-80
     } else if (subject === "My terrible cooking skills" && mood === "funny") {
-      targetRange = "noob"; // 40-74
+      targetRange = "noob"; // 30-50
     }
 
     // CUSTOM PROMPT FOR SPECIFIC TIERS
@@ -47,9 +47,9 @@ Rules:
 
     // ADD TIER-SPECIFIC INSTRUCTIONS
     if (targetRange === "mid") {
-      systemPrompt += `\n5. IMPORTANT: Generate a score between 75-89 for MID tier`;
+      systemPrompt += `\n5. IMPORTANT: Generate a score between 50-80 for MID tier`;
     } else if (targetRange === "noob") {
-      systemPrompt += `\n5. IMPORTANT: Generate a score between 40-74 for NOOB tier`;
+      systemPrompt += `\n5. IMPORTANT: Generate a score between 30-50 for NOOB tier`;
     }
 
     const chatCompletion = await client.chat.completions.create({
@@ -83,27 +83,27 @@ Rules:
     
     // FORCE SCORE INTO CORRECT RANGE IF NEEDED
     let finalScore = result.score;
-    if (targetRange === "mid" && (finalScore < 75 || finalScore > 89)) {
-      finalScore = 75 + Math.floor(Math.random() * 15); // 75-89
-    } else if (targetRange === "noob" && (finalScore < 40 || finalScore > 74)) {
-      finalScore = 40 + Math.floor(Math.random() * 35); // 40-74
+    if (targetRange === "mid" && (finalScore < 50 || finalScore > 80)) {
+      finalScore = 50 + Math.floor(Math.random() * 31); // 50-80
+    } else if (targetRange === "noob" && (finalScore < 30 || finalScore > 50)) {
+      finalScore = 30 + Math.floor(Math.random() * 21); // 30-50
     }
     
-    // Determine rarity based on FINAL score
+    // Determine rarity based on FINAL score (EXACT RANGES)
     let rarity, title, challenge;
     if (finalScore >= 95) {
       rarity = "legendary";
       title = "LEGENDARY";
       challenge = "DARE TO MATCH MY SCORE? TRY IT, LOSERS.";
-    } else if (finalScore >= 90) {
+    } else if (finalScore >= 80) {
       rarity = "epic";
       title = "EPIC";
       challenge = "DARE TO MATCH MY SCORE? TRY IT, LOSERS.";
-    } else if (finalScore >= 75) {
+    } else if (finalScore >= 50) {
       rarity = "mid";
       title = "MID";
       challenge = "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.";
-    } else if (finalScore >= 40) {
+    } else if (finalScore >= 30) {
       rarity = "noob";
       title = "NOOB";
       challenge = "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.";
@@ -129,28 +129,28 @@ Rules:
     // Fallback with proper tier targeting
     let randomScore;
     if (subject === "My inconsistent workout routine" && mood === "funny") {
-      randomScore = 75 + Math.floor(Math.random() * 15); // 75-89 for Mid
+      randomScore = 50 + Math.floor(Math.random() * 31); // 50-80 for Mid
     } else if (subject === "My terrible cooking skills" && mood === "funny") {
-      randomScore = 40 + Math.floor(Math.random() * 35); // 40-74 for Noob
+      randomScore = 30 + Math.floor(Math.random() * 21); // 30-50 for Noob
     } else {
       randomScore = Math.floor(Math.random() * 101);
     }
     
-    // Determine rarity based on score
+    // Determine rarity based on score (EXACT RANGES)
     let rarity, title, challenge;
     if (randomScore >= 95) {
       rarity = "legendary";
       title = "LEGENDARY";
       challenge = "DARE TO MATCH MY SCORE? TRY IT, LOSERS.";
-    } else if (randomScore >= 90) {
+    } else if (randomScore >= 80) {
       rarity = "epic";
       title = "EPIC";
       challenge = "DARE TO MATCH MY SCORE? TRY IT, LOSERS.";
-    } else if (randomScore >= 75) {
+    } else if (randomScore >= 50) {
       rarity = "mid";
       title = "MID";
       challenge = "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.";
-    } else if (randomScore >= 40) {
+    } else if (randomScore >= 30) {
       rarity = "noob";
       title = "NOOB";
       challenge = "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.";
