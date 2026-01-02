@@ -29,7 +29,7 @@ const extendedMoods = [
   { id: 'rebellious', emoji: '⚡', label: 'Rebellious' }
 ];
 
-// Enhanced example subjects with targeted outcomes
+// ONLY Mid and Noob tier examples
 const exampleSubjects = [
   // Normal examples (should lead to NPC/Noob)
   "Why I'm always late",
@@ -39,8 +39,8 @@ const exampleSubjects = [
   // Mid-tier example (should lead to Mid tier with funny mood)
   "My inconsistent workout routine",
   
-  // Epic-tier example (should lead to Epic/Legendary with fire mood)  
-  "My breakthrough business idea"
+  // Noob-tier example (should lead to Noob tier with funny mood)  
+  "My terrible cooking skills"
 ];
 
 export default function Home() {
@@ -89,9 +89,9 @@ export default function Home() {
     if (exampleSubject === "My inconsistent workout routine") {
       // This should lead to Mid tier with funny mood
       selectedMood = 'funny';
-    } else if (exampleSubject === "My breakthrough business idea") {
-      // This should lead to Epic tier with fire mood  
-      selectedMood = 'fire';
+    } else if (exampleSubject === "My terrible cooking skills") {
+      // This should lead to Noob tier with funny mood  
+      selectedMood = 'funny';
     } else {
       // Normal examples lead to NPC/Noob
       const noobMoods = ['funny', 'sad', 'alone'];
@@ -385,30 +385,30 @@ export default function Home() {
                     </button>
                   </div>
 
-                  {/* Epic-tier Example */}
+                  {/* Noob-tier Example */}
                   <div>
                     <div style={{
                       fontSize: '0.8rem',
                       color: '#666666',
                       marginBottom: '5px'
                     }}>
-                      🔥 For High Scores (Fire mood):
+                      🔥 For Noob Scores (Funny mood):
                     </div>
                     <button
-                      onClick={() => useExampleSubject("My breakthrough business idea")}
+                      onClick={() => useExampleSubject("My terrible cooking skills")}
                       style={{
                         width: '100%',
                         padding: '10px 12px',
                         borderRadius: '12px',
-                        background: 'rgba(255, 215, 0, 0.2)',
-                        border: '1px solid rgba(255, 215, 0, 0.5)',
-                        color: '#ffd700',
+                        background: 'rgba(255, 0, 0, 0.2)',
+                        border: '1px solid rgba(255, 0, 0, 0.5)',
+                        color: '#ff0000',
                         fontSize: '0.8rem',
                         cursor: 'pointer',
                         textAlign: 'left'
                       }}
                     >
-                      My breakthrough business idea
+                      My terrible cooking skills
                     </button>
                   </div>
                 </div>
@@ -680,4 +680,4 @@ export default function Home() {
       </div>
     </>
   );
-            }
+                              }
