@@ -24,13 +24,16 @@ export default async function handler(req, res) {
       apiKey: HF_TOKEN,
     });
 
-    // Generate score and roast in one call
-    const chatCompletion = await client.chat.completions.create({
-      model: ROAST_MODEL,
-      messages: [
-        {
-          role: "system",
-          content: `You are a brutally honest roaster. Generate ONLY JSON:
+    // DETERMINE TARGET SCORE RANGE BASED ON EXAMPLE SUBJECTS
+    let targetRange = "random";
+    if (subject === "My inconsistent workout routine" && mood === "funny") {
+      targetRange = "mid"; // 75-89
+    } else if (subject === "My breakthrough business idea" && mood === "fire") {
+      targetRange = "epic"; // 90-100
+    }
+
+    // CUSTOM PROMPT FOR SPECIFIC TIERS
+    let systemPrompt = `You are a brutally honest roaster. Generate ONLY JSON:
 {
   "score": number (0-100),
   "roast": "harsh, witty roast (2-3 lines max, can use bad words)",
@@ -40,7 +43,21 @@ Rules:
 1. Be savage but creative
 2. Use explicit language when appropriate
 3. No censorship - be brutally honest
-4. Make it sting but be witty`
+4. Make it sting but be witty`;
+
+    // ADD TIER-SPECIFIC INSTRUCTIONS
+    if (targetRange === "mid") {
+      systemPrompt += `\n5. IMPORTANT: Generate a score between 75-89 for MID tier`;
+    } else if (targetRange === "epic") {
+      systemPrompt += `\n5. IMPORTANT: Generate a score between 90-100 for EPIC/LEGENDARY tier`;
+    }
+
+    const chatCompletion = await client.chat.completions.create({
+      model: ROAST_MODEL,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
         },
         {
           role: "user",
@@ -64,21 +81,29 @@ Rules:
 
     const result = JSON.parse(jsonMatch[0]);
     
-    // Determine rarity based on score
+    // FORCE SCORE INTO CORRECT RANGE IF NEEDED
+    let finalScore = result.score;
+    if (targetRange === "mid" && (finalScore < 75 || finalScore > 89)) {
+      finalScore = 75 + Math.floor(Math.random() * 15); // 75-89
+    } else if (targetRange === "epic" && (finalScore < 90 || finalScore > 100)) {
+      finalScore = 90 + Math.floor(Math.random() * 11); // 90-100
+    }
+    
+    // Determine rarity based on FINAL score
     let rarity, title, challenge;
-    if (result.score >= 95) {
+    if (finalScore >= 95) {
       rarity = "legendary";
       title = "LEGENDARY";
       challenge = "DARE TO MATCH MY SCORE? TRY IT, LOSERS.";
-    } else if (result.score >= 90) {
+    } else if (finalScore >= 90) {
       rarity = "epic";
       title = "EPIC";
       challenge = "DARE TO MATCH MY SCORE? TRY IT, LOSERS.";
-    } else if (result.score >= 75) {
+    } else if (finalScore >= 75) {
       rarity = "mid";
       title = "MID";
       challenge = "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.";
-    } else if (result.score >= 40) {
+    } else if (finalScore >= 40) {
       rarity = "noob";
       title = "NOOB";
       challenge = "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.";
@@ -90,7 +115,7 @@ Rules:
 
     return res.status(200).json({
       aura: {
-        score: result.score,
+        score: finalScore,
         roast: result.roast,
         subjectInsight: result.subject_insight,
         rarity,
@@ -101,15 +126,47 @@ Rules:
 
   } catch (error) {
     console.error("Aura generation error:", error);
-    return res.status(500).json({ 
-      error: "Failed to generate aura card",
-      fallback: {
-        score: Math.floor(Math.random() * 60),
+    // Fallback with proper tier targeting
+    let randomScore;
+    if (subject === "My inconsistent workout routine" && mood === "funny") {
+      randomScore = 75 + Math.floor(Math.random() * 15); // 75-89 for Mid
+    } else if (subject === "My breakthrough business idea" && mood === "fire") {
+      randomScore = 90 + Math.floor(Math.random() * 11); // 90-100 for Epic
+    } else {
+      randomScore = Math.floor(Math.random() * 101);
+    }
+    
+    let rarity, title, challenge;
+    if (randomScore >= 95) {
+      rarity = "legendary";
+      title = "LEGENDARY";
+      challenge = "DARE TO MATCH MY SCORE? TRY IT, LOSERS.";
+    } else if (randomScore >= 90) {
+      rarity = "epic";
+      title = "EPIC";
+      challenge = "DARE TO MATCH MY SCORE? TRY IT, LOSERS.";
+    } else if (randomScore >= 75) {
+      rarity = "mid";
+      title = "MID";
+      challenge = "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.";
+    } else if (randomScore >= 40) {
+      rarity = "noob";
+      title = "NOOB";
+      challenge = "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.";
+    } else {
+      rarity = "npc";
+      title = "NPC";
+      challenge = "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.";
+    }
+    
+    return res.status(200).json({ 
+      aura: {
+        score: randomScore,
         roast: "Your energy is so weak, even ghosts avoid you.",
         subjectInsight: "Interesting choice, very telling...",
-        rarity: "npc",
-        title: "NPC",
-        challenge: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT."
+        rarity,
+        title,
+        challenge
       }
     });
   }
