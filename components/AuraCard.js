@@ -1,276 +1,174 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const AuraCard = ({ aura }) => {
-  // Logic to determine the style for each specific tier with your exact designs
-  const getTierData = (rarity, score) => {
-    switch (rarity) {
+  const [glitchOffset, setGlitchOffset] = useState(0);
+
+  // Sync Score Logic: If not provided, we calculate a mock one for the demo
+  const syncValue = aura.sync || Math.floor(Math.random() * 40) + 10; 
+
+  const getTierData = (rarity) => {
+    switch (rarity.toLowerCase()) {
       case 'legendary':
         return {
-          background: 'linear-gradient(135deg, #FFD700 0%, #000000 100%)',
-          border: '4px solid #FFD700',
+          bg: 'linear-gradient(135deg, #1a1a1a 0%, #000 100%)',
+          border: '2px solid #FFD700',
           accent: '#FFD700',
-          header: "DARE TO MATCH MY SCORE? TRY IT, LOSERS.",
-          icon: "👑",
-          ornament: 'gold',
-          glitch: false,
-          hazard: false,
-          premium: true
-        };
-      case 'epic':
-        return {
-          background: 'linear-gradient(135deg, #9400D3 0%, #00BFFF 100%)',
-          border: '4px solid #9400D3',
-          accent: '#9400D3',
-          header: "DARE TO MATCH MY SCORE? TRY IT, LOSERS.",
-          icon: "⚡",
-          ornament: 'purple',
-          glitch: false,
-          hazard: false,
-          premium: true
-        };
-      case 'mid':
-        return {
-          background: 'linear-gradient(135deg, #4169E1 0%, #1E90FF 100%)', // GOOD LOOKING BLUE GRADIENT
-          border: '4px solid #4169E1',
-          accent: '#4169E1',
-          header: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.",
-          icon: "🔥",
-          ornament: 'blue',
-          glitch: false,
-          hazard: true, // MID HAS HAZARD SIGNS
-          premium: false
-        };
-      case 'noob':
-        return {
-          background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)', // BLACK BACKGROUND
-          border: '4px solid #FF4500',
-          accent: '#FF4500',
-          header: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.",
-          icon: "⚠️",
-          ornament: 'orange',
-          glitch: true, // NOOB HAS GLITCHES
-          hazard: true, // NOOB HAS HAZARD SIGNS
-          premium: false
+          shadow: '0 0 30px rgba(255, 215, 0, 0.4)',
+          header: "SYSTEM BREAKER: LEGENDARY STATUS",
+          tag: "GLITCH IN REALITY",
+          noiseOpacity: 0.15
         };
       case 'npc':
       default:
         return {
-          background: 'linear-gradient(135deg, #8B0000 0%, #000000 100%)',
-          border: '4px solid #8B0000',
-          accent: '#8B0000',
-          header: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.",
-          icon: "💀",
-          ornament: 'red',
-          glitch: true,
-          hazard: false,
-          premium: false
+          bg: 'linear-gradient(135deg, #150000 0%, #000 100%)',
+          border: '2px solid #ff3131',
+          accent: '#ff3131',
+          shadow: '0 0 25px rgba(255, 49, 49, 0.3)',
+          header: "FUTURE SO DARK EVEN GOOGLE MAPS CAN'T FIND IT",
+          tag: "DEFAULT ENTITY (NPC)",
+          noiseOpacity: 0.2
         };
     }
   };
 
-  const tier = getTierData(aura.rarity, aura.score);
-
-  // Glitch effect component
-  const GlitchEffect = () => {
-    if (!tier.glitch) return null;
-    
-    return (
-      <>
-        {/* Horizontal glitch lines */}
-        <div style={{
-          position: 'absolute',
-          top: '15%',
-          left: '0',
-          right: '0',
-          height: '2px',
-          background: 'rgba(255, 69, 0, 0.4)', // ORANGE COLOR
-          opacity: '0.7'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          top: '35%',
-          left: '0',
-          right: '0',
-          height: '1px',
-          background: 'rgba(255, 140, 0, 0.3)', // ORANGE COLOR
-          opacity: '0.5'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          top: '65%',
-          left: '0',
-          right: '0',
-          height: '3px',
-          background: 'rgba(255, 165, 0, 0.5)', // ORANGE COLOR
-          opacity: '0.6'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          top: '85%',
-          left: '0',
-          right: '0',
-          height: '1px',
-          background: 'rgba(255, 215, 0, 0.4)', // GOLD COLOR
-          opacity: '0.4'
-        }}></div>
-        
-        {/* Vertical glitch effect */}
-        <div style={{
-          position: 'absolute',
-          top: '0',
-          left: '25%',
-          width: '1px',
-          height: '100%',
-          background: 'rgba(255, 69, 0, 0.3)', // ORANGE COLOR
-          opacity: '0.5'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          top: '0',
-          left: '75%',
-          width: '2px',
-          height: '100%',
-          background: 'rgba(255, 140, 0, 0.4)', // ORANGE COLOR
-          opacity: '0.6'
-        }}></div>
-      </>
-    );
-  };
-
-  // Hazard stripe pattern
-  const HazardStripes = () => {
-    if (!tier.hazard) return null;
-    
-    return (
-      <div style={{
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        right: '0',
-        height: '25px',
-        background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 69, 0, 0.3) 10px, rgba(255, 69, 0, 0.3) 20px)', // ORANGE COLOR
-        opacity: '0.6'
-      }}></div>
-    );
-  };
-
-  // Premium shine effect for Legendary/Epic
-  const PremiumShine = () => {
-    if (!tier.premium) return null;
-    
-    return (
-      <div style={{
-        position: 'absolute',
-        top: '0',
-        left: '-100%',
-        width: '200%',
-        height: '100%',
-        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
-        animation: 'shine 3s infinite',
-        zIndex: '1'
-      }}></div>
-    );
-  };
+  const theme = getTierData(aura.rarity);
 
   return (
-    <div style={{
+    <div className="aura-container" style={{
       position: 'relative',
-      width: '320px',
-      minHeight: '580px',
-      borderRadius: '15px',
+      width: '340px',
+      height: '620px',
+      background: theme.bg,
+      border: theme.border,
+      borderRadius: '2px', // Sharp edges look more "tech"
+      boxShadow: theme.shadow,
       overflow: 'hidden',
-      background: tier.background,
-      border: tier.border,
-      color: '#FFFFFF',
-      fontFamily: '"Impact", sans-serif',
+      fontFamily: '"JetBrains Mono", "Courier New", monospace',
       display: 'flex',
       flexDirection: 'column',
-      padding: '20px',
-      textAlign: 'center',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.8)'
+      padding: '24px',
+      color: 'white'
     }}>
-      
-      {/* Tier-specific patterns */}
-      <GlitchEffect />
-      <HazardStripes />
-      <PremiumShine />
-      
-      {/* 1. The Header (BAIT) */}
+      {/* 1. DIGITAL OVERLAYS (THE PEAK STUFF) */}
       <div style={{
-        fontSize: '0.9rem',
-        fontWeight: 'bold',
-        marginBottom: '15px',
-        color: tier.accent,
-        textTransform: 'uppercase',
-        letterSpacing: '1px'
+        position: 'absolute',
+        inset: 0,
+        background: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+        opacity: theme.noiseOpacity,
+        pointerEvents: 'none'
+      }} />
+      
+      {/* Scanline Effect */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))',
+        backgroundSize: '100% 4px, 3px 100%',
+        pointerEvents: 'none',
+        zIndex: 10
+      }} />
+
+      {/* 2. HEADER STRIP */}
+      <div style={{
+        fontSize: '0.65rem',
+        textAlign: 'left',
+        borderBottom: `1px solid ${theme.accent}`,
+        paddingBottom: '8px',
+        marginBottom: '20px',
+        color: theme.accent,
+        display: 'flex',
+        justifyContent: 'space-between'
       }}>
-        {tier.header}
+        <span>ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
+        <span style={{ fontWeight: 'bold' }}>LIVE_DECRYPT_02.01.26</span>
       </div>
 
-      {/* 2. Rarity Icon & Name */}
-      <div style={{ fontSize: '2.5rem', marginBottom: '5px' }}>{tier.icon}</div>
-      <h2 style={{ 
-        fontSize: '2rem', 
-        margin: '0', 
-        letterSpacing: '3px',
-        textShadow: `0 0 10px ${tier.accent}`,
-        color: tier.accent
-      }}>
-        {aura.title}
-      </h2>
+      <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: '4px', textAlign: 'left' }}>
+        {theme.header}
+      </div>
 
-      {/* 3. Score (Centerpiece) - ORANGE FOR NOOB TIER */}
+      {/* 3. RARITY TAG */}
       <div style={{
-        fontSize: '5rem',
+        background: theme.accent,
+        color: 'black',
+        fontSize: '0.8rem',
         fontWeight: '900',
-        margin: '25px 0',
-        textShadow: `0 0 20px ${tier.accent}`,
-        color: aura.rarity === 'noob' ? '#FF4500' : '#FFFFFF', // ORANGE FOR NOOB
-        position: 'relative'
+        padding: '4px 10px',
+        alignSelf: 'flex-start',
+        transform: 'skew(-15deg)',
+        marginBottom: '30px'
       }}>
-        {aura.score}
-        {/* Score glow effect */}
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '120%',
-          height: '120%',
-          borderRadius: '50%',
-          background: tier.accent,
-          filter: 'blur(20px)',
-          opacity: '0.3',
-          zIndex: '-1'
-        }}></div>
+        <span style={{ transform: 'skew(15deg)', display: 'inline-block' }}>{theme.tag}</span>
       </div>
 
-      {/* 4. The Roast (Savage AI Switch) */}
+      {/* 4. MAIN SCORE (MASSIVE) */}
+      <div style={{ position: 'relative', margin: '20px 0' }}>
+        <h1 style={{
+          fontSize: '9rem',
+          margin: 0,
+          lineHeight: 0.8,
+          fontWeight: '900',
+          textAlign: 'center',
+          color: 'white',
+          textShadow: `4px 0px ${theme.accent}, -4px 0px #00ffff`
+        }}>
+          {aura.score}
+        </h1>
+        <div style={{ fontSize: '1rem', color: theme.accent, fontWeight: 'bold' }}>AURA POINTS</div>
+      </div>
+
+      {/* 5. SYNCHRONIZATION METER */}
+      <div style={{ margin: '30px 0', textAlign: 'left' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', marginBottom: '6px' }}>
+          <span>SYNCHRONIZATION</span>
+          <span>{syncValue}%</span>
+        </div>
+        <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', width: '100%' }}>
+          <div style={{ height: '100%', width: `${syncValue}%`, background: theme.accent, boxShadow: `0 0 10px ${theme.accent}` }} />
+        </div>
+      </div>
+
+      {/* 6. SAVAGE ROAST BLOCK */}
       <div style={{
-        marginTop: 'auto',
-        background: 'rgba(0,0,0,0.4)',
-        padding: '15px',
-        borderRadius: '10px',
-        border: `1px solid ${tier.accent}`,
+        flex: 1,
+        borderLeft: `2px solid ${theme.accent}`,
+        paddingLeft: '15px',
+        textAlign: 'left',
         fontSize: '0.95rem',
-        lineHeight: '1.3'
+        lineHeight: '1.4',
+        marginTop: '10px',
+        fontStyle: 'italic',
+        color: '#eee'
       }}>
         {aura.roast}
       </div>
 
-      {/* 5. Footer */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: '20px',
-        fontSize: '0.8rem'
-      }}>
-        <div style={{ width: '45px', height: '45px', background: '#FFF', padding: '2px' }}>
-          {/* QR Component would go here */}
+      {/* 7. FOOTER */}
+      <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div style={{ textAlign: 'left' }}>
+          <div style={{ fontSize: '0.6rem', color: '#666' }}>VERIFIED BY</div>
+          <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>AURA_ENGINE_V1</div>
         </div>
-        <span style={{ opacity: 0.7 }}>aura-roast.com</span>
+        <div style={{ fontSize: '0.7rem', color: theme.accent }}>WWW.AURAMETER.COM</div>
       </div>
+
+      {/* ANIMATION STYLES */}
+      <style jsx>{`
+        @keyframes shine {
+          from { left: -100%; }
+          to { left: 100%; }
+        }
+        .aura-container::after {
+          content: "";
+          position: absolute;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                      linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 255, 0, 0.05));
+          background-size: 100% 2px, 2px 100%;
+          pointer-events: none;
+        }
+      `}</style>
     </div>
   );
 };
