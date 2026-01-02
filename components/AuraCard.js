@@ -1,7 +1,7 @@
-          import { useState } from 'react';
+import { useState } from 'react';
 
 const AuraCard = ({ aura }) => {
-  // Logic to determine the style for each specific tier with unique designs
+  // Logic to determine the style for each specific tier with your exact designs
   const getTierData = (rarity, score) => {
     switch (rarity) {
       case 'legendary':
@@ -12,7 +12,9 @@ const AuraCard = ({ aura }) => {
           header: "DARE TO MATCH MY SCORE? TRY IT, LOSERS.",
           icon: "👑",
           ornament: 'gold',
-          glitch: false
+          glitch: false,
+          hazard: false,
+          premium: true
         };
       case 'epic':
         return {
@@ -22,45 +24,53 @@ const AuraCard = ({ aura }) => {
           header: "DARE TO MATCH MY SCORE? TRY IT, LOSERS.",
           icon: "⚡",
           ornament: 'purple',
-          glitch: false
+          glitch: false,
+          hazard: false,
+          premium: true
         };
       case 'mid':
         return {
-          background: 'linear-gradient(135deg, #FF4500 0%, #8B0000 100%)',
+          background: 'linear-gradient(135deg, #4169E1 0%, #1E90FF 100%)', // GOOD LOOKING BLUE GRADIENT
+          border: '4px solid #4169E1',
+          accent: '#4169E1',
+          header: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.",
+          icon: "🔥",
+          ornament: 'blue',
+          glitch: false,
+          hazard: true, // MID HAS HAZARD SIGNS
+          premium: false
+        };
+      case 'noob':
+        return {
+          background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)', // BLACK BACKGROUND
           border: '4px solid #FF4500',
           accent: '#FF4500',
           header: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.",
           icon: "⚠️",
           ornament: 'orange',
-          glitch: false
-        };
-      case 'noob':
-        return {
-          background: 'linear-gradient(135deg, #FF0000 0%, #8B0000 100%)',
-          border: '4px solid #FF0000',
-          accent: '#FF0000',
-          header: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.",
-          icon: "💀",
-          ornament: 'red',
-          glitch: true // RED CONTAINS GLITCH
+          glitch: true, // NOOB HAS GLITCHES
+          hazard: true, // NOOB HAS HAZARD SIGNS
+          premium: false
         };
       case 'npc':
       default:
         return {
-          background: 'linear-gradient(135deg, #000000 0%, #8B0000 100%)',
-          border: '4px solid #FF0000',
-          accent: '#FF0000',
+          background: 'linear-gradient(135deg, #8B0000 0%, #000000 100%)',
+          border: '4px solid #8B0000',
+          accent: '#8B0000',
           header: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT.",
-          icon: "☠️",
-          ornament: 'black',
-          glitch: true // BLACK CONTAINS GLITCH
+          icon: "💀",
+          ornament: 'red',
+          glitch: true,
+          hazard: false,
+          premium: false
         };
     }
   };
 
   const tier = getTierData(aura.rarity, aura.score);
 
-  // Glitch effect component for red/black tiers
+  // Glitch effect component
   const GlitchEffect = () => {
     if (!tier.glitch) return null;
     
@@ -69,38 +79,38 @@ const AuraCard = ({ aura }) => {
         {/* Horizontal glitch lines */}
         <div style={{
           position: 'absolute',
-          top: '20%',
+          top: '15%',
           left: '0',
           right: '0',
           height: '2px',
-          background: 'rgba(255, 255, 255, 0.3)',
+          background: 'rgba(255, 69, 0, 0.4)', // ORANGE COLOR
           opacity: '0.7'
         }}></div>
         <div style={{
           position: 'absolute',
-          top: '40%',
+          top: '35%',
           left: '0',
           right: '0',
           height: '1px',
-          background: 'rgba(0, 255, 0, 0.2)',
+          background: 'rgba(255, 140, 0, 0.3)', // ORANGE COLOR
           opacity: '0.5'
         }}></div>
         <div style={{
           position: 'absolute',
-          top: '60%',
+          top: '65%',
           left: '0',
           right: '0',
           height: '3px',
-          background: 'rgba(255, 0, 0, 0.4)',
+          background: 'rgba(255, 165, 0, 0.5)', // ORANGE COLOR
           opacity: '0.6'
         }}></div>
         <div style={{
           position: 'absolute',
-          top: '80%',
+          top: '85%',
           left: '0',
           right: '0',
           height: '1px',
-          background: 'rgba(0, 0, 255, 0.3)',
+          background: 'rgba(255, 215, 0, 0.4)', // GOLD COLOR
           opacity: '0.4'
         }}></div>
         
@@ -108,19 +118,28 @@ const AuraCard = ({ aura }) => {
         <div style={{
           position: 'absolute',
           top: '0',
-          left: '30%',
+          left: '25%',
           width: '1px',
           height: '100%',
-          background: 'rgba(255, 255, 0, 0.2)',
+          background: 'rgba(255, 69, 0, 0.3)', // ORANGE COLOR
           opacity: '0.5'
+        }}></div>
+        <div style={{
+          position: 'absolute',
+          top: '0',
+          left: '75%',
+          width: '2px',
+          height: '100%',
+          background: 'rgba(255, 140, 0, 0.4)', // ORANGE COLOR
+          opacity: '0.6'
         }}></div>
       </>
     );
   };
 
-  // Hazard stripe pattern for certain tiers
+  // Hazard stripe pattern
   const HazardStripes = () => {
-    if (aura.rarity !== 'mid') return null;
+    if (!tier.hazard) return null;
     
     return (
       <div style={{
@@ -128,26 +147,27 @@ const AuraCard = ({ aura }) => {
         top: '0',
         left: '0',
         right: '0',
-        height: '20px',
-        background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.3) 10px, rgba(0,0,0,0.3) 20px)',
-        opacity: '0.4'
+        height: '25px',
+        background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 69, 0, 0.3) 10px, rgba(255, 69, 0, 0.3) 20px)', // ORANGE COLOR
+        opacity: '0.6'
       }}></div>
     );
   };
 
-  // Cyberpunk circuit pattern for Epic tier
-  const CircuitPattern = () => {
-    if (aura.rarity !== 'epic') return null;
+  // Premium shine effect for Legendary/Epic
+  const PremiumShine = () => {
+    if (!tier.premium) return null;
     
     return (
       <div style={{
         position: 'absolute',
         top: '0',
-        left: '0',
-        right: '0',
-        height: '20px',
-        background: 'repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(0,191,255,0.3) 5px, rgba(0,191,255,0.3) 10px)',
-        opacity: '0.5'
+        left: '-100%',
+        width: '200%',
+        height: '100%',
+        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+        animation: 'shine 3s infinite',
+        zIndex: '1'
       }}></div>
     );
   };
@@ -173,7 +193,7 @@ const AuraCard = ({ aura }) => {
       {/* Tier-specific patterns */}
       <GlitchEffect />
       <HazardStripes />
-      <CircuitPattern />
+      <PremiumShine />
       
       {/* 1. The Header (BAIT) */}
       <div style={{
@@ -199,13 +219,13 @@ const AuraCard = ({ aura }) => {
         {aura.title}
       </h2>
 
-      {/* 3. Score (Centerpiece) */}
+      {/* 3. Score (Centerpiece) - ORANGE FOR NOOB TIER */}
       <div style={{
         fontSize: '5rem',
         fontWeight: '900',
         margin: '25px 0',
         textShadow: `0 0 20px ${tier.accent}`,
-        color: '#FFFFFF',
+        color: aura.rarity === 'noob' ? '#FF4500' : '#FFFFFF', // ORANGE FOR NOOB
         position: 'relative'
       }}>
         {aura.score}
