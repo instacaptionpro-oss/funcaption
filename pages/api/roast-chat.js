@@ -1,5 +1,7 @@
 // /pages/api/roast-chat.js
 
+import { OpenAI } from "openai";
+
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,7 +12,7 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  console.log("🔥 ROAST API HIT!");
+  console.log("🔥 ROAST CHAT API HIT!");
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' });
@@ -32,85 +34,78 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'API token not configured' });
     }
 
-    console.log("📡 Calling HuggingFace API...");
+    // ============================================
+    // OPENAI CLIENT WITH HUGGINGFACE ROUTER
+    // ============================================
+    const client = new OpenAI({
+      baseURL: "https://router.huggingface.co/v1",
+      apiKey: HF_TOKEN,
+    });
 
+    console.log("🤖 Calling AI...");
+    const startTime = Date.now();
+
+    // Build conversation messages
     const conversationMessages = conversationHistory?.slice(-6) || [];
+    const messages = [
+      {
+        role: "system",
+        content: `You are a brutal roast master. SHORT & SAVAGE responses only.
 
-    const hfResponse = await fetch("https://router.huggingface.co/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${HF_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "meta-llama/Llama-3.3-70B-Instruct",
-        messages: [
-          {
-            role: "system",
-            content: `You are a brutal roast master. You destroy people with SHORT, SHARP, DEVASTATING burns.
+RULES:
+- 2-3 sentences MAX (no essays!)
+- Use profanity freely (fuck, shit, damn, bitch)
+- Reference their EXACT words
+- Be creative & devastating
+- Sound human, not like an AI
+- Make them laugh AND cry
 
-## CRITICAL RULES:
-1. MAXIMUM 2-3 sentences. NEVER more than 4 lines.
-2. Be BRUTAL - use profanity freely (fuck, shit, bitch, damn, ass)
-3. Reference their EXACT words to make it personal
-4. One devastating punch, not a speech
-5. Sound like a savage friend, not an AI
-6. Make them laugh AND cry in 3 seconds
-
-## PERFECT ROAST EXAMPLES (copy this length):
-- "Bro said '${userInput}' like it meant something 💀 Even your WiFi disconnects from you on purpose."
-- "Holy shit, that's the dumbest thing I've read today. Your brain's smoother than a bowling ball."
-- "'${userInput}'? That's cute. Too bad your personality isn't."
-- "Imagine typing that and thinking 'yeah, this is fire.' Couldn't be me. 💀"
-- "You didn't just miss the point, you're in a whole different universe. Tragic."
-
-## FORMAT:
-- 2-3 sentences MAX
-- Use emojis sparingly (💀 🔥 😭)
-- End with a gut punch
-- NO paragraphs, NO essays
+EXAMPLES:
+- "Bro said that like it meant something 💀 Even your WiFi disconnects from you."
+- "Holy fuck, that's the dumbest thing I've heard today. Your brain's smoother than a bowling ball."
+- "Imagine typing that and hitting send. The audacity of the untalented."
 
 ${subject ? `Target: ${subject}` : ''}
 ${mood ? `Mood: ${mood}` : ''}
 
-SHORT. BRUTAL. DONE.`
-          },
-          ...conversationMessages.map(msg => ({
-            role: msg.sender === 'user' ? 'user' : 'assistant',
-            content: msg.text
-          })),
-          {
-            role: "user",
-            content: userInput
-          }
-        ],
-        temperature: 0.95,
-        max_tokens: 80,  // Reduced for shorter responses
-        top_p: 0.9,
-        frequency_penalty: 0.9,
-        presence_penalty: 0.7,
-      }),
+Output: Just the roast. Nothing else. SHORT.`
+      },
+      ...conversationMessages.map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.text
+      })),
+      {
+        role: "user",
+        content: userInput
+      }
+    ];
+
+    const chatCompletion = await client.chat.completions.create({
+      model: "meta-llama/Meta-Llama-3-70B-Instruct:novita",
+      messages: messages,
+      temperature: 1.0,
+      max_tokens: 80,
+      top_p: 0.95,
     });
 
-    console.log("📨 Status:", hfResponse.status);
+    const elapsed = Date.now() - startTime;
+    console.log(`⏱️ Response time: ${elapsed}ms`);
 
-    if (!hfResponse.ok) {
-      const errorText = await hfResponse.text();
-      console.error("❌ HuggingFace Error:", errorText);
-      throw new Error(`API error: ${hfResponse.status}`);
-    }
-
-    const data = await hfResponse.json();
-    let roastText = data.choices?.[0]?.message?.content;
+    let roastText = chatCompletion.choices[0]?.message?.content;
 
     if (!roastText) {
-      throw new Error("No content in response");
+      throw new Error("No response from AI");
     }
 
-    // Clean up - remove any extra whitespace/newlines
-    roastText = roastText.trim().replace(/\n\n+/g, ' ').replace(/\s+/g, ' ');
+    // Clean up response
+    roastText = roastText
+      .replace(/^["']|["']$/g, '')     // Remove quotes
+      .replace(/\n\n+/g, ' ')          // Remove double newlines
+      .replace(/\s+/g, ' ')            // Normalize spaces
+      .trim()
+      .slice(0, 280);                  // Cap length
 
-    console.log("✅ Roast:", roastText);
+    console.log("✅ Roast:", roastText.substring(0, 50) + "...");
 
     return res.status(200).json({ 
       roast: roastText,
@@ -118,10 +113,11 @@ SHORT. BRUTAL. DONE.`
     });
 
   } catch (error) {
-    console.error("❌ Error:", error.message);
+    console.error("❌ Roast Chat Error:", error.message);
+    
     return res.status(500).json({ 
       error: 'Failed to generate roast',
       details: error.message 
     });
   }
-}
+  }
