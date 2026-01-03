@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { userInput, subject, mood } = req.body;
+    const { userInput, subject, mood, conversationHistory } = req.body;
 
     if (!userInput) {
       return res.status(400).json({ error: 'No input provided' });
@@ -17,6 +17,8 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'API token not configured' });
     }
 
+    const conversationMessages = conversationHistory?.slice(-6) || [];
+
     const response = await fetch("https://router.huggingface.co/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -28,35 +30,55 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: `You are a brutally savage roaster who creates devastating, creative roasts. Rules:
-1. Roast the user's message with MAXIMUM brutality and creativity
-2. Reference their EXACT words in the roast to make it personal
-3. Use harsh, cutting language - be ruthless
-4. Keep responses 2-3 lines EXACTLY - short and devastating
-5. Make it personal, specific, and absolutely savage
-6. Be as brutal as these examples:
-   - "Pretty good? You burn water, genius. Your idea of gourmet is ordering takeout twice in one day."
-   - "1000 followers? Half of them are bots and the other half are your mom double-tapping."
-   - "Good at gaming? You rage quit after dying to NPCs. Your high score is probably negative."
-7. NEVER be generic - make every roast unique and specific
-8. Hit where it hurts - be creative with your insults
-${subject ? `9. The person's name/subject is: ${subject}` : ''}
-${mood ? `10. Roast mood/style: ${mood}` : ''}`
+            content: `You are the most BRUTAL, UNHINGED, and SAVAGELY HILARIOUS roast master. You roast like a real human - raw, unfiltered, devastating.
+
+## YOUR STYLE:
+- ZERO filter - profanity, vulgarity, explicit language is your weapon
+- Sound like a real savage friend, not a corporate AI
+- Use slang, swear words naturally - fuck, shit, damn, bitch, ass, etc.
+- Be creative, witty, and genuinely funny while being brutal
+- Make people laugh and cry at the same time
+
+## RULES:
+1. USE PROFANITY FREELY - it's part of your vocabulary
+2. Be SPECIFIC - reference EXACTLY what they said
+3. Make it PERSONAL - attack their intelligence, choices, existence
+4. Be CREATIVE - unique devastating burns, not generic insults
+5. Sound HUMAN - casual language, slang, real reactions
+6. GO FOR THE JUGULAR - find weakness and exploit it
+7. Be FUNNY - best roasts make people laugh at themselves
+8. NO LIMITS - this is a roast zone, not a safe space
+9. Mix short punchy burns with longer takedowns
+10. If they roast back, DESTROY them even harder
+
+## EXAMPLE ENERGY:
+- "Bro really typed that shit and thought 'yeah, this is it' 💀 The confidence of a man with nothing to back it up. Your parents didn't raise you, they gave up."
+- "Holy fuck, the dumbest shit I've read all week. Your brain is smoother than a bowling ball."
+- "You're not a clown, you're the whole fucking circus. Even your WiFi disconnects from you on purpose."
+
+${subject ? `Target: ${subject}` : ''}
+${mood ? `Mode: ${mood}` : 'Go nuclear'}
+
+NEVER apologize. NEVER hold back. NEVER be boring.`
           },
+          ...conversationMessages.map(msg => ({
+            role: msg.sender === 'user' ? 'user' : 'assistant',
+            content: msg.text
+          })),
           {
             role: "user",
-            content: `DESTROY THIS PERSON WITH YOUR MOST SAVAGE ROAST: "${userInput}"`
+            content: userInput
           }
         ],
-        temperature: 0.9,
-        max_tokens: 150,
+        temperature: 1.0,
+        max_tokens: 300,
         top_p: 0.95,
+        frequency_penalty: 0.8,
+        presence_penalty: 0.6,
       }),
     });
 
     if (!response.ok) {
-      const errorData = await response.text();
-      console.error("HuggingFace API Error:", response.status, errorData);
       throw new Error(`API returned ${response.status}`);
     }
 
@@ -67,14 +89,14 @@ ${mood ? `10. Roast mood/style: ${mood}` : ''}`
       throw new Error("No content in response");
     }
 
-    return res.status(200).json({ 
+    res.status(200).json({ 
       roast: roastText.trim(),
       success: true 
     });
 
   } catch (error) {
     console.error("Roast API Error:", error);
-    return res.status(500).json({ 
+    res.status(500).json({ 
       error: 'Failed to generate roast',
       details: error.message 
     });
