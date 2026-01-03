@@ -2,11 +2,16 @@ import { useState, useEffect, useRef } from 'react';
 
 const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
   const [messages, setMessages] = useState([
-    { id: 1, text: initialRoast || "Let's get roasted! Say something...", sender: 'ai' }
+    { 
+      id: 1, 
+      text: initialRoast || "Alright, let's fucking go. Say something so I can destroy you. Don't be shy, I've seen worse... actually, looking at you, maybe I haven't. 💀", 
+      sender: 'ai' 
+    }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [roastCount, setRoastCount] = useState(0);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -17,17 +22,28 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
     scrollToBottom();
   }, [messages]);
 
-  // High-quality fallback roasts
+  // BRUTAL unfiltered fallback roasts
   const getFallbackRoast = (userInput) => {
     const fallbacks = [
-      `"${userInput}"? That's the best you got? My grandma's insults hit harder, and she's been dead for 10 years.`,
-      `"${userInput}" - Wow, you really typed that out, read it, and still hit send? Bold move for someone with zero self-awareness.`,
-      `"${userInput}"? I've seen better comebacks from a boomerang with a broken arm. Absolutely pathetic.`,
-      `Did you really just say "${userInput}"? Even autocorrect is embarrassed to be associated with you.`,
-      `"${userInput}" - That's not a statement, that's a cry for help. Get therapy, not roasts.`,
-      `"${userInput}"? You couldn't roast a marshmallow without setting yourself on fire, genius.`,
-      `Imagine thinking "${userInput}" was worth anyone's time. Couldn't be me. Actually couldn't be anyone with brain cells.`,
-      `"${userInput}" - This is why your parents changed the WiFi password and "forgot" to tell you.`
+      `"${userInput}"? That's the shit you came up with? Holy fuck, I've seen better comebacks from a guy in a coma. Your brain must be running on Internet Explorer.`,
+      
+      `Bro really said "${userInput}" like it meant something 💀 The absolute audacity of someone with your track record. You're not a disappointment, you're a fucking catastrophe.`,
+      
+      `"${userInput}" - Did your last brain cell write that before it died of loneliness? Even autocorrect gave up on your dumbass. Pathetic doesn't even begin to cover it.`,
+      
+      `Jesus Christ, "${userInput}"? That's what you're bringing to the table? No wonder everyone leaves you on read. Your existence is a typo God forgot to delete.`,
+      
+      `"${userInput}" holy shit 😭 You typed that out, looked at it, and thought "yeah this is fire"? Bitch, the only fire here is the dumpster you crawled out of.`,
+      
+      `Imagine having the balls to say "${userInput}" when you look like that and live like this. The delusion is almost impressive. Almost.`,
+      
+      `"${userInput}"? That's cute. You know what else is cute? The way you think anyone gives a fuck. Spoiler: they don't. They never did.`,
+      
+      `Bro said "${userInput}" 💀💀💀 I'm actually speechless at how stupid that was. And I'm never speechless. Congratulations, you've achieved peak dumbassery.`,
+      
+      `"${userInput}" - This is why your parents drink. This is why your ex left. This is why you're alone on a Friday night talking to an AI for validation. Tragic.`,
+      
+      `Holy fuck, "${userInput}"? Even for you, this is embarrassing. Your family tree must be a circle because there's no way natural selection allowed this.`
     ];
     return fallbacks[Math.floor(Math.random() * fallbacks.length)];
   };
@@ -41,14 +57,14 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
       sender: 'user'
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     const userInput = inputValue;
     setInputValue('');
     setIsLoading(true);
     setError(null);
 
     try {
-      // Call your backend API route
       const response = await fetch('/api/roast', {
         method: 'POST',
         headers: {
@@ -57,7 +73,8 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         body: JSON.stringify({
           userInput: userInput,
           subject: subject,
-          mood: mood
+          mood: mood,
+          conversationHistory: updatedMessages.slice(-8) // Send recent context
         }),
       });
 
@@ -78,12 +95,12 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
       };
 
       setMessages(prev => [...prev, aiMessage]);
+      setRoastCount(prev => prev + 1);
 
     } catch (error) {
       console.error("Roast chat error:", error);
       setError(error.message);
       
-      // Use high-quality fallback
       const aiMessage = {
         id: Date.now() + 1,
         text: getFallbackRoast(userInput),
@@ -91,6 +108,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
       };
       
       setMessages(prev => [...prev, aiMessage]);
+      setRoastCount(prev => prev + 1);
     } finally {
       setIsLoading(false);
     }
@@ -103,6 +121,17 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
     }
   };
 
+  // Get roast intensity label
+  const getIntensityLabel = () => {
+    if (roastCount === 0) return { text: "WARMING UP", color: "#FFD700" };
+    if (roastCount < 3) return { text: "GETTING SPICY", color: "#FF8C00" };
+    if (roastCount < 6) return { text: "ON FIRE", color: "#FF4500" };
+    if (roastCount < 10) return { text: "NUCLEAR", color: "#DC143C" };
+    return { text: "EXTINCTION LEVEL", color: "#8B0000" };
+  };
+
+  const intensity = getIntensityLabel();
+
   return (
     <div style={{
       position: 'fixed',
@@ -110,91 +139,139 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
       left: '0',
       right: '0',
       bottom: '0',
-      background: 'linear-gradient(180deg, #0a0a0a 0%, #1a0a0a 100%)',
+      background: 'linear-gradient(180deg, #0a0505 0%, #150808 50%, #0a0505 100%)',
       zIndex: '10000',
       display: 'flex',
       flexDirection: 'column'
     }}>
       {/* Header */}
       <div style={{
-        padding: '15px 20px',
-        background: 'linear-gradient(90deg, #8B0000, #DC143C, #FF4500)',
+        padding: '12px 20px',
+        background: 'linear-gradient(90deg, #1a0000, #3d0000, #1a0000)',
+        borderBottom: '2px solid #8B0000',
         color: 'white',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        boxShadow: '0 4px 20px rgba(139, 0, 0, 0.5)'
+        boxShadow: '0 4px 30px rgba(139, 0, 0, 0.6)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '1.5rem' }}>🔥</span>
-          <h3 style={{ margin: '0', fontSize: '1.2rem', fontWeight: '700', letterSpacing: '2px' }}>
-            ROAST CHAT
-          </h3>
-          <span style={{ fontSize: '1.5rem' }}>🔥</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontSize: '1.8rem', filter: 'drop-shadow(0 0 10px #FF4500)' }}>🔥</span>
+          <div>
+            <h3 style={{ 
+              margin: '0', 
+              fontSize: '1.1rem', 
+              fontWeight: '900', 
+              letterSpacing: '3px',
+              textShadow: '0 0 10px rgba(255, 69, 0, 0.5)'
+            }}>
+              ROAST ZONE
+            </h3>
+            <span style={{ 
+              fontSize: '0.65rem', 
+              color: intensity.color,
+              letterSpacing: '2px',
+              fontWeight: '700'
+            }}>
+              ⚡ {intensity.text}
+            </span>
+          </div>
         </div>
-        <button
-          onClick={onClose}
-          style={{
-            background: 'rgba(255,255,255,0.2)',
-            border: 'none',
-            color: 'white',
-            fontSize: '1.3rem',
-            cursor: 'pointer',
-            width: '35px',
-            height: '35px',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'background 0.2s'
-          }}
-          onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
-          onMouseOut={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
-        >
-          ×
-        </button>
-      </div>
-
-      {/* Error Banner */}
-      {error && (
-        <div style={{
-          padding: '10px 20px',
-          background: 'rgba(255, 193, 7, 0.2)',
-          borderBottom: '1px solid #FFC107',
-          color: '#FFC107',
-          fontSize: '0.85rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          <span>⚠️</span>
-          <span>AI temporarily unavailable - using backup roasts</span>
-          <button 
-            onClick={() => setError(null)}
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          {/* Roast Counter */}
+          <div style={{
+            background: 'rgba(139, 0, 0, 0.5)',
+            padding: '5px 12px',
+            borderRadius: '15px',
+            fontSize: '0.75rem',
+            border: '1px solid #FF4500'
+          }}>
+            💀 {roastCount} BURNS
+          </div>
+          
+          <button
+            onClick={onClose}
             style={{
-              marginLeft: 'auto',
-              background: 'none',
-              border: 'none',
-              color: '#FFC107',
-              cursor: 'pointer'
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              color: 'white',
+              fontSize: '1.2rem',
+              cursor: 'pointer',
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s'
             }}
           >
             ×
           </button>
         </div>
-      )}
+      </div>
+
+      {/* Warning Banner */}
+      <div style={{
+        padding: '8px 20px',
+        background: 'linear-gradient(90deg, rgba(139, 0, 0, 0.3), rgba(255, 69, 0, 0.2), rgba(139, 0, 0, 0.3))',
+        borderBottom: '1px solid rgba(255, 69, 0, 0.3)',
+        color: '#FF6B6B',
+        fontSize: '0.7rem',
+        textAlign: 'center',
+        letterSpacing: '1px',
+        textTransform: 'uppercase'
+      }}>
+        ⚠️ EXPLICIT CONTENT • NO FILTER ZONE • ENTER AT YOUR OWN RISK ⚠️
+      </div>
 
       {/* Subject Info */}
       {subject && (
         <div style={{
           padding: '10px 20px',
-          background: 'rgba(139, 0, 0, 0.3)',
-          borderBottom: '1px solid rgba(255, 69, 0, 0.3)',
-          color: '#FF6B6B',
-          fontSize: '0.85rem'
+          background: 'rgba(0, 0, 0, 0.5)',
+          borderBottom: '1px solid rgba(255, 69, 0, 0.2)',
+          color: '#FF8C69',
+          fontSize: '0.8rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px'
         }}>
-          🎯 Roasting: <strong>{subject}</strong>
-          {mood && <span style={{ marginLeft: '15px' }}>💀 Mood: <strong>{mood}</strong></span>}
+          <span>🎯</span>
+          <span>Target: <strong style={{ color: '#FF4500' }}>{subject}</strong></span>
+          {mood && (
+            <>
+              <span style={{ opacity: 0.5 }}>|</span>
+              <span>Mode: <strong style={{ color: '#FFD700' }}>{mood}</strong></span>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Error Banner */}
+      {error && (
+        <div style={{
+          padding: '8px 20px',
+          background: 'rgba(255, 193, 7, 0.15)',
+          borderBottom: '1px solid rgba(255, 193, 7, 0.3)',
+          color: '#FFC107',
+          fontSize: '0.8rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <span>⚠️ AI overheated - using backup savage mode</span>
+          <button 
+            onClick={() => setError(null)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#FFC107',
+              cursor: 'pointer',
+              fontSize: '1rem'
+            }}
+          >×</button>
         </div>
       )}
 
@@ -205,49 +282,75 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         padding: '20px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '15px'
+        gap: '18px',
+        background: 'radial-gradient(ellipse at center, rgba(139, 0, 0, 0.1) 0%, transparent 70%)'
       }}>
-        {messages.map((message) => (
+        {messages.map((message, index) => (
           <div
             key={message.id}
             style={{
               alignSelf: message.sender === 'user' ? 'flex-end' : 'flex-start',
-              maxWidth: '85%',
-              animation: 'fadeIn 0.3s ease-out'
+              maxWidth: '88%',
+              animation: 'slideIn 0.3s ease-out'
             }}
           >
             {/* Sender Label */}
             <div style={{
-              fontSize: '0.7rem',
-              color: message.sender === 'user' ? '#4A9FFF' : '#FF6B6B',
-              marginBottom: '5px',
+              fontSize: '0.68rem',
+              color: message.sender === 'user' ? '#6B9FFF' : '#FF5C5C',
+              marginBottom: '6px',
               textAlign: message.sender === 'user' ? 'right' : 'left',
               textTransform: 'uppercase',
-              letterSpacing: '1px'
+              letterSpacing: '1.5px',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start'
             }}>
-              {message.sender === 'user' ? '🎤 You' : '🔥 Roast Master'}
+              {message.sender === 'user' ? (
+                <>YOU 🎤</>
+              ) : (
+                <>💀 ROAST MASTER</>
+              )}
             </div>
             
             {/* Message Bubble */}
             <div style={{
               background: message.sender === 'user' 
-                ? 'linear-gradient(135deg, #1E3A5F, #2E5A8F)' 
-                : 'linear-gradient(135deg, #5C1515, #8B2020, #A52A2A)',
+                ? 'linear-gradient(135deg, #1a2a4a, #2a3a5a)' 
+                : 'linear-gradient(135deg, #2a0a0a, #4a1515, #3a1010)',
               color: 'white',
-              padding: '14px 18px',
+              padding: '16px 20px',
               borderRadius: message.sender === 'user' 
-                ? '20px 5px 20px 20px' 
-                : '5px 20px 20px 20px',
+                ? '22px 6px 22px 22px' 
+                : '6px 22px 22px 22px',
               boxShadow: message.sender === 'user'
-                ? '0 4px 15px rgba(30, 58, 95, 0.4)'
-                : '0 4px 15px rgba(139, 32, 32, 0.5), 0 0 20px rgba(255, 69, 0, 0.2)',
-              border: message.sender === 'ai' ? '1px solid rgba(255, 69, 0, 0.3)' : 'none'
+                ? '0 5px 20px rgba(30, 58, 95, 0.4)'
+                : '0 5px 25px rgba(139, 0, 0, 0.5), inset 0 1px 0 rgba(255, 100, 100, 0.1)',
+              border: message.sender === 'ai' 
+                ? '1px solid rgba(255, 69, 0, 0.4)' 
+                : '1px solid rgba(100, 150, 255, 0.2)',
+              position: 'relative'
             }}>
+              {/* Fire indicator for AI messages */}
+              {message.sender === 'ai' && (
+                <div style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  left: '15px',
+                  fontSize: '1rem'
+                }}>
+                  🔥
+                </div>
+              )}
+              
               <p style={{ 
                 margin: '0', 
                 fontSize: '1rem', 
-                lineHeight: '1.5',
-                wordBreak: 'break-word'
+                lineHeight: '1.6',
+                wordBreak: 'break-word',
+                whiteSpace: 'pre-wrap'
               }}>
                 {message.text}
               </p>
@@ -257,48 +360,48 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         
         {/* Loading State */}
         {isLoading && (
-          <div style={{
-            alignSelf: 'flex-start',
-            maxWidth: '85%'
-          }}>
+          <div style={{ alignSelf: 'flex-start', maxWidth: '88%' }}>
             <div style={{
-              fontSize: '0.7rem',
-              color: '#FF6B6B',
-              marginBottom: '5px',
+              fontSize: '0.68rem',
+              color: '#FF5C5C',
+              marginBottom: '6px',
               textTransform: 'uppercase',
-              letterSpacing: '1px'
+              letterSpacing: '1.5px',
+              fontWeight: '600'
             }}>
-              🔥 Roast Master
+              💀 ROAST MASTER
             </div>
             <div style={{
-              background: 'linear-gradient(135deg, #5C1515, #8B2020)',
+              background: 'linear-gradient(135deg, #2a0a0a, #4a1515)',
               color: 'white',
-              padding: '14px 18px',
-              borderRadius: '5px 20px 20px 20px',
-              boxShadow: '0 4px 15px rgba(139, 32, 32, 0.5)',
-              border: '1px solid rgba(255, 69, 0, 0.3)',
+              padding: '16px 20px',
+              borderRadius: '6px 22px 22px 22px',
+              boxShadow: '0 5px 25px rgba(139, 0, 0, 0.5)',
+              border: '1px solid rgba(255, 69, 0, 0.4)',
               display: 'flex',
               alignItems: 'center',
-              gap: '10px'
+              gap: '12px'
             }}>
-              <div style={{
-                display: 'flex',
-                gap: '4px'
-              }}>
-                <span style={{ 
-                  animation: 'bounce 1s infinite',
-                  animationDelay: '0ms'
-                }}>🔥</span>
-                <span style={{ 
-                  animation: 'bounce 1s infinite',
-                  animationDelay: '150ms'
-                }}>🔥</span>
-                <span style={{ 
-                  animation: 'bounce 1s infinite',
-                  animationDelay: '300ms'
-                }}>🔥</span>
+              <div style={{ display: 'flex', gap: '5px' }}>
+                {['🔥', '💀', '🔥'].map((emoji, i) => (
+                  <span 
+                    key={i}
+                    style={{ 
+                      animation: `pulse 1s ease-in-out infinite`,
+                      animationDelay: `${i * 0.2}s`,
+                      display: 'inline-block'
+                    }}
+                  >
+                    {emoji}
+                  </span>
+                ))}
               </div>
-              <span style={{ fontSize: '0.95rem' }}>Cooking up something savage...</span>
+              <span style={{ 
+                fontSize: '0.95rem',
+                color: '#FF8C69'
+              }}>
+                Crafting something brutal...
+              </span>
             </div>
           </div>
         )}
@@ -307,97 +410,150 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
 
       {/* Input Area */}
       <div style={{
-        padding: '15px 20px',
-        background: 'rgba(15, 15, 15, 0.98)',
-        borderTop: '1px solid rgba(139, 0, 0, 0.5)'
+        padding: '15px 20px 20px',
+        background: 'linear-gradient(180deg, rgba(20, 8, 8, 0.95), rgba(10, 5, 5, 0.98))',
+        borderTop: '2px solid rgba(139, 0, 0, 0.6)'
       }}>
         <div style={{
           display: 'flex',
           gap: '12px',
           alignItems: 'flex-end'
         }}>
-          <textarea
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Say something to get brutally roasted... 💀"
-            style={{
-              flex: '1',
-              padding: '14px 18px',
-              borderRadius: '25px',
-              border: '2px solid rgba(139, 0, 0, 0.6)',
-              background: 'rgba(30, 30, 30, 0.9)',
-              color: 'white',
-              fontSize: '1rem',
-              outline: 'none',
-              resize: 'none',
-              height: '52px',
-              fontFamily: 'inherit',
-              transition: 'border-color 0.2s, box-shadow 0.2s'
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#FF4500';
-              e.target.style.boxShadow = '0 0 15px rgba(255, 69, 0, 0.3)';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = 'rgba(139, 0, 0, 0.6)';
-              e.target.style.boxShadow = 'none';
-            }}
-            disabled={isLoading}
-          />
+          <div style={{ flex: 1, position: 'relative' }}>
+            <textarea
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Talk shit and find out... 💀"
+              style={{
+                width: '100%',
+                padding: '15px 20px',
+                paddingRight: '50px',
+                borderRadius: '25px',
+                border: '2px solid rgba(139, 0, 0, 0.6)',
+                background: 'rgba(25, 15, 15, 0.95)',
+                color: 'white',
+                fontSize: '1rem',
+                outline: 'none',
+                resize: 'none',
+                height: '55px',
+                fontFamily: 'inherit',
+                transition: 'all 0.3s',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#FF4500';
+                e.target.style.boxShadow = '0 0 20px rgba(255, 69, 0, 0.4), inset 0 0 10px rgba(255, 69, 0, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(139, 0, 0, 0.6)';
+                e.target.style.boxShadow = 'none';
+              }}
+              disabled={isLoading}
+            />
+            {/* Character hint */}
+            <span style={{
+              position: 'absolute',
+              right: '15px',
+              bottom: '15px',
+              fontSize: '0.7rem',
+              color: 'rgba(255,255,255,0.3)'
+            }}>
+              {inputValue.length > 0 ? '↵' : ''}
+            </span>
+          </div>
+          
           <button
             onClick={sendMessage}
             disabled={isLoading || !inputValue.trim()}
             style={{
-              padding: '14px 28px',
+              padding: '15px 30px',
               background: isLoading || !inputValue.trim() 
-                ? 'linear-gradient(135deg, #444, #555)' 
-                : 'linear-gradient(135deg, #8B0000, #DC143C, #FF4500)',
+                ? 'linear-gradient(135deg, #333, #444)' 
+                : 'linear-gradient(135deg, #8B0000, #CC0000, #FF2200)',
               color: 'white',
               border: 'none',
               borderRadius: '25px',
-              fontWeight: '700',
-              fontSize: '1rem',
+              fontWeight: '800',
+              fontSize: '0.95rem',
               cursor: isLoading || !inputValue.trim() ? 'not-allowed' : 'pointer',
               boxShadow: isLoading || !inputValue.trim() 
                 ? 'none' 
-                : '0 4px 20px rgba(139, 0, 0, 0.5)',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              letterSpacing: '1px'
-            }}
-            onMouseOver={(e) => {
-              if (!isLoading && inputValue.trim()) {
-                e.target.style.transform = 'scale(1.05)';
-              }
-            }}
-            onMouseOut={(e) => {
-              e.target.style.transform = 'scale(1)';
+                : '0 5px 25px rgba(200, 0, 0, 0.5), 0 0 40px rgba(255, 69, 0, 0.2)',
+              transition: 'all 0.2s',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              minWidth: '130px'
             }}
           >
-            {isLoading ? '🔥' : 'ROAST ME'}
+            {isLoading ? (
+              <span style={{ fontSize: '1.2rem' }}>🔥</span>
+            ) : (
+              'SEND IT'
+            )}
           </button>
         </div>
         
-        {/* Hint Text */}
-        <p style={{
-          margin: '10px 0 0 0',
-          fontSize: '0.75rem',
-          color: 'rgba(255, 255, 255, 0.4)',
-          textAlign: 'center'
+        {/* Bottom hint */}
+        <div style={{
+          marginTop: '12px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '0.7rem',
+          color: 'rgba(255, 255, 255, 0.35)'
         }}>
-          Press Enter to send • Be prepared to get destroyed 💀
-        </p>
+          <span>⌨️ Enter to send • Shift+Enter for new line</span>
+          <span style={{ color: '#FF6B6B' }}>No limits. No mercy. 💀</span>
+        </div>
       </div>
 
       {/* CSS Animations */}
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+      <style jsx global>{`
+        @keyframes slideIn {
+          from { 
+            opacity: 0; 
+            transform: translateY(15px) scale(0.98); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0) scale(1); 
+          }
         }
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
+        
+        @keyframes pulse {
+          0%, 100% { 
+            transform: scale(1); 
+            opacity: 1;
+          }
+          50% { 
+            transform: scale(1.3); 
+            opacity: 0.7;
+          }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+          background: rgba(20, 10, 10, 0.5);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+          background: linear-gradient(180deg, #8B0000, #FF4500);
+          border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(180deg, #AA0000, #FF6622);
+        }
+        
+        /* Disable text selection on labels */
+        .no-select {
+          user-select: none;
+          -webkit-user-select: none;
         }
       `}</style>
     </div>
