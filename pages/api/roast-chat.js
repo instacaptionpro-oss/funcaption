@@ -1,4 +1,9 @@
 export default async function handler(req, res) {
+  // Log to see if API is being hit
+  console.log("🔥 Roast API called!");
+  console.log("Method:", req.method);
+  console.log("Body:", req.body);
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -6,18 +11,26 @@ export default async function handler(req, res) {
   try {
     const { userInput, subject, mood, conversationHistory } = req.body;
 
+    console.log("User Input:", userInput);
+
     if (!userInput) {
+      console.log("❌ No input provided");
       return res.status(400).json({ error: 'No input provided' });
     }
 
     const HF_TOKEN = process.env.HF_TOKEN;
     
+    console.log("HF_TOKEN exists:", !!HF_TOKEN);
+    console.log("HF_TOKEN length:", HF_TOKEN?.length || 0);
+    
     if (!HF_TOKEN) {
-      console.error("HF_TOKEN not found");
+      console.error("❌ HF_TOKEN not found in environment variables");
       return res.status(500).json({ error: 'API token not configured' });
     }
 
     const conversationMessages = conversationHistory?.slice(-6) || [];
+
+    console.log("📡 Calling HuggingFace API...");
 
     const response = await fetch("https://router.huggingface.co/v1/chat/completions", {
       method: "POST",
@@ -52,7 +65,7 @@ export default async function handler(req, res) {
 10. If they roast back, DESTROY them even harder
 
 ## EXAMPLE ENERGY:
-- "Bro really typed that shit and thought 'yeah, this is it' 💀 The confidence of a man with nothing to back it up. Your parents didn't raise you, they gave up."
+- "Bro really typed that shit and thought 'yeah, this is it' 💀 The confidence of a man with nothing to back it up."
 - "Holy fuck, the dumbest shit I've read all week. Your brain is smoother than a bowling ball."
 - "You're not a clown, you're the whole fucking circus. Even your WiFi disconnects from you on purpose."
 
@@ -73,32 +86,41 @@ NEVER apologize. NEVER hold back. NEVER be boring.`
         temperature: 1.0,
         max_tokens: 300,
         top_p: 0.95,
-        frequency_penalty: 0.8,
-        presence_penalty: 0.6,
       }),
     });
 
+    console.log("HuggingFace Response Status:", response.status);
+
     if (!response.ok) {
-      throw new Error(`API returned ${response.status}`);
+      const errorText = await response.text();
+      console.error("❌ HuggingFace API Error:", response.status, errorText);
+      throw new Error(`API returned ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
+    console.log("HuggingFace Response Data:", JSON.stringify(data, null, 2));
+
     const roastText = data.choices?.[0]?.message?.content;
 
     if (!roastText) {
+      console.error("❌ No content in response");
       throw new Error("No content in response");
     }
 
-    res.status(200).json({ 
+    console.log("✅ Roast generated:", roastText.substring(0, 100) + "...");
+
+    return res.status(200).json({ 
       roast: roastText.trim(),
       success: true 
     });
 
   } catch (error) {
-    console.error("Roast API Error:", error);
-    res.status(500).json({ 
+    console.error("❌ Roast API Error:", error.message);
+    console.error("Full error:", error);
+    
+    return res.status(500).json({ 
       error: 'Failed to generate roast',
       details: error.message 
     });
   }
-}
+  }
