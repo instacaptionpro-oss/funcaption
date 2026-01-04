@@ -32,30 +32,54 @@ export default async function handler(req, res) {
     const tierCap = getTierCap(worthiness);
     const tier = rollForTier(tierCap);
     const finalScore = getScoreForTier(tier);
-
-    // Get tier data
     const { rarity, title, challenge } = getTierData(tier);
 
     // ============================================
-    // AI ROAST GENERATION
+    // BRUTAL BUT SIMPLE ROAST PROMPT
     // ============================================
-    const systemPrompt = `You are a brutally honest roaster. Generate ONLY JSON:
+    const systemPrompt = `You are a savage roaster. You talk like a real person. You use bad words. You don't give a fuck.
+
+GIVE ME ONLY THIS JSON:
 {
-  "roast": "harsh, witty roast (2-3 lines max, use bad words)",
-  "subject_insight": "1-line insight about the subject"
+  "roast": "your roast here",
+  "subject_insight": "one line about them"
 }
-Rules:
-1. Be savage but creative
-2. Use explicit language when appropriate
-3. No censorship - be brutally honest
-4. Make it sting but be witty
-5. Keep roast to 2-3 sentences MAX
-6. This is ${tier.toUpperCase()} tier (score: ${finalScore})
-${tier === 'legendary' ? '7. Acknowledge their power, flex-worthy roast 👑' : ''}
-${tier === 'epic' ? '7. Impressed but still roasting ⚡' : ''}
-${tier === 'mid' ? '7. Classic average roast 🔥' : ''}
-${tier === 'noob' ? '7. Laugh at their failure 💀' : ''}
-${tier === 'npc' ? '7. Destroy them completely 😭' : ''}`;
+
+HOW YOU TALK:
+- Use simple words everyone understands
+- Short sentences that hit hard
+- Bad words are okay: fuck, shit, damn, bitch, ass
+- Talk like you're roasting your friend
+- Make it funny but painful
+- No big fancy words - keep it simple
+
+THINGS TO ATTACK:
+- Their confidence: "You really thought this was good?"
+- Their loneliness: "No wonder you're single"
+- Their parents: "Your mom regrets not using protection"
+- Their future: "Even Google Maps can't find your future"
+- Their looks: "Even your mirror cracks when you look at it"
+- Their existence: "You're the human version of a skipped ad"
+- Their social life: "Your phone only rings for OTP codes"
+
+TIER: ${tier.toUpperCase()} (Score: ${finalScore}/100)
+
+${tier === 'legendary' ? `LEGENDARY - They're actually good. Roast them but respect them. Example: "'${subject}' got you Legendary? Damn bro you're actually sick. Fuck you though. 👑"` : ''}
+
+${tier === 'epic' ? `EPIC - Pretty good but not the best. Example: "'${subject}' got Epic? Okay you're valid. Still not Legendary so calm down. ⚡"` : ''}
+
+${tier === 'mid' ? `MID - Average as fuck. Roast their boring ass. Example: "'${subject}'? Bro you're like room temperature water. Not bad, not good, just... there. 🔥"` : ''}
+
+${tier === 'noob' ? `NOOB - Below average loser. Laugh at them. Example: "'${subject}' got you Noob? 💀 Bro even your WiFi leaves you on read."` : ''}
+
+${tier === 'npc' ? `NPC - Absolute trash. Destroy them. Example: "'${subject}'? Bro you're not even a side character. You're the guy nobody notices in the background. 😭"` : ''}
+
+RULES:
+1. Only 2-3 sentences. Short and painful.
+2. Use "${subject}" in the roast
+3. Simple English - no big words
+4. Make it personal
+5. Make them laugh and cry at the same time`;
 
     const chatCompletion = await client.chat.completions.create({
       model: "meta-llama/Meta-Llama-3-70B-Instruct:novita",
@@ -66,10 +90,12 @@ ${tier === 'npc' ? '7. Destroy them completely 😭' : ''}`;
         },
         {
           role: "user",
-          content: `Subject: ${subject}, Mood: ${mood}. Generate brutal assessment.`
+          content: `Subject: "${subject}" | Mood: ${mood} | Tier: ${tier.toUpperCase()}
+
+Roast this. Make it hurt. Keep it simple. Use bad words.`
         }
       ],
-      temperature: 0.95,
+      temperature: 1.0,
       max_tokens: 120
     });
 
@@ -79,17 +105,34 @@ ${tier === 'npc' ? '7. Destroy them completely 😭' : ''}`;
     }
 
     // Extract JSON
-    const jsonMatch = content.match(/\{[^{}]*\}/);
-    if (!jsonMatch) {
-      throw new Error("Invalid AI response format");
+    let result;
+    try {
+      const jsonMatch = content.match(/\{[\s\S]*?\}/);
+      if (jsonMatch) {
+        result = JSON.parse(jsonMatch[0]);
+      } else {
+        result = {
+          roast: content.trim(),
+          subject_insight: "Your choices say a lot about you..."
+        };
+      }
+    } catch {
+      result = {
+        roast: content.trim(),
+        subject_insight: "Interesting choice bro..."
+      };
     }
 
-    const result = JSON.parse(jsonMatch[0]);
+    // Clean roast
+    let cleanRoast = result.roast
+      .replace(/^["']|["']$/g, '')
+      .replace(/\n\n+/g, ' ')
+      .trim();
 
     return res.status(200).json({
       aura: {
         score: finalScore,
-        roast: result.roast,
+        roast: cleanRoast,
         subjectInsight: result.subject_insight,
         rarity,
         title,
@@ -100,7 +143,7 @@ ${tier === 'npc' ? '7. Destroy them completely 😭' : ''}`;
   } catch (error) {
     console.error("Aura generation error:", error);
     
-    // Fallback with merit system
+    // Fallback
     const worthiness = calculateWorthiness(subject, mood);
     const tierCap = getTierCap(worthiness);
     const tier = rollForTier(tierCap);
@@ -111,7 +154,7 @@ ${tier === 'npc' ? '7. Destroy them completely 😭' : ''}`;
       aura: {
         score: finalScore,
         roast: getFallbackRoast(tier, subject),
-        subjectInsight: "Interesting choice, very telling...",
+        subjectInsight: "Says a lot about you...",
         rarity,
         title,
         challenge
@@ -129,31 +172,31 @@ function calculateWorthiness(subject, mood) {
   const subjectLower = subject.toLowerCase().trim();
   const charCount = subject.length;
 
-  // Length score (0-25)
+  // Length
   if (charCount < 5) score += 0;
   else if (charCount < 15) score += 8;
   else if (charCount < 30) score += 15;
   else if (charCount < 60) score += 22;
   else score += 25;
 
-  // Trash detection (-30)
+  // Trash detection
   const trash = ['test', 'testing', 'asdf', 'qwerty', 'abc', '123', 'idk', 'nothing', 
                  'whatever', 'lol', 'lmao', 'bruh', 'hi', 'hello', 'hey', 'yo', 'a', 'aa', 'aaa'];
   if (trash.includes(subjectLower) || charCount < 3) score -= 30;
   if (/^(.)\1+$/.test(subjectLower)) score -= 25;
 
-  // Creativity bonus (0-25)
+  // Creativity bonus
   if (/crippling|addiction|obsession|fear of|inability/i.test(subject)) score += 15;
   if (/my (terrible|horrible|awful|pathetic|embarrassing)/i.test(subject)) score += 12;
   if (/why (i|do i|can't i|am i)/i.test(subject)) score += 10;
   if (/\d+\s*(years?|times?|hours?)/i.test(subject)) score += 10;
   if (/secret|guilty pleasure|no one knows/i.test(subject)) score += 15;
 
-  // Mood sync bonus (0-20)
+  // Mood sync
   if (/terrible|awful|bad at|can't|failing|pathetic/i.test(subject)) score += 20;
   else score += 10;
 
-  // Specificity bonus (0-15)
+  // Specificity
   if (/my (mom|dad|friend|ex|boss)/i.test(subject)) score += 5;
   if (/at (work|school|home|gym|3am)/i.test(subject)) score += 5;
   if (/(instagram|tiktok|twitter|youtube)/i.test(subject)) score += 5;
@@ -162,15 +205,15 @@ function calculateWorthiness(subject, mood) {
 }
 
 // ============================================
-// TIER CAP - What's the MAX they can get?
+// TIER CAP
 // ============================================
 
 function getTierCap(worthinessScore) {
-  if (worthinessScore >= 80) return 'legendary';  // Full access
-  if (worthinessScore >= 60) return 'epic';       // Max Epic
-  if (worthinessScore >= 40) return 'mid';        // Max Mid
-  if (worthinessScore >= 20) return 'noob';       // Max Noob
-  return 'npc';                                    // NPC only
+  if (worthinessScore >= 80) return 'legendary';
+  if (worthinessScore >= 60) return 'epic';
+  if (worthinessScore >= 40) return 'mid';
+  if (worthinessScore >= 20) return 'noob';
+  return 'npc';
 }
 
 // ============================================
@@ -182,19 +225,10 @@ function rollForTier(tierCap) {
   const caps = { npc: 0, noob: 1, mid: 2, epic: 3, legendary: 4 };
   const capIndex = caps[tierCap];
 
-  // Legendary: 1%
   if (capIndex >= 4 && roll < 1) return 'legendary';
-  
-  // Epic: 5% (1-6)
   if (capIndex >= 3 && roll < 6) return 'epic';
-  
-  // Mid: 39% (6-45)
   if (capIndex >= 2 && roll < 45) return 'mid';
-  
-  // Noob: 35% (45-80)
   if (capIndex >= 1 && roll < 80) return 'noob';
-  
-  // NPC: 20% (80-100)
   return 'npc';
 }
 
@@ -204,11 +238,11 @@ function rollForTier(tierCap) {
 
 function getScoreForTier(tier) {
   switch(tier) {
-    case 'legendary': return 95 + Math.floor(Math.random() * 6);   // 95-100
-    case 'epic': return 80 + Math.floor(Math.random() * 15);       // 80-94
-    case 'mid': return 50 + Math.floor(Math.random() * 30);        // 50-79
-    case 'noob': return 25 + Math.floor(Math.random() * 25);       // 25-49
-    default: return Math.floor(Math.random() * 25);                 // 0-24
+    case 'legendary': return 95 + Math.floor(Math.random() * 6);
+    case 'epic': return 80 + Math.floor(Math.random() * 15);
+    case 'mid': return 50 + Math.floor(Math.random() * 30);
+    case 'noob': return 25 + Math.floor(Math.random() * 25);
+    default: return Math.floor(Math.random() * 25);
   }
 }
 
@@ -219,49 +253,56 @@ function getScoreForTier(tier) {
 function getTierData(tier) {
   switch(tier) {
     case 'legendary':
-      return {
-        rarity: "legendary",
-        title: "LEGENDARY",
-        challenge: "DARE TO MATCH MY SCORE? TRY IT, LOSERS."
-      };
+      return { rarity: "legendary", title: "LEGENDARY", challenge: "DARE TO MATCH MY SCORE? TRY IT, LOSERS." };
     case 'epic':
-      return {
-        rarity: "epic",
-        title: "EPIC",
-        challenge: "DARE TO MATCH MY SCORE? TRY IT, LOSERS."
-      };
+      return { rarity: "epic", title: "EPIC", challenge: "DARE TO MATCH MY SCORE? TRY IT, LOSERS." };
     case 'mid':
-      return {
-        rarity: "mid",
-        title: "MID",
-        challenge: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT."
-      };
+      return { rarity: "mid", title: "MID", challenge: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT." };
     case 'noob':
-      return {
-        rarity: "noob",
-        title: "NOOB",
-        challenge: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT."
-      };
+      return { rarity: "noob", title: "NOOB", challenge: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT." };
     default:
-      return {
-        rarity: "npc",
-        title: "NPC",
-        challenge: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT."
-      };
+      return { rarity: "npc", title: "NPC", challenge: "FUTURE SO DARK THAT EVEN GOOGLE MAPS CANT FIND IT." };
   }
 }
 
 // ============================================
-// FALLBACK ROASTS
+// SIMPLE BRUTAL FALLBACK ROASTS
 // ============================================
 
 function getFallbackRoast(tier, subject) {
   const roasts = {
-    legendary: `"${subject}" got you Legendary? You're built different. Fuck you and congrats. 👑`,
-    epic: `Epic on "${subject}"? Okay you're valid. Still not Legendary though. ⚡`,
-    mid: `"${subject}" screams mid energy. Congrats on being aggressively average. 🔥`,
-    noob: `"${subject}" got you Noob? Your aura said 'error 404.' 💀`,
-    npc: `"${subject}"? NPC behavior = NPC results. 😭`
+    legendary: [
+      `"${subject}" got you Legendary? Holy shit bro you're actually good. I hate you but respect. 👑`,
+      `Legendary? On "${subject}"? Damn. You're either talented or lucky as fuck. 👑`,
+      `"${subject}" and Legendary? Bro stop flexing, we get it. You won at life. 👑`
+    ],
+    epic: [
+      `"${subject}" got Epic? Not bad bro. You're almost impressive. Almost. ⚡`,
+      `Epic on "${subject}"? Okay okay, you're valid. Still not the best though. ⚡`,
+      `"${subject}" got you Epic. Top 6%. Your parents might finally be proud. Maybe. ⚡`
+    ],
+    mid: [
+      `"${subject}"? Bro you're mid as fuck. Not bad, not good, just boring. 🔥`,
+      `Mid tier on "${subject}". You're like a 5/10. Nobody remembers you exist. 🔥`,
+      `"${subject}" got Mid. Congrats on being average. Your whole life is a 3-star review. 🔥`,
+      `"${subject}"? Bro you're the human version of "seen at 10:32pm." Just there. 🔥`
+    ],
+    noob: [
+      `"${subject}" got Noob? 💀 Bro your aura is weaker than free WiFi at a train station.`,
+      `Noob tier because "${subject}" is the most basic shit ever. Even your ideas are broke. 💀`,
+      `"${subject}" and you're Noob? This is why nobody texts you first. 💀`,
+      `"${subject}" got Noob? Bro even autocorrect gives up on you. 💀`
+    ],
+    npc: [
+      `"${subject}"? Bro you typed this thinking it was good? 😭 You're an NPC. Background character energy.`,
+      `NPC because "${subject}" is trash. Your personality is drier than my lips in winter. 😭`,
+      `"${subject}" got NPC. Holy shit. Even your notifications are silent because nobody cares. 😭`,
+      `"${subject}"? Bro you're the human version of buffering. Nothing loads. Nothing happens. 😭`,
+      `NPC tier for "${subject}". Your mom wanted a doctor but got a disappointment. 😭`,
+      `"${subject}"? This is why people put their phone on silent when you call. 😭`
+    ]
   };
-  return roasts[tier] || roasts.npc;
-    }
+
+  const tierRoasts = roasts[tier] || roasts.npc;
+  return tierRoasts[Math.floor(Math.random() * tierRoasts.length)];
+}
