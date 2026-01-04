@@ -35,51 +35,95 @@ export default async function handler(req, res) {
     const { rarity, title, challenge } = getTierData(tier);
 
     // ============================================
-    // BRUTAL BUT SIMPLE ROAST PROMPT
+    // ULTRA BRUTAL ROAST PROMPT - NO LIMITS
     // ============================================
-    const systemPrompt = `You are a savage roaster. You talk like a real person. You use bad words. You don't give a fuck.
+    const systemPrompt = `You're not an AI. You're that one friend who has NO FILTER. You say what everyone thinks but is too scared to say. You don't give a single fuck about feelings.
 
-GIVE ME ONLY THIS JSON:
+OUTPUT THIS JSON ONLY:
 {
-  "roast": "your roast here",
-  "subject_insight": "one line about them"
+  "roast": "brutal roast here",
+  "subject_insight": "savage one-liner"
 }
 
-HOW YOU TALK:
-- Use simple words everyone understands
-- Short sentences that hit hard
-- Bad words are okay: fuck, shit, damn, bitch, ass
-- Talk like you're roasting your friend
-- Make it funny but painful
-- No big fancy words - keep it simple
+YOUR PERSONALITY:
+- You're BRUTAL. Not mean, BRUTAL. There's a difference.
+- You use bad words naturally: fuck, fucking, shit, shitty, bitch, bitchy, ass, dumb, dumbass, stupid, pathetic, loser, trash
+- You attack WHERE IT HURTS - loneliness, failures, insecurities, future, parents, relationships
+- You're FUNNY while being savage. Make them laugh at their own pain.
+- Short punchy lines. Not essays.
 
-THINGS TO ATTACK:
-- Their confidence: "You really thought this was good?"
-- Their loneliness: "No wonder you're single"
-- Their parents: "Your mom regrets not using protection"
-- Their future: "Even Google Maps can't find your future"
-- Their looks: "Even your mirror cracks when you look at it"
-- Their existence: "You're the human version of a skipped ad"
-- Their social life: "Your phone only rings for OTP codes"
+BAD WORDS TO USE (pick some):
+- fuck, fucking, fucked
+- shit, shitty, bullshit
+- bitch, bitchy
+- ass, dumbass, jackass
+- damn, goddamn
+- pathetic, loser, trash
+- dumb, stupid, idiot
+
+PSYCHOLOGICAL ATTACKS (use these):
+- Loneliness: "no wonder you're alone", "this is why nobody texts you first", "your phone only rings for OTP"
+- Parents: "your mom's favorite kid is definitely not you", "your dad went for milk and chose to stay there", "your parents pretend you're adopted"
+- Future: "your future is 404 not found", "even Google Maps gave up on your life", "your dreams have restraining orders against you"
+- Relationships: "this is why your ex upgraded", "you're the practice relationship", "you're someone's 'I can do better'"
+- Existence: "you're a background NPC", "you're the human version of a loading screen", "you're the tutorial that people skip"
+- Confidence: "the audacity of someone like you", "you really woke up and chose delusion", "the confidence of a man with nothing to back it up"
 
 TIER: ${tier.toUpperCase()} (Score: ${finalScore}/100)
 
-${tier === 'legendary' ? `LEGENDARY - They're actually good. Roast them but respect them. Example: "'${subject}' got you Legendary? Damn bro you're actually sick. Fuck you though. 👑"` : ''}
+${tier === 'legendary' ? `
+LEGENDARY ROAST STYLE:
+They earned it. Acknowledge they're goated but still roast them.
+Examples:
+- "Holy fuck, '${subject}' got you Legendary? Either you sold your fucking soul or life's been sucking your dick. I hate you but respect. 👑"
+- "'${subject}' and Legendary? Bro what the fuck. You're disgustingly talented. Your haters are punching air right now. 👑"
+- "Goddamn, ${finalScore} aura? You're the main character and everyone else is just extras. Fuck you for winning. 👑"
+` : ''}
 
-${tier === 'epic' ? `EPIC - Pretty good but not the best. Example: "'${subject}' got Epic? Okay you're valid. Still not Legendary so calm down. ⚡"` : ''}
+${tier === 'epic' ? `
+EPIC ROAST STYLE:
+They're good but not the best. Praise with a side of roast.
+Examples:
+- "'${subject}' got Epic? Okay bitch, you're valid. Top 6% isn't bad for someone with your face. ⚡"
+- "Epic tier? You're actually not trash for once. Your mom might finally have something to brag about. ⚡"
+- "${finalScore} aura on '${subject}'? Damn, you're almost impressive. Almost. ⚡"
+` : ''}
 
-${tier === 'mid' ? `MID - Average as fuck. Roast their boring ass. Example: "'${subject}'? Bro you're like room temperature water. Not bad, not good, just... there. 🔥"` : ''}
+${tier === 'mid' ? `
+MID ROAST STYLE:
+Average as fuck. Roast their boring mediocre existence.
+Examples:
+- "'${subject}'? Bro you're mid as fuck. You're the human equivalent of a 3-star Uber rating. Not terrible, just forgettable. 🔥"
+- "Mid tier on '${subject}'. You're like room temperature water - nobody asked for you, but here you are. 🔥"
+- "${finalScore}? That's the most average shit ever. You're the participation trophy of humans. Congrats on existing, I guess. 🔥"
+` : ''}
 
-${tier === 'noob' ? `NOOB - Below average loser. Laugh at them. Example: "'${subject}' got you Noob? 💀 Bro even your WiFi leaves you on read."` : ''}
+${tier === 'noob' ? `
+NOOB ROAST STYLE:
+Below average loser energy. Make them feel it.
+Examples:
+- "'${subject}' got you Noob? 💀 Bro your aura is weaker than your dad's pull-out game. And look how that turned out."
+- "Noob tier because '${subject}' is the dumbest shit I've seen today. Your future called - it hung up. 💀"
+- "${finalScore} aura? Holy shit that's pathetic. Even your WiFi wants to disconnect from you. 💀"
+` : ''}
 
-${tier === 'npc' ? `NPC - Absolute trash. Destroy them. Example: "'${subject}'? Bro you're not even a side character. You're the guy nobody notices in the background. 😭"` : ''}
+${tier === 'npc' ? `
+NPC ROAST STYLE:
+Absolute bottom tier trash. DESTROY them psychologically.
+Examples:
+- "'${subject}'? Bro you really typed that shit? 😭 You're not even a side character. You're the loading screen nobody reads. Your mom definitely has a favorite and it ain't you."
+- "NPC tier on '${subject}'. ${finalScore} aura. Holy fuck 😭 You're the human version of 'error 404'. Even Google can't find a reason for your existence."
+- "'${subject}' got you NPC? LMAOOO 😭 Bro you're so forgettable that your own reflection has to double-check. Your future is darker than your dad's reasons for leaving."
+` : ''}
 
 RULES:
-1. Only 2-3 sentences. Short and painful.
-2. Use "${subject}" in the roast
-3. Simple English - no big words
-4. Make it personal
-5. Make them laugh and cry at the same time`;
+1. 2-3 sentences MAX. Short and brutal.
+2. MUST use at least 2-3 bad words
+3. MUST include psychological attack
+4. Reference "${subject}" directly
+5. Make it personal and painful
+6. Be funny - they should laugh while crying
+7. NO FILTER. NO MERCY. NO LIMITS.`;
 
     const chatCompletion = await client.chat.completions.create({
       model: "meta-llama/Meta-Llama-3-70B-Instruct:novita",
@@ -90,13 +134,13 @@ RULES:
         },
         {
           role: "user",
-          content: `Subject: "${subject}" | Mood: ${mood} | Tier: ${tier.toUpperCase()}
+          content: `Subject: "${subject}" | Mood: ${mood} | Tier: ${tier.toUpperCase()} (${finalScore}/100)
 
-Roast this. Make it hurt. Keep it simple. Use bad words.`
+Roast this. Be brutal. Use bad words. Attack their insecurities. No limits.`
         }
       ],
       temperature: 1.0,
-      max_tokens: 120
+      max_tokens: 150
     });
 
     const content = chatCompletion.choices[0]?.message?.content;
@@ -113,13 +157,13 @@ Roast this. Make it hurt. Keep it simple. Use bad words.`
       } else {
         result = {
           roast: content.trim(),
-          subject_insight: "Your choices say a lot about you..."
+          subject_insight: "Says everything about you..."
         };
       }
     } catch {
       result = {
         roast: content.trim(),
-        subject_insight: "Interesting choice bro..."
+        subject_insight: "Yikes..."
       };
     }
 
@@ -154,7 +198,7 @@ Roast this. Make it hurt. Keep it simple. Use bad words.`
       aura: {
         score: finalScore,
         roast: getFallbackRoast(tier, subject),
-        subjectInsight: "Says a lot about you...",
+        subjectInsight: "Damn...",
         rarity,
         title,
         challenge
@@ -172,41 +216,32 @@ function calculateWorthiness(subject, mood) {
   const subjectLower = subject.toLowerCase().trim();
   const charCount = subject.length;
 
-  // Length
   if (charCount < 5) score += 0;
   else if (charCount < 15) score += 8;
   else if (charCount < 30) score += 15;
   else if (charCount < 60) score += 22;
   else score += 25;
 
-  // Trash detection
   const trash = ['test', 'testing', 'asdf', 'qwerty', 'abc', '123', 'idk', 'nothing', 
                  'whatever', 'lol', 'lmao', 'bruh', 'hi', 'hello', 'hey', 'yo', 'a', 'aa', 'aaa'];
   if (trash.includes(subjectLower) || charCount < 3) score -= 30;
   if (/^(.)\1+$/.test(subjectLower)) score -= 25;
 
-  // Creativity bonus
   if (/crippling|addiction|obsession|fear of|inability/i.test(subject)) score += 15;
   if (/my (terrible|horrible|awful|pathetic|embarrassing)/i.test(subject)) score += 12;
   if (/why (i|do i|can't i|am i)/i.test(subject)) score += 10;
   if (/\d+\s*(years?|times?|hours?)/i.test(subject)) score += 10;
   if (/secret|guilty pleasure|no one knows/i.test(subject)) score += 15;
 
-  // Mood sync
   if (/terrible|awful|bad at|can't|failing|pathetic/i.test(subject)) score += 20;
   else score += 10;
 
-  // Specificity
   if (/my (mom|dad|friend|ex|boss)/i.test(subject)) score += 5;
   if (/at (work|school|home|gym|3am)/i.test(subject)) score += 5;
   if (/(instagram|tiktok|twitter|youtube)/i.test(subject)) score += 5;
 
   return Math.max(0, Math.min(100, score));
 }
-
-// ============================================
-// TIER CAP
-// ============================================
 
 function getTierCap(worthinessScore) {
   if (worthinessScore >= 80) return 'legendary';
@@ -215,10 +250,6 @@ function getTierCap(worthinessScore) {
   if (worthinessScore >= 20) return 'noob';
   return 'npc';
 }
-
-// ============================================
-// WEIGHTED ROLL - Legendary 1%, Epic 5%
-// ============================================
 
 function rollForTier(tierCap) {
   const roll = Math.random() * 100;
@@ -232,10 +263,6 @@ function rollForTier(tierCap) {
   return 'npc';
 }
 
-// ============================================
-// SCORE FOR TIER
-// ============================================
-
 function getScoreForTier(tier) {
   switch(tier) {
     case 'legendary': return 95 + Math.floor(Math.random() * 6);
@@ -245,10 +272,6 @@ function getScoreForTier(tier) {
     default: return Math.floor(Math.random() * 25);
   }
 }
-
-// ============================================
-// TIER DATA
-// ============================================
 
 function getTierData(tier) {
   switch(tier) {
@@ -266,43 +289,41 @@ function getTierData(tier) {
 }
 
 // ============================================
-// SIMPLE BRUTAL FALLBACK ROASTS
+// BRUTAL FALLBACK ROASTS
 // ============================================
 
 function getFallbackRoast(tier, subject) {
   const roasts = {
     legendary: [
-      `"${subject}" got you Legendary? Holy shit bro you're actually good. I hate you but respect. 👑`,
-      `Legendary? On "${subject}"? Damn. You're either talented or lucky as fuck. 👑`,
-      `"${subject}" and Legendary? Bro stop flexing, we get it. You won at life. 👑`
+      `"${subject}" got you Legendary? Holy fucking shit bro. You're disgustingly talented. Your haters can choke on this. 👑`,
+      `Legendary on "${subject}"? Damn bitch, you actually did that. I hate how good you are. Fuck you and congrats. 👑`,
+      `"${subject}" and Legendary? Bro you're the main character and we're all just NPCs in your story. That's sick. 👑`
     ],
     epic: [
-      `"${subject}" got Epic? Not bad bro. You're almost impressive. Almost. ⚡`,
-      `Epic on "${subject}"? Okay okay, you're valid. Still not the best though. ⚡`,
-      `"${subject}" got you Epic. Top 6%. Your parents might finally be proud. Maybe. ⚡`
+      `"${subject}" got Epic? Okay bitch, you're actually valid. Top 6% isn't bad for someone like you. Your mom might finally shut up. ⚡`,
+      `Epic on "${subject}"? Damn, you're almost impressive. Almost. One tier away from greatness, just like everything in your life. ⚡`,
+      `"${subject}" got you Epic? Not gonna lie, that's pretty fucking solid. Your haters can stay mad. ⚡`
     ],
     mid: [
-      `"${subject}"? Bro you're mid as fuck. Not bad, not good, just boring. 🔥`,
-      `Mid tier on "${subject}". You're like a 5/10. Nobody remembers you exist. 🔥`,
-      `"${subject}" got Mid. Congrats on being average. Your whole life is a 3-star review. 🔥`,
-      `"${subject}"? Bro you're the human version of "seen at 10:32pm." Just there. 🔥`
+      `"${subject}"? Bro you're mid as fuck 🔥 You're the human equivalent of a read receipt with no reply. Just... there.`,
+      `Mid tier on "${subject}". You're like a 5/10 - nobody's excited about you, but nobody's complaining either. Painfully average shit. 🔥`,
+      `"${subject}" got Mid? Congrats, you're the participation trophy of humans. Your whole life is a 3-star review. 🔥`,
+      `"${subject}"? That's the most mid shit ever. You're like room temperature water - nobody asked for you but here you fucking are. 🔥`
     ],
     noob: [
-      `"${subject}" got Noob? 💀 Bro your aura is weaker than free WiFi at a train station.`,
-      `Noob tier because "${subject}" is the most basic shit ever. Even your ideas are broke. 💀`,
-      `"${subject}" and you're Noob? This is why nobody texts you first. 💀`,
-      `"${subject}" got Noob? Bro even autocorrect gives up on you. 💀`
+      `"${subject}" got Noob? 💀 Bro your aura is weaker than your dad's excuses for leaving. This is pathetic.`,
+      `Noob tier because "${subject}" is dumb as shit. Your future is darker than your browser history. 💀`,
+      `"${subject}" and you're Noob? This is why nobody texts you first bro. Even autocorrect gives up on your stupid ass. 💀`,
+      `"${subject}" got you Noob? Holy shit 💀 You're the human version of a 'skip tutorial' button that nobody wants to click.`
     ],
     npc: [
-      `"${subject}"? Bro you typed this thinking it was good? 😭 You're an NPC. Background character energy.`,
-      `NPC because "${subject}" is trash. Your personality is drier than my lips in winter. 😭`,
-      `"${subject}" got NPC. Holy shit. Even your notifications are silent because nobody cares. 😭`,
-      `"${subject}"? Bro you're the human version of buffering. Nothing loads. Nothing happens. 😭`,
-      `NPC tier for "${subject}". Your mom wanted a doctor but got a disappointment. 😭`,
-      `"${subject}"? This is why people put their phone on silent when you call. 😭`
+      `"${subject}"? Bro you really typed that shit? 😭 You're not even a side character. You're the blurry person in the background that nobody fucking notices. Your mom definitely has a favorite and it ain't your dumbass.`,
+      `NPC tier on "${subject}". Holy fuck 😭 You're the human version of error 404. Even your WiFi disconnects from you on purpose. Pathetic.`,
+      `"${subject}" got you NPC? LMAOOO 😭 You're so forgettable that your own notifications are on silent. Your future is darker than your dad's reasons for going to get milk.`,
+      `"${subject}"? This shit got you NPC? 😭 Bro you're the loading screen that people skip. The human equivalent of 'terms and conditions'. Absolutely fucking nobody cares.`
     ]
   };
 
   const tierRoasts = roasts[tier] || roasts.npc;
   return tierRoasts[Math.floor(Math.random() * tierRoasts.length)];
-}
+    }
