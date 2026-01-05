@@ -1,20 +1,303 @@
 // /components/AuraCard.js
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const AuraCard = ({ aura }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareMessage, setShareMessage] = useState('');
+  const cardRef = useRef(null);
   
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
   // ============================================
-  // LEGENDARY - Gold Neon Electric Border
+  // SHARE FUNCTIONS
+  // ============================================
+
+  const captureCard = async () => {
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: '#0a0a0a',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      return canvas;
+    } catch (error) {
+      console.error('Error capturing card:', error);
+      return null;
+    }
+  };
+
+  const downloadCard = async () => {
+    setIsSharing(true);
+    try {
+      const canvas = await captureCard();
+      if (canvas) {
+        const link = document.createElement('a');
+        link.download = `aura-card-${aura.rarity}-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        setShareMessage('✅ Downloaded! Now share on Instagram');
+        setTimeout(() => setShareMessage(''), 3000);
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      setShareMessage('❌ Download failed. Try again.');
+      setTimeout(() => setShareMessage(''), 3000);
+    }
+    setIsSharing(false);
+  };
+
+  const shareToInstagramStory = async () => {
+    setIsSharing(true);
+    try {
+      const canvas = await captureCard();
+      if (!canvas) throw new Error('Failed to capture');
+
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const file = new File([blob], 'aura-card.png', { type: 'image/png' });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: `My Aura: ${aura.rarity.toUpperCase()}`,
+          text: `I got ${aura.rarity.toUpperCase()} tier with ${aura.score} aura! 🔥 Check yours at aura-roast.com`,
+        });
+        setShareMessage('✅ Shared successfully!');
+      } else {
+        await downloadCard();
+        setShowShareModal(true);
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.error('Share error:', error);
+        await downloadCard();
+        setShowShareModal(true);
+      }
+    }
+    setIsSharing(false);
+    setTimeout(() => setShareMessage(''), 3000);
+  };
+
+  const shareToInstagramFeed = async () => {
+    setIsSharing(true);
+    try {
+      const canvas = await captureCard();
+      if (!canvas) throw new Error('Failed to capture');
+
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const file = new File([blob], 'aura-card.png', { type: 'image/png' });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: `My Aura: ${aura.rarity.toUpperCase()}`,
+          text: `I got ${aura.rarity.toUpperCase()} tier with ${aura.score} aura! 🔥\n\nCheck yours at aura-roast.com`,
+        });
+        setShareMessage('✅ Shared successfully!');
+      } else {
+        await downloadCard();
+        setShowShareModal(true);
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.error('Share error:', error);
+        await downloadCard();
+        setShowShareModal(true);
+      }
+    }
+    setIsSharing(false);
+    setTimeout(() => setShareMessage(''), 3000);
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText('https://aura-roast.com');
+      setShareMessage('✅ Link copied!');
+      setTimeout(() => setShareMessage(''), 2000);
+    } catch (error) {
+      setShareMessage('❌ Failed to copy');
+      setTimeout(() => setShareMessage(''), 2000);
+    }
+  };
+
+  // ============================================
+  // SHARE MODAL COMPONENT
+  // ============================================
+  const ShareModal = () => (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(0,0,0,0.9)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 9999,
+      padding: '20px',
+    }}>
+      <div style={{
+        background: 'linear-gradient(180deg, #1a1a1a, #0a0a0a)',
+        borderRadius: '20px',
+        padding: '30px',
+        maxWidth: '350px',
+        width: '100%',
+        border: `2px solid ${config.accentColor}50`,
+        boxShadow: `0 0 50px ${config.accentColor}30`,
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '25px' }}>
+          <span style={{ fontSize: '3rem' }}>📸</span>
+          <h3 style={{
+            margin: '15px 0 10px 0',
+            color: config.accentColor,
+            fontSize: '1.3rem',
+            fontWeight: '800',
+          }}>
+            Share to Instagram
+          </h3>
+          <p style={{
+            margin: 0,
+            color: 'rgba(255,255,255,0.6)',
+            fontSize: '0.85rem',
+          }}>
+            Your card has been downloaded!
+          </p>
+        </div>
+
+        <div style={{
+          background: 'rgba(255,255,255,0.05)',
+          borderRadius: '12px',
+          padding: '20px',
+          marginBottom: '20px',
+        }}>
+          <p style={{
+            margin: '0 0 15px 0',
+            color: '#fff',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+          }}>
+            📋 How to share:
+          </p>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {['Open Instagram app', 'Create new Story or Post', 'Select your downloaded Aura Card', 'Tag @auraroast 🔥'].map((step, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                <span style={{
+                  background: config.accentColor,
+                  color: '#000',
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.75rem',
+                  fontWeight: '800',
+                  flexShrink: 0,
+                }}>{i + 1}</span>
+                <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem' }}>
+                  {step}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <a
+          href="instagram://app"
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '14px',
+            background: 'linear-gradient(45deg, #833AB4, #FD1D1D, #F77737)',
+            border: 'none',
+            borderRadius: '12px',
+            color: '#fff',
+            fontSize: '1rem',
+            fontWeight: '700',
+            textAlign: 'center',
+            textDecoration: 'none',
+            cursor: 'pointer',
+            marginBottom: '12px',
+          }}
+          onClick={() => {
+            setTimeout(() => {
+              window.open('https://instagram.com', '_blank');
+            }, 500);
+          }}
+        >
+          📱 Open Instagram
+        </a>
+
+        <button
+          onClick={() => setShowShareModal(false)}
+          style={{
+            width: '100%',
+            padding: '12px',
+            background: 'rgba(255,255,255,0.1)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '12px',
+            color: '#fff',
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+          }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+
+  // ============================================
+  // LEGENDARY - AGGRESSIVE GOLD PLASMA BORDER
   // ============================================
   const LegendaryCard = () => (
     <>
-      {/* Outer Glow Layer */}
+      {/* LAYER 1: Outer Massive Glow */}
+      <div style={{
+        position: 'absolute',
+        top: '-15px',
+        left: '-15px',
+        right: '-15px',
+        bottom: '-15px',
+        borderRadius: '28px',
+        background: 'transparent',
+        boxShadow: `
+          0 0 40px rgba(255, 215, 0, 0.8),
+          0 0 80px rgba(255, 215, 0, 0.6),
+          0 0 120px rgba(255, 215, 0, 0.4),
+          0 0 200px rgba(255, 215, 0, 0.2),
+          inset 0 0 60px rgba(255, 215, 0, 0.1)
+        `,
+        animation: 'legendaryMegaPulse 2s ease-in-out infinite',
+        zIndex: 1
+      }} />
+
+      {/* LAYER 2: Plasma Energy Ring 1 */}
+      <div style={{
+        position: 'absolute',
+        top: '-10px',
+        left: '-10px',
+        right: '-10px',
+        bottom: '-10px',
+        borderRadius: '26px',
+        background: `conic-gradient(
+          from 0deg,
+          #FFD700, #FFA500, #FF8C00, #FFD700, #FFEC8B, 
+          #FFA500, #FFD700, #FF8C00, #FFD700
+        )`,
+        animation: 'plasmaRotate 3s linear infinite',
+        zIndex: 2
+      }} />
+
+      {/* LAYER 3: Plasma Energy Ring 2 (Counter-rotate) */}
       <div style={{
         position: 'absolute',
         top: '-8px',
@@ -22,172 +305,243 @@ const AuraCard = ({ aura }) => {
         right: '-8px',
         bottom: '-8px',
         borderRadius: '24px',
-        background: 'transparent',
-        boxShadow: `
-          0 0 30px rgba(255, 215, 0, 0.6),
-          0 0 60px rgba(255, 215, 0, 0.4),
-          0 0 100px rgba(255, 215, 0, 0.2),
-          inset 0 0 30px rgba(255, 215, 0, 0.1)
-        `,
-        animation: 'legendaryPulse 3s ease-in-out infinite',
-        zIndex: 1
-      }} />
-      
-      {/* Electric Plasma Border - Layer 1 */}
-      <div style={{
-        position: 'absolute',
-        top: '-4px',
-        left: '-4px',
-        right: '-4px',
-        bottom: '-4px',
-        borderRadius: '20px',
-        background: `
-          linear-gradient(90deg, #FFD700, #FFA500, #FFD700, #FFA500, #FFD700)
-        `,
-        backgroundSize: '200% 100%',
-        animation: 'electricFlow 2s linear infinite',
-        zIndex: 2
-      }} />
-      
-      {/* Plasma Crack Effect - Layer 2 */}
-      <div style={{
-        position: 'absolute',
-        top: '-3px',
-        left: '-3px',
-        right: '-3px',
-        bottom: '-3px',
-        borderRadius: '19px',
-        background: `
-          radial-gradient(ellipse at 20% 20%, rgba(255, 255, 200, 0.8) 0%, transparent 30%),
-          radial-gradient(ellipse at 80% 30%, rgba(255, 200, 100, 0.6) 0%, transparent 25%),
-          radial-gradient(ellipse at 40% 80%, rgba(255, 255, 150, 0.7) 0%, transparent 20%),
-          radial-gradient(ellipse at 90% 90%, rgba(255, 180, 50, 0.5) 0%, transparent 30%),
-          linear-gradient(135deg, #FFD700, #B8860B, #FFD700)
-        `,
-        animation: 'plasmaShift 4s ease-in-out infinite',
+        background: `conic-gradient(
+          from 180deg,
+          transparent, #FFD700, transparent, #FFA500, 
+          transparent, #FFD700, transparent, #FFA500
+        )`,
+        animation: 'plasmaRotateReverse 2s linear infinite',
+        opacity: 0.7,
         zIndex: 3
       }} />
-      
-      {/* Inner Dark Layer */}
+
+      {/* LAYER 4: Electric Arc Border */}
       <div style={{
         position: 'absolute',
-        top: '2px',
-        left: '2px',
-        right: '2px',
-        bottom: '2px',
-        borderRadius: '16px',
-        background: '#0a0a0a',
+        top: '-6px',
+        left: '-6px',
+        right: '-6px',
+        bottom: '-6px',
+        borderRadius: '22px',
+        background: `
+          linear-gradient(90deg, #FFD700, #FFA500, #FFEC8B, #FFD700, #FFA500, #FFD700)
+        `,
+        backgroundSize: '300% 100%',
+        animation: 'electricFlowFast 1.5s linear infinite',
         zIndex: 4
       }} />
-      
-      {/* Circuit Board Pattern */}
-      <svg style={{
+
+      {/* LAYER 5: Plasma Crack Overlay */}
+      <div style={{
+        position: 'absolute',
+        top: '-5px',
+        left: '-5px',
+        right: '-5px',
+        bottom: '-5px',
+        borderRadius: '21px',
+        background: `
+          radial-gradient(ellipse at 10% 10%, rgba(255, 255, 200, 1) 0%, transparent 20%),
+          radial-gradient(ellipse at 90% 20%, rgba(255, 200, 100, 0.9) 0%, transparent 25%),
+          radial-gradient(ellipse at 20% 80%, rgba(255, 255, 150, 0.8) 0%, transparent 20%),
+          radial-gradient(ellipse at 85% 90%, rgba(255, 180, 50, 0.9) 0%, transparent 25%),
+          radial-gradient(ellipse at 50% 50%, rgba(255, 215, 0, 0.5) 0%, transparent 50%)
+        `,
+        animation: 'plasmaShiftAggressive 1.5s ease-in-out infinite',
+        zIndex: 5
+      }} />
+
+      {/* LAYER 6: Inner Dark Core */}
+      <div style={{
+        position: 'absolute',
+        top: '3px',
+        left: '3px',
+        right: '3px',
+        bottom: '3px',
+        borderRadius: '16px',
+        background: 'radial-gradient(ellipse at center, #1a1000 0%, #0a0a0a 100%)',
+        zIndex: 6
+      }} />
+
+      {/* LAYER 7: Inner Glow Edge */}
+      <div style={{
         position: 'absolute',
         top: '4px',
         left: '4px',
-        width: 'calc(100% - 8px)',
-        height: 'calc(100% - 8px)',
-        borderRadius: '14px',
-        zIndex: 5,
-        opacity: 0.15
-      }} viewBox="0 0 340 620">
-        {/* Golden Circuits */}
+        right: '4px',
+        bottom: '4px',
+        borderRadius: '15px',
+        background: 'transparent',
+        boxShadow: 'inset 0 0 30px rgba(255, 215, 0, 0.3), inset 0 0 60px rgba(255, 215, 0, 0.1)',
+        zIndex: 7
+      }} />
+
+      {/* Electric Lightning Bolts SVG */}
+      <svg style={{
+        position: 'absolute',
+        top: '-15px',
+        left: '-15px',
+        width: 'calc(100% + 30px)',
+        height: 'calc(100% + 30px)',
+        zIndex: 8,
+        pointerEvents: 'none',
+        overflow: 'visible'
+      }} viewBox="0 0 370 650">
         <defs>
-          <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FFD700" />
-            <stop offset="50%" stopColor="#FFA500" />
-            <stop offset="100%" stopColor="#FFD700" />
+          <linearGradient id="goldLightning" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FFEC8B" />
+            <stop offset="50%" stopColor="#FFD700" />
+            <stop offset="100%" stopColor="#FFA500" />
           </linearGradient>
+          <filter id="goldGlow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
         </defs>
         
-        {/* Horizontal Lines */}
-        <line x1="0" y1="50" x2="80" y2="50" stroke="url(#goldGrad)" strokeWidth="1"/>
-        <line x1="260" y1="60" x2="340" y2="60" stroke="url(#goldGrad)" strokeWidth="1"/>
-        <line x1="0" y1="560" x2="100" y2="560" stroke="url(#goldGrad)" strokeWidth="1"/>
-        <line x1="240" y1="570" x2="340" y2="570" stroke="url(#goldGrad)" strokeWidth="1"/>
+        {/* Top Lightning Arcs */}
+        <path d="M50,15 Q100,5 150,15 Q200,25 250,15 Q300,5 320,15" 
+          stroke="url(#goldLightning)" strokeWidth="3" fill="none" filter="url(#goldGlow)"
+          style={{ animation: 'lightningFlicker 0.5s ease-in-out infinite' }} />
         
-        {/* Vertical Lines */}
-        <line x1="30" y1="80" x2="30" y2="180" stroke="url(#goldGrad)" strokeWidth="1"/>
-        <line x1="310" y1="100" x2="310" y2="200" stroke="url(#goldGrad)" strokeWidth="1"/>
+        {/* Bottom Lightning Arcs */}
+        <path d="M50,635 Q100,645 150,635 Q200,625 250,635 Q300,645 320,635" 
+          stroke="url(#goldLightning)" strokeWidth="3" fill="none" filter="url(#goldGlow)"
+          style={{ animation: 'lightningFlicker 0.5s ease-in-out infinite 0.25s' }} />
         
-        {/* Connection Nodes */}
-        <circle cx="80" cy="50" r="4" fill="#FFD700"/>
-        <circle cx="260" cy="60" r="4" fill="#FFD700"/>
-        <circle cx="30" cy="80" r="3" fill="#FFD700"/>
-        <circle cx="310" cy="100" r="3" fill="#FFD700"/>
+        {/* Left Lightning */}
+        <path d="M15,100 Q5,200 15,300 Q25,400 15,500" 
+          stroke="url(#goldLightning)" strokeWidth="2" fill="none" filter="url(#goldGlow)"
+          style={{ animation: 'lightningFlicker 0.3s ease-in-out infinite 0.1s' }} />
         
-        {/* Chip Patterns */}
-        <rect x="15" y="400" width="40" height="50" fill="none" stroke="url(#goldGrad)" strokeWidth="1"/>
-        <rect x="285" y="420" width="40" height="50" fill="none" stroke="url(#goldGrad)" strokeWidth="1"/>
+        {/* Right Lightning */}
+        <path d="M355,100 Q365,200 355,300 Q345,400 355,500" 
+          stroke="url(#goldLightning)" strokeWidth="2" fill="none" filter="url(#goldGlow)"
+          style={{ animation: 'lightningFlicker 0.3s ease-in-out infinite 0.2s' }} />
+        
+        {/* Corner Energy Bursts */}
+        <circle cx="20" cy="20" r="8" fill="#FFD700" filter="url(#goldGlow)">
+          <animate attributeName="r" values="8;12;8" dur="1s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="1;0.5;1" dur="1s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="350" cy="20" r="8" fill="#FFD700" filter="url(#goldGlow)">
+          <animate attributeName="r" values="8;12;8" dur="1s" repeatCount="indefinite" begin="0.25s"/>
+          <animate attributeName="opacity" values="1;0.5;1" dur="1s" repeatCount="indefinite" begin="0.25s"/>
+        </circle>
+        <circle cx="20" cy="630" r="8" fill="#FFD700" filter="url(#goldGlow)">
+          <animate attributeName="r" values="8;12;8" dur="1s" repeatCount="indefinite" begin="0.5s"/>
+          <animate attributeName="opacity" values="1;0.5;1" dur="1s" repeatCount="indefinite" begin="0.5s"/>
+        </circle>
+        <circle cx="350" cy="630" r="8" fill="#FFD700" filter="url(#goldGlow)">
+          <animate attributeName="r" values="8;12;8" dur="1s" repeatCount="indefinite" begin="0.75s"/>
+          <animate attributeName="opacity" values="1;0.5;1" dur="1s" repeatCount="indefinite" begin="0.75s"/>
+        </circle>
       </svg>
       
       {/* Floating Crown */}
       <div style={{
         position: 'absolute',
-        top: '-30px',
+        top: '-35px',
         left: '50%',
         transform: 'translateX(-50%)',
-        fontSize: '40px',
+        fontSize: '45px',
         zIndex: 20,
-        filter: 'drop-shadow(0 0 20px rgba(255, 215, 0, 0.9))',
-        animation: 'crownFloat 3s ease-in-out infinite'
+        filter: 'drop-shadow(0 0 25px rgba(255, 215, 0, 1)) drop-shadow(0 0 50px rgba(255, 215, 0, 0.8))',
+        animation: 'crownFloat 2s ease-in-out infinite'
       }}>
         👑
       </div>
       
-      {/* Floating Gold Particles */}
-      {Array.from({ length: 20 }, (_, i) => (
+      {/* Aggressive Floating Particles */}
+      {Array.from({ length: 30 }, (_, i) => (
         <div
           key={i}
           style={{
             position: 'absolute',
-            left: `${10 + Math.random() * 80}%`,
-            top: `${10 + Math.random() * 80}%`,
-            width: `${2 + Math.random() * 4}px`,
-            height: `${2 + Math.random() * 4}px`,
+            left: `${5 + Math.random() * 90}%`,
+            top: `${5 + Math.random() * 90}%`,
+            width: `${3 + Math.random() * 5}px`,
+            height: `${3 + Math.random() * 5}px`,
             borderRadius: '50%',
-            background: '#FFD700',
-            boxShadow: '0 0 6px #FFD700, 0 0 12px rgba(255, 215, 0, 0.5)',
-            animation: `particleFloat ${3 + Math.random() * 4}s ease-in-out ${Math.random() * 2}s infinite`,
-            zIndex: 6
+            background: i % 3 === 0 ? '#FFEC8B' : i % 3 === 1 ? '#FFD700' : '#FFA500',
+            boxShadow: `0 0 10px ${i % 3 === 0 ? '#FFEC8B' : '#FFD700'}, 0 0 20px rgba(255, 215, 0, 0.5)`,
+            animation: `particleOrbit ${2 + Math.random() * 3}s ease-in-out ${Math.random() * 2}s infinite`,
+            zIndex: 9
           }}
         />
       ))}
       
-      {/* Top Energy Line */}
+      {/* Top Energy Bar */}
       <div style={{
         position: 'absolute',
-        top: '10px',
-        left: '20px',
-        right: '20px',
-        height: '2px',
-        background: 'linear-gradient(90deg, transparent, #FFD700, transparent)',
-        boxShadow: '0 0 10px #FFD700',
-        animation: 'energyPulse 2s ease-in-out infinite',
+        top: '0',
+        left: '15px',
+        right: '15px',
+        height: '4px',
+        background: 'linear-gradient(90deg, transparent, #FFD700, #FFEC8B, #FFD700, transparent)',
+        boxShadow: '0 0 20px #FFD700, 0 0 40px rgba(255, 215, 0, 0.8)',
+        animation: 'energyBarPulse 1s ease-in-out infinite',
         zIndex: 10
       }} />
       
-      {/* Bottom Energy Line */}
+      {/* Bottom Energy Bar */}
       <div style={{
         position: 'absolute',
-        bottom: '10px',
-        left: '20px',
-        right: '20px',
-        height: '2px',
-        background: 'linear-gradient(90deg, transparent, #FFD700, transparent)',
-        boxShadow: '0 0 10px #FFD700',
-        animation: 'energyPulse 2s ease-in-out infinite reverse',
+        bottom: '0',
+        left: '15px',
+        right: '15px',
+        height: '4px',
+        background: 'linear-gradient(90deg, transparent, #FFA500, #FFD700, #FFA500, transparent)',
+        boxShadow: '0 0 20px #FFD700, 0 0 40px rgba(255, 215, 0, 0.8)',
+        animation: 'energyBarPulse 1s ease-in-out infinite reverse',
         zIndex: 10
       }} />
     </>
   );
 
   // ============================================
-  // EPIC - Cyan/Blue Electric Neon Border
+  // EPIC - AGGRESSIVE CYAN/PURPLE PLASMA BORDER
   // ============================================
   const EpicCard = () => (
     <>
-      {/* Outer Glow */}
+      {/* LAYER 1: Outer Massive Glow */}
+      <div style={{
+        position: 'absolute',
+        top: '-15px',
+        left: '-15px',
+        right: '-15px',
+        bottom: '-15px',
+        borderRadius: '28px',
+        boxShadow: `
+          0 0 40px rgba(0, 255, 255, 0.7),
+          0 0 80px rgba(148, 0, 211, 0.5),
+          0 0 120px rgba(0, 255, 255, 0.3),
+          0 0 180px rgba(148, 0, 211, 0.2)
+        `,
+        animation: 'epicMegaPulse 2s ease-in-out infinite',
+        zIndex: 1
+      }} />
+
+      {/* LAYER 2: Plasma Energy Ring 1 */}
+      <div style={{
+        position: 'absolute',
+        top: '-10px',
+        left: '-10px',
+        right: '-10px',
+        bottom: '-10px',
+        borderRadius: '26px',
+        background: `conic-gradient(
+          from 0deg,
+          #00FFFF, #9400D3, #00BFFF, #8A2BE2, #00FFFF, 
+          #9400D3, #00FFFF, #8A2BE2, #00FFFF
+        )`,
+        animation: 'plasmaRotate 2.5s linear infinite',
+        zIndex: 2
+      }} />
+
+      {/* LAYER 3: Plasma Energy Ring 2 (Counter-rotate) */}
       <div style={{
         position: 'absolute',
         top: '-8px',
@@ -195,16 +549,221 @@ const AuraCard = ({ aura }) => {
         right: '-8px',
         bottom: '-8px',
         borderRadius: '24px',
-        boxShadow: `
-          0 0 25px rgba(0, 255, 255, 0.5),
-          0 0 50px rgba(148, 0, 211, 0.4),
-          0 0 80px rgba(0, 191, 255, 0.3)
+        background: `conic-gradient(
+          from 90deg,
+          transparent, #00FFFF, transparent, #9400D3, 
+          transparent, #00FFFF, transparent, #9400D3
+        )`,
+        animation: 'plasmaRotateReverse 1.5s linear infinite',
+        opacity: 0.8,
+        zIndex: 3
+      }} />
+
+      {/* LAYER 4: Electric Arc Border */}
+      <div style={{
+        position: 'absolute',
+        top: '-6px',
+        left: '-6px',
+        right: '-6px',
+        bottom: '-6px',
+        borderRadius: '22px',
+        background: `
+          linear-gradient(90deg, #00FFFF, #9400D3, #00BFFF, #8A2BE2, #00FFFF, #9400D3)
         `,
-        animation: 'epicPulse 2.5s ease-in-out infinite',
+        backgroundSize: '300% 100%',
+        animation: 'electricFlowFast 1.2s linear infinite',
+        zIndex: 4
+      }} />
+
+      {/* LAYER 5: Plasma Crack Overlay */}
+      <div style={{
+        position: 'absolute',
+        top: '-5px',
+        left: '-5px',
+        right: '-5px',
+        bottom: '-5px',
+        borderRadius: '21px',
+        background: `
+          radial-gradient(ellipse at 10% 10%, rgba(0, 255, 255, 1) 0%, transparent 20%),
+          radial-gradient(ellipse at 90% 15%, rgba(148, 0, 211, 0.9) 0%, transparent 25%),
+          radial-gradient(ellipse at 15% 85%, rgba(0, 191, 255, 0.8) 0%, transparent 20%),
+          radial-gradient(ellipse at 90% 90%, rgba(138, 43, 226, 0.9) 0%, transparent 25%),
+          radial-gradient(ellipse at 50% 50%, rgba(0, 255, 255, 0.4) 0%, transparent 40%)
+        `,
+        animation: 'plasmaShiftAggressive 1.2s ease-in-out infinite',
+        zIndex: 5
+      }} />
+
+      {/* LAYER 6: Inner Dark Core */}
+      <div style={{
+        position: 'absolute',
+        top: '3px',
+        left: '3px',
+        right: '3px',
+        bottom: '3px',
+        borderRadius: '16px',
+        background: 'radial-gradient(ellipse at center, #0a0020 0%, #050010 100%)',
+        zIndex: 6
+      }} />
+
+      {/* LAYER 7: Inner Glow Edge */}
+      <div style={{
+        position: 'absolute',
+        top: '4px',
+        left: '4px',
+        right: '4px',
+        bottom: '4px',
+        borderRadius: '15px',
+        boxShadow: 'inset 0 0 30px rgba(0, 255, 255, 0.3), inset 0 0 60px rgba(148, 0, 211, 0.2)',
+        zIndex: 7
+      }} />
+
+      {/* Electric Lightning Bolts SVG */}
+      <svg style={{
+        position: 'absolute',
+        top: '-15px',
+        left: '-15px',
+        width: 'calc(100% + 30px)',
+        height: 'calc(100% + 30px)',
+        zIndex: 8,
+        pointerEvents: 'none',
+        overflow: 'visible'
+      }} viewBox="0 0 370 650">
+        <defs>
+          <linearGradient id="cyanLightning" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#00FFFF" />
+            <stop offset="50%" stopColor="#9400D3" />
+            <stop offset="100%" stopColor="#00FFFF" />
+          </linearGradient>
+          <filter id="cyanGlow">
+            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        
+        {/* Electric Arcs */}
+        <path d="M30,10 L50,30 L40,50 L60,80" stroke="url(#cyanLightning)" strokeWidth="2" fill="none" filter="url(#cyanGlow)"
+          style={{ animation: 'lightningFlicker 0.2s ease-in-out infinite' }} />
+        <path d="M340,10 L320,30 L330,50 L310,80" stroke="url(#cyanLightning)" strokeWidth="2" fill="none" filter="url(#cyanGlow)"
+          style={{ animation: 'lightningFlicker 0.2s ease-in-out infinite 0.1s' }} />
+        <path d="M30,640 L50,620 L40,600 L60,570" stroke="url(#cyanLightning)" strokeWidth="2" fill="none" filter="url(#cyanGlow)"
+          style={{ animation: 'lightningFlicker 0.2s ease-in-out infinite 0.15s' }} />
+        <path d="M340,640 L320,620 L330,600 L310,570" stroke="url(#cyanLightning)" strokeWidth="2" fill="none" filter="url(#cyanGlow)"
+          style={{ animation: 'lightningFlicker 0.2s ease-in-out infinite 0.2s' }} />
+        
+        {/* Energy Nodes */}
+        <circle cx="185" cy="10" r="6" fill="#00FFFF" filter="url(#cyanGlow)">
+          <animate attributeName="r" values="6;10;6" dur="0.8s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="185" cy="640" r="6" fill="#9400D3" filter="url(#cyanGlow)">
+          <animate attributeName="r" values="6;10;6" dur="0.8s" repeatCount="indefinite" begin="0.4s"/>
+        </circle>
+      </svg>
+      
+      {/* Floating Particles */}
+      {Array.from({ length: 25 }, (_, i) => (
+        <div
+          key={i}
+          style={{
+            position: 'absolute',
+            left: `${5 + Math.random() * 90}%`,
+            top: `${5 + Math.random() * 90}%`,
+            width: `${2 + Math.random() * 4}px`,
+            height: `${2 + Math.random() * 4}px`,
+            borderRadius: '50%',
+            background: i % 2 === 0 ? '#00FFFF' : '#9400D3',
+            boxShadow: `0 0 10px ${i % 2 === 0 ? '#00FFFF' : '#9400D3'}`,
+            animation: `particleOrbit ${2 + Math.random() * 2}s ease-in-out ${Math.random() * 2}s infinite`,
+            zIndex: 9
+          }}
+        />
+      ))}
+      
+      {/* Energy Bars */}
+      <div style={{
+        position: 'absolute',
+        top: '0',
+        left: '15px',
+        right: '15px',
+        height: '4px',
+        background: 'linear-gradient(90deg, transparent, #00FFFF, #9400D3, #00FFFF, transparent)',
+        boxShadow: '0 0 20px #00FFFF, 0 0 40px rgba(0, 255, 255, 0.6)',
+        animation: 'energyBarPulse 0.8s ease-in-out infinite',
+        zIndex: 10
+      }} />
+      <div style={{
+        position: 'absolute',
+        bottom: '0',
+        left: '15px',
+        right: '15px',
+        height: '4px',
+        background: 'linear-gradient(90deg, transparent, #9400D3, #00FFFF, #9400D3, transparent)',
+        boxShadow: '0 0 20px #9400D3, 0 0 40px rgba(148, 0, 211, 0.6)',
+        animation: 'energyBarPulse 0.8s ease-in-out infinite reverse',
+        zIndex: 10
+      }} />
+    </>
+  );
+
+  // ============================================
+  // MID - WHITE/SILVER PLASMA BORDER
+  // ============================================
+  const MidCard = () => (
+    <>
+      {/* LAYER 1: Outer Glow */}
+      <div style={{
+        position: 'absolute',
+        top: '-12px',
+        left: '-12px',
+        right: '-12px',
+        bottom: '-12px',
+        borderRadius: '26px',
+        boxShadow: `
+          0 0 30px rgba(255, 255, 255, 0.5),
+          0 0 60px rgba(135, 206, 235, 0.4),
+          0 0 100px rgba(255, 255, 255, 0.2)
+        `,
+        animation: 'midMegaPulse 3s ease-in-out infinite',
         zIndex: 1
       }} />
-      
-      {/* Electric Border - Cyan Layer */}
+
+      {/* LAYER 2: Plasma Energy Ring */}
+      <div style={{
+        position: 'absolute',
+        top: '-8px',
+        left: '-8px',
+        right: '-8px',
+        bottom: '-8px',
+        borderRadius: '24px',
+        background: `conic-gradient(
+          from 0deg,
+          #FFFFFF, #87CEEB, #E0E0E0, #B0C4DE, #FFFFFF, 
+          #87CEEB, #FFFFFF, #B0C4DE, #FFFFFF
+        )`,
+        animation: 'plasmaRotate 4s linear infinite',
+        zIndex: 2
+      }} />
+
+      {/* LAYER 3: Electric Arc Border */}
+      <div style={{
+        position: 'absolute',
+        top: '-5px',
+        left: '-5px',
+        right: '-5px',
+        bottom: '-5px',
+        borderRadius: '21px',
+        background: `
+          linear-gradient(90deg, #FFFFFF, #87CEEB, #FFFFFF, #B0C4DE, #FFFFFF)
+        `,
+        backgroundSize: '200% 100%',
+        animation: 'electricFlowFast 2s linear infinite',
+        zIndex: 3
+      }} />
+
+      {/* LAYER 4: Plasma Glow */}
       <div style={{
         position: 'absolute',
         top: '-4px',
@@ -213,79 +772,36 @@ const AuraCard = ({ aura }) => {
         bottom: '-4px',
         borderRadius: '20px',
         background: `
-          linear-gradient(90deg, #00FFFF, #9400D3, #00BFFF, #9400D3, #00FFFF)
+          radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.8) 0%, transparent 25%),
+          radial-gradient(ellipse at 80% 80%, rgba(135, 206, 235, 0.6) 0%, transparent 25%)
         `,
-        backgroundSize: '300% 100%',
-        animation: 'electricFlow 3s linear infinite',
-        zIndex: 2
-      }} />
-      
-      {/* Plasma Crack Layer */}
-      <div style={{
-        position: 'absolute',
-        top: '-3px',
-        left: '-3px',
-        right: '-3px',
-        bottom: '-3px',
-        borderRadius: '19px',
-        background: `
-          radial-gradient(ellipse at 15% 15%, rgba(0, 255, 255, 0.9) 0%, transparent 25%),
-          radial-gradient(ellipse at 85% 25%, rgba(148, 0, 211, 0.8) 0%, transparent 30%),
-          radial-gradient(ellipse at 25% 85%, rgba(0, 191, 255, 0.7) 0%, transparent 25%),
-          radial-gradient(ellipse at 75% 75%, rgba(138, 43, 226, 0.6) 0%, transparent 30%),
-          linear-gradient(135deg, #00FFFF, #9400D3, #00BFFF)
-        `,
-        animation: 'epicPlasma 5s ease-in-out infinite',
-        zIndex: 3
-      }} />
-      
-      {/* Inner Dark */}
-      <div style={{
-        position: 'absolute',
-        top: '2px',
-        left: '2px',
-        right: '2px',
-        bottom: '2px',
-        borderRadius: '16px',
-        background: 'linear-gradient(180deg, #0a0015, #050010)',
         zIndex: 4
       }} />
-      
-      {/* Circuit Pattern */}
-      <svg style={{
+
+      {/* LAYER 5: Inner Dark Core */}
+      <div style={{
+        position: 'absolute',
+        top: '3px',
+        left: '3px',
+        right: '3px',
+        bottom: '3px',
+        borderRadius: '16px',
+        background: 'linear-gradient(180deg, #0a1628, #050d18)',
+        zIndex: 5
+      }} />
+
+      {/* LAYER 6: Inner Glow */}
+      <div style={{
         position: 'absolute',
         top: '4px',
         left: '4px',
-        width: 'calc(100% - 8px)',
-        height: 'calc(100% - 8px)',
-        borderRadius: '14px',
-        zIndex: 5,
-        opacity: 0.2
-      }} viewBox="0 0 340 620">
-        <defs>
-          <linearGradient id="epicGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#00FFFF" />
-            <stop offset="50%" stopColor="#9400D3" />
-            <stop offset="100%" stopColor="#00BFFF" />
-          </linearGradient>
-        </defs>
-        
-        <line x1="0" y1="60" x2="90" y2="60" stroke="url(#epicGrad)" strokeWidth="1.5"/>
-        <line x1="250" y1="70" x2="340" y2="70" stroke="url(#epicGrad)" strokeWidth="1.5"/>
-        <line x1="25" y1="90" x2="25" y2="200" stroke="url(#epicGrad)" strokeWidth="1"/>
-        <line x1="315" y1="110" x2="315" y2="220" stroke="url(#epicGrad)" strokeWidth="1"/>
-        
-        <circle cx="90" cy="60" r="5" fill="#00FFFF">
-          <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/>
-        </circle>
-        <circle cx="250" cy="70" r="5" fill="#9400D3">
-          <animate attributeName="opacity" values="1;0.4;1" dur="2.5s" repeatCount="indefinite"/>
-        </circle>
-        
-        <rect x="10" y="420" width="45" height="55" fill="none" stroke="url(#epicGrad)" strokeWidth="1.5"/>
-        <rect x="285" y="400" width="45" height="55" fill="none" stroke="url(#epicGrad)" strokeWidth="1.5"/>
-      </svg>
-      
+        right: '4px',
+        bottom: '4px',
+        borderRadius: '15px',
+        boxShadow: 'inset 0 0 20px rgba(255, 255, 255, 0.2)',
+        zIndex: 6
+      }} />
+
       {/* Floating Particles */}
       {Array.from({ length: 15 }, (_, i) => (
         <div
@@ -297,136 +813,21 @@ const AuraCard = ({ aura }) => {
             width: `${2 + Math.random() * 3}px`,
             height: `${2 + Math.random() * 3}px`,
             borderRadius: '50%',
-            background: i % 2 === 0 ? '#00FFFF' : '#9400D3',
-            boxShadow: `0 0 8px ${i % 2 === 0 ? '#00FFFF' : '#9400D3'}`,
-            animation: `particleFloat ${2 + Math.random() * 3}s ease-in-out ${Math.random() * 2}s infinite`,
-            zIndex: 6
+            background: i % 2 === 0 ? '#FFFFFF' : '#87CEEB',
+            boxShadow: '0 0 8px rgba(255, 255, 255, 0.8)',
+            animation: `particleFloat ${3 + Math.random() * 3}s ease-in-out ${Math.random() * 2}s infinite`,
+            zIndex: 7
           }}
         />
       ))}
-      
-      {/* Energy Lines */}
-      <div style={{
-        position: 'absolute',
-        top: '12px',
-        left: '25px',
-        right: '25px',
-        height: '2px',
-        background: 'linear-gradient(90deg, transparent, #00FFFF, #9400D3, #00FFFF, transparent)',
-        boxShadow: '0 0 15px rgba(0, 255, 255, 0.8)',
-        animation: 'energyPulse 1.5s ease-in-out infinite',
-        zIndex: 10
-      }} />
-      <div style={{
-        position: 'absolute',
-        bottom: '12px',
-        left: '25px',
-        right: '25px',
-        height: '2px',
-        background: 'linear-gradient(90deg, transparent, #9400D3, #00FFFF, #9400D3, transparent)',
-        boxShadow: '0 0 15px rgba(148, 0, 211, 0.8)',
-        animation: 'energyPulse 1.5s ease-in-out infinite reverse',
-        zIndex: 10
-      }} />
-    </>
-  );
-
-  // ============================================
-  // MID - White/Silver Neon Electric Border
-  // ============================================
-  const MidCard = () => (
-    <>
-      {/* Outer Glow */}
-      <div style={{
-        position: 'absolute',
-        top: '-6px',
-        left: '-6px',
-        right: '-6px',
-        bottom: '-6px',
-        borderRadius: '22px',
-        boxShadow: `
-          0 0 20px rgba(255, 255, 255, 0.4),
-          0 0 40px rgba(59, 130, 246, 0.3),
-          0 0 60px rgba(255, 255, 255, 0.2)
-        `,
-        animation: 'midPulse 4s ease-in-out infinite',
-        zIndex: 1
-      }} />
-      
-      {/* Electric Border */}
-      <div style={{
-        position: 'absolute',
-        top: '-3px',
-        left: '-3px',
-        right: '-3px',
-        bottom: '-3px',
-        borderRadius: '19px',
-        background: `
-          linear-gradient(90deg, #FFFFFF, #87CEEB, #FFFFFF, #B0C4DE, #FFFFFF)
-        `,
-        backgroundSize: '200% 100%',
-        animation: 'electricFlow 4s linear infinite',
-        zIndex: 2
-      }} />
-      
-      {/* Subtle Plasma */}
-      <div style={{
-        position: 'absolute',
-        top: '-2px',
-        left: '-2px',
-        right: '-2px',
-        bottom: '-2px',
-        borderRadius: '18px',
-        background: `
-          radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.6) 0%, transparent 30%),
-          radial-gradient(ellipse at 80% 80%, rgba(135, 206, 235, 0.5) 0%, transparent 30%),
-          linear-gradient(135deg, #E0E0E0, #FFFFFF, #D0D0D0)
-        `,
-        zIndex: 3
-      }} />
-      
-      {/* Inner Dark */}
-      <div style={{
-        position: 'absolute',
-        top: '2px',
-        left: '2px',
-        right: '2px',
-        bottom: '2px',
-        borderRadius: '15px',
-        background: 'linear-gradient(180deg, #0a1628, #050d18)',
-        zIndex: 4
-      }} />
-      
-      {/* Circuit Pattern */}
-      <svg style={{
-        position: 'absolute',
-        top: '4px',
-        left: '4px',
-        width: 'calc(100% - 8px)',
-        height: 'calc(100% - 8px)',
-        borderRadius: '13px',
-        zIndex: 5,
-        opacity: 0.12
-      }} viewBox="0 0 340 620">
-        <line x1="0" y1="55" x2="70" y2="55" stroke="#FFFFFF" strokeWidth="1"/>
-        <line x1="270" y1="65" x2="340" y2="65" stroke="#FFFFFF" strokeWidth="1"/>
-        <line x1="20" y1="80" x2="20" y2="160" stroke="#87CEEB" strokeWidth="1"/>
-        <line x1="320" y1="90" x2="320" y2="170" stroke="#87CEEB" strokeWidth="1"/>
-        
-        <circle cx="70" cy="55" r="4" fill="#FFFFFF" opacity="0.8"/>
-        <circle cx="270" cy="65" r="4" fill="#FFFFFF" opacity="0.8"/>
-        
-        <rect x="12" y="430" width="35" height="45" fill="none" stroke="#B0C4DE" strokeWidth="1"/>
-        <rect x="293" y="440" width="35" height="45" fill="none" stroke="#B0C4DE" strokeWidth="1"/>
-      </svg>
       
       {/* Upgrade Hint */}
       <div style={{
         position: 'absolute',
         top: '15px',
         right: '15px',
-        background: 'rgba(148, 0, 211, 0.15)',
-        border: '1px solid rgba(148, 0, 211, 0.4)',
+        background: 'rgba(148, 0, 211, 0.2)',
+        border: '1px solid rgba(148, 0, 211, 0.5)',
         borderRadius: '12px',
         padding: '6px 12px',
         fontSize: '0.6rem',
@@ -434,7 +835,8 @@ const AuraCard = ({ aura }) => {
         fontWeight: '600',
         letterSpacing: '1px',
         zIndex: 10,
-        boxShadow: '0 0 10px rgba(148, 0, 211, 0.3)'
+        boxShadow: '0 0 15px rgba(148, 0, 211, 0.4)',
+        animation: 'upgradeHintPulse 2s ease-in-out infinite'
       }}>
         ⚡ EPIC CLOSE
       </div>
@@ -442,468 +844,423 @@ const AuraCard = ({ aura }) => {
       {/* Energy Lines */}
       <div style={{
         position: 'absolute',
-        top: '10px',
-        left: '20px',
-        right: '20px',
-        height: '1px',
-        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)',
-        boxShadow: '0 0 8px rgba(255,255,255,0.5)',
-        zIndex: 10
-      }} />
-      <div style={{
-        position: 'absolute',
-        bottom: '10px',
-        left: '20px',
-        right: '20px',
-        height: '1px',
-        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)',
-        boxShadow: '0 0 8px rgba(255,255,255,0.5)',
-        zIndex: 10
-      }} />
-    </>
-  );
-
-  // ============================================
-  // NOOB - Orange Electric Neon Border
-  // ============================================
-  const NoobCard = () => (
-    <>
-      {/* Outer Glow */}
-      <div style={{
-        position: 'absolute',
-        top: '-7px',
-        left: '-7px',
-        right: '-7px',
-        bottom: '-7px',
-        borderRadius: '22px',
-        boxShadow: `
-          0 0 25px rgba(255, 140, 0, 0.5),
-          0 0 50px rgba(255, 69, 0, 0.4),
-          0 0 80px rgba(255, 165, 0, 0.2)
-        `,
-        animation: 'noobPulse 2s ease-in-out infinite',
-        zIndex: 1
-      }} />
-      
-      {/* Electric Border */}
-      <div style={{
-        position: 'absolute',
-        top: '-4px',
-        left: '-4px',
-        right: '-4px',
-        bottom: '-4px',
-        borderRadius: '20px',
-        background: `
-          linear-gradient(90deg, #FF8C00, #FF4500, #FFA500, #FF6600, #FF8C00)
-        `,
-        backgroundSize: '200% 100%',
-        animation: 'electricFlow 2.5s linear infinite',
-        zIndex: 2
-      }} />
-      
-      {/* Plasma Crack Layer */}
-      <div style={{
-        position: 'absolute',
-        top: '-3px',
-        left: '-3px',
-        right: '-3px',
-        bottom: '-3px',
-        borderRadius: '19px',
-        background: `
-          radial-gradient(ellipse at 10% 10%, rgba(255, 200, 100, 0.8) 0%, transparent 25%),
-          radial-gradient(ellipse at 90% 20%, rgba(255, 100, 0, 0.7) 0%, transparent 30%),
-          radial-gradient(ellipse at 20% 90%, rgba(255, 165, 0, 0.6) 0%, transparent 25%),
-          radial-gradient(ellipse at 85% 85%, rgba(255, 140, 0, 0.7) 0%, transparent 30%),
-          linear-gradient(135deg, #FF8C00, #FF4500, #FFA500)
-        `,
-        animation: 'noobPlasma 3s ease-in-out infinite',
-        zIndex: 3
-      }} />
-      
-      {/* Inner Dark */}
-      <div style={{
-        position: 'absolute',
-        top: '2px',
-        left: '2px',
-        right: '2px',
-        bottom: '2px',
-        borderRadius: '16px',
-        background: 'linear-gradient(180deg, #1a0f00, #0f0800)',
-        zIndex: 4
-      }} />
-      
-      {/* Circuit Pattern */}
-      <svg style={{
-        position: 'absolute',
-        top: '4px',
-        left: '4px',
-        width: 'calc(100% - 8px)',
-        height: 'calc(100% - 8px)',
-        borderRadius: '14px',
-        zIndex: 5,
-        opacity: 0.2
-      }} viewBox="0 0 340 620">
-        <defs>
-          <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FF8C00" />
-            <stop offset="50%" stopColor="#FF4500" />
-            <stop offset="100%" stopColor="#FFA500" />
-          </linearGradient>
-        </defs>
-        
-        <line x1="0" y1="55" x2="80" y2="55" stroke="url(#orangeGrad)" strokeWidth="1.5"/>
-        <line x1="260" y1="65" x2="340" y2="65" stroke="url(#orangeGrad)" strokeWidth="1.5"/>
-        <line x1="25" y1="85" x2="25" y2="180" stroke="url(#orangeGrad)" strokeWidth="1"/>
-        <line x1="315" y1="95" x2="315" y2="190" stroke="url(#orangeGrad)" strokeWidth="1"/>
-        
-        <circle cx="80" cy="55" r="5" fill="#FF8C00">
-          <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/>
-        </circle>
-        <circle cx="260" cy="65" r="5" fill="#FF4500">
-          <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
-        </circle>
-        
-        <rect x="10" y="430" width="45" height="55" fill="none" stroke="url(#orangeGrad)" strokeWidth="1.5"/>
-        <rect x="285" y="420" width="45" height="55" fill="none" stroke="url(#orangeGrad)" strokeWidth="1.5"/>
-        
-        {/* Warning symbols */}
-        <polygon points="170,100 180,118 160,118" fill="none" stroke="#FF4500" strokeWidth="1.5"/>
-        <line x1="170" y1="106" x2="170" y2="112" stroke="#FF4500" strokeWidth="1.5"/>
-        <circle cx="170" cy="115" r="1" fill="#FF4500"/>
-      </svg>
-      
-      {/* Warning Corner Accents */}
-      <div style={{
-        position: 'absolute',
-        top: '8px',
-        left: '8px',
-        width: '30px',
-        height: '30px',
-        borderTop: '3px solid #FF8C00',
-        borderLeft: '3px solid #FF8C00',
-        borderRadius: '4px 0 0 0',
-        boxShadow: '-3px -3px 15px rgba(255, 140, 0, 0.5)',
-        zIndex: 10
-      }} />
-      <div style={{
-        position: 'absolute',
-        top: '8px',
-        right: '8px',
-        width: '30px',
-        height: '30px',
-        borderTop: '3px solid #FF8C00',
-        borderRight: '3px solid #FF8C00',
-        borderRadius: '0 4px 0 0',
-        boxShadow: '3px -3px 15px rgba(255, 140, 0, 0.5)',
-        zIndex: 10
-      }} />
-      <div style={{
-        position: 'absolute',
-        bottom: '8px',
-        left: '8px',
-        width: '30px',
-        height: '30px',
-        borderBottom: '3px solid #FF8C00',
-        borderLeft: '3px solid #FF8C00',
-        borderRadius: '0 0 0 4px',
-        boxShadow: '-3px 3px 15px rgba(255, 140, 0, 0.5)',
-        zIndex: 10
-      }} />
-      <div style={{
-        position: 'absolute',
-        bottom: '8px',
-        right: '8px',
-        width: '30px',
-        height: '30px',
-        borderBottom: '3px solid #FF8C00',
-        borderRight: '3px solid #FF8C00',
-        borderRadius: '0 0 4px 0',
-        boxShadow: '3px 3px 15px rgba(255, 140, 0, 0.5)',
-        zIndex: 10
-      }} />
-      
-      {/* Energy Lines */}
-      <div style={{
-        position: 'absolute',
         top: '0',
-        left: '0',
-        right: '0',
-        height: '4px',
-        background: 'linear-gradient(90deg, transparent, #FF8C00, #FF4500, #FF8C00, transparent)',
-        boxShadow: '0 0 15px rgba(255, 140, 0, 0.8)',
+        left: '20px',
+        right: '20px',
+        height: '2px',
+        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent)',
+        boxShadow: '0 0 15px rgba(255,255,255,0.6)',
         zIndex: 10
       }} />
       <div style={{
         position: 'absolute',
         bottom: '0',
-        left: '0',
-        right: '0',
-        height: '4px',
-        background: 'linear-gradient(90deg, transparent, #FF4500, #FF8C00, #FF4500, transparent)',
-        boxShadow: '0 0 15px rgba(255, 69, 0, 0.8)',
+        left: '20px',
+        right: '20px',
+        height: '2px',
+        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent)',
+        boxShadow: '0 0 15px rgba(255,255,255,0.6)',
         zIndex: 10
       }} />
     </>
   );
 
   // ============================================
-  // NPC - Red Corrupted Neon Border
+  // NOOB - AGGRESSIVE ORANGE PLASMA BORDER
   // ============================================
-  const NPCCard = () => (
+  const NoobCard = () => (
     <>
-      {/* Outer Glow - Corrupted */}
+      {/* LAYER 1: Outer Massive Glow */}
+      <div style={{
+        position: 'absolute',
+        top: '-14px',
+        left: '-14px',
+        right: '-14px',
+        bottom: '-14px',
+        borderRadius: '28px',
+        boxShadow: `
+          0 0 35px rgba(255, 140, 0, 0.7),
+          0 0 70px rgba(255, 69, 0, 0.5),
+          0 0 110px rgba(255, 140, 0, 0.3),
+          0 0 160px rgba(255, 69, 0, 0.2)
+        `,
+        animation: 'noobMegaPulse 1.5s ease-in-out infinite',
+        zIndex: 1
+      }} />
+
+      {/* LAYER 2: Plasma Energy Ring 1 */}
+      <div style={{
+        position: 'absolute',
+        top: '-10px',
+        left: '-10px',
+        right: '-10px',
+        bottom: '-10px',
+        borderRadius: '26px',
+        background: `conic-gradient(
+          from 0deg,
+          #FF8C00, #FF4500, #FFA500, #FF6600, #FF8C00, 
+          #FF4500, #FF8C00, #FF6600, #FF8C00
+        )`,
+        animation: 'plasmaRotate 2s linear infinite',
+        zIndex: 2
+      }} />
+
+      {/* LAYER 3: Plasma Energy Ring 2 */}
       <div style={{
         position: 'absolute',
         top: '-8px',
         left: '-8px',
         right: '-8px',
         bottom: '-8px',
-        borderRadius: '20px',
-        boxShadow: `
-          0 0 30px rgba(255, 0, 0, 0.5),
-          0 0 60px rgba(139, 0, 0, 0.4),
-          0 0 90px rgba(255, 0, 0, 0.2)
-        `,
-        animation: 'npcFlicker 0.1s ease-in-out infinite',
-        zIndex: 1
-      }} />
-      
-      {/* Electric Border - Glitchy */}
-      <div style={{
-        position: 'absolute',
-        top: '-4px',
-        left: '-4px',
-        right: '-4px',
-        bottom: '-4px',
-        borderRadius: '18px',
-        background: `
-          linear-gradient(90deg, #FF0000, #8B0000, #FF0000, #660000, #FF0000)
-        `,
-        backgroundSize: '300% 100%',
-        animation: 'glitchFlow 1.5s linear infinite',
-        zIndex: 2
-      }} />
-      
-      {/* Corrupted Plasma Layer */}
-      <div style={{
-        position: 'absolute',
-        top: '-3px',
-        left: '-3px',
-        right: '-3px',
-        bottom: '-3px',
-        borderRadius: '17px',
-        background: `
-          radial-gradient(ellipse at 5% 5%, rgba(255, 0, 0, 0.9) 0%, transparent 20%),
-          radial-gradient(ellipse at 95% 15%, rgba(139, 0, 0, 0.8) 0%, transparent 25%),
-          radial-gradient(ellipse at 15% 95%, rgba(255, 50, 50, 0.7) 0%, transparent 20%),
-          radial-gradient(ellipse at 90% 90%, rgba(100, 0, 0, 0.8) 0%, transparent 25%),
-          linear-gradient(135deg, #FF0000, #8B0000, #660000)
-        `,
-        animation: 'corruptedPlasma 2s ease-in-out infinite',
+        borderRadius: '24px',
+        background: `conic-gradient(
+          from 180deg,
+          transparent, #FF8C00, transparent, #FF4500, 
+          transparent, #FF8C00, transparent, #FF4500
+        )`,
+        animation: 'plasmaRotateReverse 1.5s linear infinite',
+        opacity: 0.7,
         zIndex: 3
       }} />
-      
-      {/* Inner Dark - Corrupted */}
+
+      {/* LAYER 4: Electric Arc Border */}
       <div style={{
         position: 'absolute',
-        top: '2px',
-        left: '2px',
-        right: '2px',
-        bottom: '2px',
-        borderRadius: '14px',
-        background: '#050000',
+        top: '-6px',
+        left: '-6px',
+        right: '-6px',
+        bottom: '-6px',
+        borderRadius: '22px',
+        background: `
+          linear-gradient(90deg, #FF8C00, #FF4500, #FFA500, #FF6600, #FF8C00, #FF4500)
+        `,
+        backgroundSize: '300% 100%',
+        animation: 'electricFlowFast 1.5s linear infinite',
         zIndex: 4
       }} />
-      
-      {/* Broken Circuit Pattern */}
-      <svg style={{
+
+      {/* LAYER 5: Plasma Crack */}
+      <div style={{
+        position: 'absolute',
+        top: '-5px',
+        left: '-5px',
+        right: '-5px',
+        bottom: '-5px',
+        borderRadius: '21px',
+        background: `
+          radial-gradient(ellipse at 10% 10%, rgba(255, 200, 100, 0.9) 0%, transparent 20%),
+          radial-gradient(ellipse at 90% 20%, rgba(255, 100, 0, 0.8) 0%, transparent 25%),
+          radial-gradient(ellipse at 20% 90%, rgba(255, 165, 0, 0.7) 0%, transparent 20%),
+          radial-gradient(ellipse at 85% 85%, rgba(255, 140, 0, 0.8) 0%, transparent 25%)
+        `,
+        animation: 'plasmaShiftAggressive 1s ease-in-out infinite',
+        zIndex: 5
+      }} />
+
+      {/* LAYER 6: Inner Dark Core */}
+      <div style={{
+        position: 'absolute',
+        top: '3px',
+        left: '3px',
+        right: '3px',
+        bottom: '3px',
+        borderRadius: '16px',
+        background: 'linear-gradient(180deg, #1a0f00, #0f0800)',
+        zIndex: 6
+      }} />
+
+      {/* LAYER 7: Inner Glow */}
+      <div style={{
         position: 'absolute',
         top: '4px',
         left: '4px',
-        width: 'calc(100% - 8px)',
-        height: 'calc(100% - 8px)',
-        borderRadius: '12px',
-        zIndex: 5,
-        opacity: 0.25
-      }} viewBox="0 0 340 620">
-        <defs>
-          <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FF0000" />
-            <stop offset="50%" stopColor="#8B0000" />
-            <stop offset="100%" stopColor="#FF0000" />
-          </linearGradient>
-        </defs>
-        
-        {/* Broken Lines */}
-        <line x1="0" y1="50" x2="40" y2="50" stroke="url(#redGrad)" strokeWidth="2"/>
-        <line x1="55" y1="52" x2="90" y2="48" stroke="url(#redGrad)" strokeWidth="1" strokeDasharray="5,5"/>
-        <line x1="250" y1="60" x2="340" y2="60" stroke="url(#redGrad)" strokeWidth="2"/>
-        <line x1="200" y1="62" x2="240" y2="58" stroke="url(#redGrad)" strokeWidth="1" strokeDasharray="3,7"/>
-        
-        {/* Corrupted Vertical */}
-        <line x1="25" y1="80" x2="25" y2="130" stroke="url(#redGrad)" strokeWidth="1.5"/>
-        <line x1="27" y1="145" x2="23" y2="180" stroke="url(#redGrad)" strokeWidth="1" strokeDasharray="4,4"/>
-        <line x1="315" y1="90" x2="315" y2="140" stroke="url(#redGrad)" strokeWidth="1.5"/>
-        <line x1="313" y1="155" x2="317" y2="190" stroke="url(#redGrad)" strokeWidth="1" strokeDasharray="4,4"/>
-        
-        {/* Broken Nodes */}
-        <circle cx="40" cy="50" r="4" fill="#FF0000" opacity="0.8"/>
-        <circle cx="250" cy="60" r="4" fill="#8B0000" opacity="0.8"/>
-        
-        {/* Corrupted Chips */}
-        <rect x="10" y="420" width="45" height="55" fill="none" stroke="url(#redGrad)" strokeWidth="1.5" strokeDasharray="10,5"/>
-        <rect x="285" y="430" width="45" height="55" fill="none" stroke="url(#redGrad)" strokeWidth="1.5" strokeDasharray="10,5"/>
-        
-        {/* Error X marks */}
-        <g opacity="0.6">
-          <line x1="160" y1="95" x2="180" y2="115" stroke="#FF0000" strokeWidth="3"/>
-          <line x1="180" y1="95" x2="160" y2="115" stroke="#FF0000" strokeWidth="3"/>
-        </g>
-        <g opacity="0.4">
-          <line x1="155" y1="510" x2="175" y2="530" stroke="#8B0000" strokeWidth="2"/>
-          <line x1="175" y1="510" x2="155" y2="530" stroke="#8B0000" strokeWidth="2"/>
-        </g>
-      </svg>
-      
-      {/* Glitch Scanlines */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        borderRadius: '14px',
-        background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 0, 0, 0.03) 2px, rgba(255, 0, 0, 0.03) 4px)',
-        zIndex: 6,
-        pointerEvents: 'none'
-      }} />
-      
-      {/* Glitch Lines */}
-      <div style={{
-        position: 'absolute',
-        top: '18%',
-        left: 0,
-        right: 0,
-        height: '3px',
-        background: 'linear-gradient(90deg, transparent, #FF0000, transparent)',
-        opacity: 0.4,
-        animation: 'glitchLine 2s ease-in-out infinite',
+        right: '4px',
+        bottom: '4px',
+        borderRadius: '15px',
+        boxShadow: 'inset 0 0 25px rgba(255, 140, 0, 0.3)',
         zIndex: 7
       }} />
-      <div style={{
-        position: 'absolute',
-        top: '45%',
-        left: 0,
-        right: 0,
-        height: '2px',
-        background: '#8B0000',
-        opacity: 0.3,
-        animation: 'glitchLine 1.5s ease-in-out infinite reverse',
-        zIndex: 7
-      }} />
-      <div style={{
-        position: 'absolute',
-        top: '72%',
-        left: 0,
-        right: 0,
-        height: '3px',
-        background: 'linear-gradient(90deg, transparent, #FF0000, transparent)',
-        opacity: 0.35,
-        animation: 'glitchLine 2.5s ease-in-out infinite',
-        zIndex: 7
-      }} />
+
+      {/* Warning Corner Accents */}
+      {[
+        { top: '6px', left: '6px', borderTop: true, borderLeft: true },
+        { top: '6px', right: '6px', borderTop: true, borderRight: true },
+        { bottom: '6px', left: '6px', borderBottom: true, borderLeft: true },
+        { bottom: '6px', right: '6px', borderBottom: true, borderRight: true },
+      ].map((pos, i) => (
+        <div key={i} style={{
+          position: 'absolute',
+          ...pos,
+          width: '35px',
+          height: '35px',
+          borderTop: pos.borderTop ? '4px solid #FF8C00' : 'none',
+          borderBottom: pos.borderBottom ? '4px solid #FF8C00' : 'none',
+          borderLeft: pos.borderLeft ? '4px solid #FF8C00' : 'none',
+          borderRight: pos.borderRight ? '4px solid #FF8C00' : 'none',
+          boxShadow: `0 0 20px rgba(255, 140, 0, 0.7)`,
+          zIndex: 10,
+          animation: `cornerPulse 1.5s ease-in-out ${i * 0.2}s infinite`
+        }} />
+      ))}
+
+      {/* Floating Particles */}
+      {Array.from({ length: 20 }, (_, i) => (
+        <div
+          key={i}
+          style={{
+            position: 'absolute',
+            left: `${5 + Math.random() * 90}%`,
+            top: `${5 + Math.random() * 90}%`,
+            width: `${2 + Math.random() * 4}px`,
+            height: `${2 + Math.random() * 4}px`,
+            borderRadius: '50%',
+            background: i % 2 === 0 ? '#FF8C00' : '#FF4500',
+            boxShadow: `0 0 8px ${i % 2 === 0 ? '#FF8C00' : '#FF4500'}`,
+            animation: `particleOrbit ${2 + Math.random() * 2}s ease-in-out ${Math.random() * 2}s infinite`,
+            zIndex: 9
+          }}
+        />
+      ))}
       
-      {/* Corrupted Corner Accents */}
-      <div style={{
-        position: 'absolute',
-        top: '6px',
-        left: '6px',
-        width: '25px',
-        height: '25px',
-        borderTop: '3px solid #FF0000',
-        borderLeft: '3px solid #FF0000',
-        boxShadow: '-3px -3px 12px rgba(255, 0, 0, 0.6)',
-        zIndex: 10,
-        animation: 'cornerGlitch 3s ease-in-out infinite'
-      }} />
-      <div style={{
-        position: 'absolute',
-        top: '6px',
-        right: '6px',
-        width: '25px',
-        height: '25px',
-        borderTop: '3px solid #FF0000',
-        borderRight: '3px solid #FF0000',
-        boxShadow: '3px -3px 12px rgba(255, 0, 0, 0.6)',
-        zIndex: 10,
-        animation: 'cornerGlitch 3s ease-in-out infinite 0.5s'
-      }} />
-      <div style={{
-        position: 'absolute',
-        bottom: '6px',
-        left: '6px',
-        width: '25px',
-        height: '25px',
-        borderBottom: '3px solid #FF0000',
-        borderLeft: '3px solid #FF0000',
-        boxShadow: '-3px 3px 12px rgba(255, 0, 0, 0.6)',
-        zIndex: 10,
-        animation: 'cornerGlitch 3s ease-in-out infinite 1s'
-      }} />
-      <div style={{
-        position: 'absolute',
-        bottom: '6px',
-        right: '6px',
-        width: '25px',
-        height: '25px',
-        borderBottom: '3px solid #FF0000',
-        borderRight: '3px solid #FF0000',
-        boxShadow: '3px 3px 12px rgba(255, 0, 0, 0.6)',
-        zIndex: 10,
-        animation: 'cornerGlitch 3s ease-in-out infinite 1.5s'
-      }} />
-      
-      {/* Top/Bottom Energy Bars */}
+      {/* Energy Bars */}
       <div style={{
         position: 'absolute',
         top: '0',
         left: '0',
         right: '0',
-        height: '4px',
-        background: 'linear-gradient(90deg, transparent 5%, #FF0000 20%, #FF0000 80%, transparent 95%)',
-        boxShadow: '0 0 20px #FF0000, 0 0 40px rgba(255, 0, 0, 0.5)',
-        zIndex: 10,
-        animation: 'energyFlicker 0.5s ease-in-out infinite'
+        height: '5px',
+        background: 'linear-gradient(90deg, transparent 5%, #FF8C00 20%, #FF4500 50%, #FF8C00 80%, transparent 95%)',
+        boxShadow: '0 0 20px #FF8C00, 0 0 40px rgba(255, 140, 0, 0.6)',
+        animation: 'energyBarPulse 1s ease-in-out infinite',
+        zIndex: 10
       }} />
       <div style={{
         position: 'absolute',
         bottom: '0',
         left: '0',
         right: '0',
-        height: '4px',
-        background: 'linear-gradient(90deg, transparent 5%, #8B0000 20%, #FF0000 50%, #8B0000 80%, transparent 95%)',
-        boxShadow: '0 0 20px #FF0000, 0 0 40px rgba(139, 0, 0, 0.5)',
-        zIndex: 10,
-        animation: 'energyFlicker 0.5s ease-in-out infinite reverse'
+        height: '5px',
+        background: 'linear-gradient(90deg, transparent 5%, #FF4500 20%, #FF8C00 50%, #FF4500 80%, transparent 95%)',
+        boxShadow: '0 0 20px #FF4500, 0 0 40px rgba(255, 69, 0, 0.6)',
+        animation: 'energyBarPulse 1s ease-in-out infinite reverse',
+        zIndex: 10
       }} />
-      
+    </>
+  );
+
+  // ============================================
+  // NPC - CORRUPTED RED GLITCH PLASMA BORDER
+  // ============================================
+  const NPCCard = () => (
+    <>
+      {/* LAYER 1: Outer Corrupted Glow */}
+      <div style={{
+        position: 'absolute',
+        top: '-15px',
+        left: '-15px',
+        right: '-15px',
+        bottom: '-15px',
+        borderRadius: '28px',
+        boxShadow: `
+          0 0 40px rgba(255, 0, 0, 0.7),
+          0 0 80px rgba(139, 0, 0, 0.5),
+          0 0 120px rgba(255, 0, 0, 0.3),
+          0 0 180px rgba(139, 0, 0, 0.2)
+        `,
+        animation: 'npcGlitchPulse 0.1s ease-in-out infinite',
+        zIndex: 1
+      }} />
+
+      {/* LAYER 2: Glitchy Plasma Ring */}
+      <div style={{
+        position: 'absolute',
+        top: '-10px',
+        left: '-10px',
+        right: '-10px',
+        bottom: '-10px',
+        borderRadius: '26px',
+        background: `conic-gradient(
+          from 0deg,
+          #FF0000, #8B0000, #FF0000, #660000, #FF0000, 
+          #8B0000, #FF0000, #660000, #FF0000
+        )`,
+        animation: 'glitchRotate 1s linear infinite',
+        zIndex: 2
+      }} />
+
+      {/* LAYER 3: Broken Plasma Ring */}
+      <div style={{
+        position: 'absolute',
+        top: '-8px',
+        left: '-8px',
+        right: '-8px',
+        bottom: '-8px',
+        borderRadius: '24px',
+        background: `conic-gradient(
+          from 45deg,
+          transparent 0deg, #FF0000 30deg, transparent 60deg,
+          #8B0000 90deg, transparent 120deg, #FF0000 150deg,
+          transparent 180deg, #660000 210deg, transparent 240deg,
+          #FF0000 270deg, transparent 300deg, #8B0000 330deg, transparent 360deg
+        )`,
+        animation: 'glitchRotateReverse 0.8s linear infinite',
+        zIndex: 3
+      }} />
+
+      {/* LAYER 4: Glitchy Electric Border */}
+      <div style={{
+        position: 'absolute',
+        top: '-6px',
+        left: '-6px',
+        right: '-6px',
+        bottom: '-6px',
+        borderRadius: '22px',
+        background: `
+          linear-gradient(90deg, #FF0000, #8B0000, #FF0000, #660000, #FF0000, #8B0000)
+        `,
+        backgroundSize: '300% 100%',
+        animation: 'glitchFlowFast 0.5s linear infinite',
+        zIndex: 4
+      }} />
+
+      {/* LAYER 5: Corrupted Plasma */}
+      <div style={{
+        position: 'absolute',
+        top: '-5px',
+        left: '-5px',
+        right: '-5px',
+        bottom: '-5px',
+        borderRadius: '21px',
+        background: `
+          radial-gradient(ellipse at 5% 5%, rgba(255, 0, 0, 1) 0%, transparent 15%),
+          radial-gradient(ellipse at 95% 10%, rgba(139, 0, 0, 0.9) 0%, transparent 20%),
+          radial-gradient(ellipse at 10% 95%, rgba(255, 50, 50, 0.8) 0%, transparent 15%),
+          radial-gradient(ellipse at 90% 90%, rgba(100, 0, 0, 0.9) 0%, transparent 20%)
+        `,
+        animation: 'corruptedPlasmaAggressive 0.5s ease-in-out infinite',
+        zIndex: 5
+      }} />
+
+      {/* LAYER 6: Inner Corrupted Core */}
+      <div style={{
+        position: 'absolute',
+        top: '3px',
+        left: '3px',
+        right: '3px',
+        bottom: '3px',
+        borderRadius: '16px',
+        background: '#050000',
+        zIndex: 6
+      }} />
+
+      {/* LAYER 7: Scanlines */}
+      <div style={{
+        position: 'absolute',
+        top: '4px',
+        left: '4px',
+        right: '4px',
+        bottom: '4px',
+        borderRadius: '15px',
+        background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 0, 0, 0.05) 2px, rgba(255, 0, 0, 0.05) 4px)',
+        zIndex: 7,
+        pointerEvents: 'none'
+      }} />
+
+      {/* Glitch Lines */}
+      {[15, 35, 55, 75, 88].map((pos, i) => (
+        <div key={i} style={{
+          position: 'absolute',
+          top: `${pos}%`,
+          left: 0,
+          right: 0,
+          height: i % 2 === 0 ? '4px' : '2px',
+          background: `linear-gradient(90deg, transparent ${Math.random() * 20}%, #FF0000 ${30 + Math.random() * 20}%, transparent ${70 + Math.random() * 20}%)`,
+          opacity: 0.6,
+          animation: `glitchLine ${0.5 + Math.random() * 0.5}s ease-in-out ${Math.random() * 0.5}s infinite`,
+          zIndex: 8
+        }} />
+      ))}
+
+      {/* Corrupted Corner Accents */}
+      {[
+        { top: '4px', left: '4px' },
+        { top: '4px', right: '4px' },
+        { bottom: '4px', left: '4px' },
+        { bottom: '4px', right: '4px' },
+      ].map((pos, i) => (
+        <div key={i} style={{
+          position: 'absolute',
+          ...pos,
+          width: '30px',
+          height: '30px',
+          borderTop: pos.top ? '4px solid #FF0000' : 'none',
+          borderBottom: pos.bottom ? '4px solid #FF0000' : 'none',
+          borderLeft: pos.left === '4px' ? '4px solid #FF0000' : 'none',
+          borderRight: pos.right === '4px' ? '4px solid #FF0000' : 'none',
+          boxShadow: `0 0 15px rgba(255, 0, 0, 0.8)`,
+          zIndex: 10,
+          animation: `glitchCorner 0.3s ease-in-out ${i * 0.1}s infinite`
+        }} />
+      ))}
+
+      {/* Error X Marks */}
+      <svg style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '80px',
+        height: '80px',
+        zIndex: 8,
+        opacity: 0.08,
+        pointerEvents: 'none'
+      }} viewBox="0 0 100 100">
+        <line x1="20" y1="20" x2="80" y2="80" stroke="#FF0000" strokeWidth="8"/>
+        <line x1="80" y1="20" x2="20" y2="80" stroke="#FF0000" strokeWidth="8"/>
+      </svg>
+
       {/* ERROR Watermark */}
       <div style={{
         position: 'absolute',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%) rotate(-20deg)',
-        fontSize: '4rem',
+        fontSize: '4.5rem',
         fontWeight: '900',
-        color: 'rgba(255, 0, 0, 0.06)',
-        letterSpacing: '20px',
+        color: 'rgba(255, 0, 0, 0.04)',
+        letterSpacing: '15px',
         whiteSpace: 'nowrap',
         pointerEvents: 'none',
-        zIndex: 6,
-        fontFamily: 'monospace'
+        zIndex: 8,
+        fontFamily: 'monospace',
+        animation: 'errorGlitch 2s ease-in-out infinite'
       }}>
         ERROR
       </div>
+      
+      {/* Energy Bars */}
+      <div style={{
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        right: '0',
+        height: '5px',
+        background: 'linear-gradient(90deg, transparent 5%, #FF0000 20%, #FF0000 80%, transparent 95%)',
+        boxShadow: '0 0 25px #FF0000, 0 0 50px rgba(255, 0, 0, 0.6)',
+        animation: 'energyFlickerFast 0.2s ease-in-out infinite',
+        zIndex: 10
+      }} />
+      <div style={{
+        position: 'absolute',
+        bottom: '0',
+        left: '0',
+        right: '0',
+        height: '5px',
+        background: 'linear-gradient(90deg, transparent 5%, #8B0000 20%, #FF0000 50%, #8B0000 80%, transparent 95%)',
+        boxShadow: '0 0 25px #FF0000, 0 0 50px rgba(139, 0, 0, 0.6)',
+        animation: 'energyFlickerFast 0.2s ease-in-out infinite reverse',
+        zIndex: 10
+      }} />
     </>
   );
 
@@ -983,9 +1340,6 @@ const AuraCard = ({ aura }) => {
 
   const config = getTierConfig(aura.rarity);
 
-  // ============================================
-  // RENDER CARD EFFECT BASED ON TIER
-  // ============================================
   const renderCardEffect = () => {
     switch (aura.rarity) {
       case 'legendary': return <LegendaryCard />;
@@ -998,310 +1352,512 @@ const AuraCard = ({ aura }) => {
   };
 
   return (
-    <div style={{
-      position: 'relative',
-      width: '340px',
-      minHeight: '620px',
-      borderRadius: '16px',
-      overflow: 'visible',
-      background: 'transparent',
-      color: '#FFFFFF',
-      fontFamily: config.fontFamily,
-      display: 'flex',
-      flexDirection: 'column',
-      opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-      transition: 'opacity 0.5s, transform 0.5s',
-    }}>
+    <>
+      {showShareModal && <ShareModal />}
       
-      {/* Tier Effect Layer */}
-      {renderCardEffect()}
-      
-      {/* ============================================ */}
-      {/* CONTENT LAYER */}
-      {/* ============================================ */}
+      {shareMessage && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'rgba(0,0,0,0.9)',
+          border: `1px solid ${config.accentColor}`,
+          borderRadius: '12px',
+          padding: '12px 24px',
+          color: '#fff',
+          fontSize: '0.9rem',
+          fontWeight: '600',
+          zIndex: 10000,
+          boxShadow: `0 0 20px ${config.accentColor}50`,
+        }}>
+          {shareMessage}
+        </div>
+      )}
+
       <div style={{
-        position: 'relative',
-        zIndex: 15,
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
-        minHeight: '620px',
-        padding: '20px',
+        alignItems: 'center',
+        gap: '20px',
       }}>
-        
-        {/* Header */}
-        <div style={{
-          textAlign: 'center',
-          padding: '15px 0',
-          marginBottom: '10px',
-          background: config.headerBg,
-          borderRadius: '8px',
-        }}>
-          <span style={{
-            fontSize: '0.8rem',
-            fontWeight: '700',
-            letterSpacing: '3px',
-            color: config.accentColor,
-            textShadow: `0 0 20px ${config.accentColor}`,
+        {/* THE CARD */}
+        <div 
+          ref={cardRef}
+          style={{
+            position: 'relative',
+            width: '340px',
+            minHeight: '620px',
+            borderRadius: '16px',
+            overflow: 'visible',
+            background: 'transparent',
+            color: '#FFFFFF',
+            fontFamily: config.fontFamily,
+            display: 'flex',
+            flexDirection: 'column',
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.5s, transform 0.5s',
+          }}
+        >
+          
+          {renderCardEffect()}
+          
+          {/* CONTENT LAYER */}
+          <div style={{
+            position: 'relative',
+            zIndex: 15,
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+            minHeight: '620px',
+            padding: '20px',
           }}>
-            {config.headerText}
-          </span>
+            
+            {/* Header */}
+            <div style={{
+              textAlign: 'center',
+              padding: '15px 0',
+              marginBottom: '10px',
+              background: config.headerBg,
+              borderRadius: '8px',
+            }}>
+              <span style={{
+                fontSize: '0.8rem',
+                fontWeight: '700',
+                letterSpacing: '3px',
+                color: config.accentColor,
+                textShadow: `0 0 20px ${config.accentColor}`,
+              }}>
+                {config.headerText}
+              </span>
+            </div>
+
+            {/* Tier Icon & Label */}
+            <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+              <div style={{
+                fontSize: '3rem',
+                marginBottom: '10px',
+                filter: `drop-shadow(0 0 25px ${config.accentColor})`,
+              }}>
+                {config.tierIcon}
+              </div>
+              
+              <h1 style={{
+                margin: '0',
+                fontSize: '2.5rem',
+                fontWeight: '900',
+                letterSpacing: '6px',
+                color: config.accentColor,
+                textShadow: `0 0 30px ${config.accentColor}, 0 0 60px ${config.accentColor}50`,
+              }}>
+                {config.tierLabel}
+              </h1>
+              
+              <p style={{
+                margin: '10px 0 0 0',
+                fontSize: '0.7rem',
+                letterSpacing: '3px',
+                color: config.secondaryColor,
+                opacity: 0.9,
+              }}>
+                {config.tierSubtext}
+              </p>
+            </div>
+
+            {/* Score */}
+            <div style={{
+              textAlign: 'center',
+              margin: '25px 0',
+              position: 'relative',
+            }}>
+              <div style={{
+                fontSize: '5rem',
+                fontWeight: '900',
+                lineHeight: 1,
+                color: config.accentColor,
+                textShadow: `0 0 40px ${config.accentColor}, 0 0 80px ${config.accentColor}50`,
+              }}>
+                {aura.score}
+              </div>
+              
+              <div style={{
+                fontSize: '0.7rem',
+                color: config.accentColor,
+                letterSpacing: '4px',
+                marginTop: '10px',
+                opacity: 0.8,
+              }}>
+                AURA SCORE
+              </div>
+            </div>
+
+            {/* Roast Box */}
+            <div style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}>
+              <div style={{
+                background: `${config.accentColor}10`,
+                border: `1px solid ${config.accentColor}40`,
+                borderRadius: '12px',
+                padding: '18px',
+                position: 'relative',
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  top: '-12px',
+                  left: '20px',
+                  background: '#0a0a0a',
+                  padding: '0 10px',
+                  color: config.accentColor,
+                  fontSize: '1rem',
+                }}>
+                  💬
+                </div>
+                
+                <p style={{
+                  margin: 0,
+                  fontSize: '0.95rem',
+                  lineHeight: 1.6,
+                  color: 'rgba(255,255,255,0.95)',
+                  fontStyle: 'italic',
+                }}>
+                  {aura.roast}
+                </p>
+              </div>
+            </div>
+
+            {/* Motivation */}
+            <div style={{
+              textAlign: 'center',
+              marginTop: '15px',
+              padding: '12px',
+              borderTop: `1px solid ${config.accentColor}30`,
+            }}>
+              <p style={{
+                margin: 0,
+                fontSize: '0.8rem',
+                color: config.accentColor,
+                fontWeight: '600',
+              }}>
+                {config.motivationText}
+              </p>
+            </div>
+
+            {/* Footer */}
+            <div style={{
+              marginTop: '15px',
+              padding: '10px 0',
+              borderTop: `1px solid ${config.accentColor}20`,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <div style={{
+                fontSize: '0.5rem',
+                color: config.accentColor,
+                letterSpacing: '1px',
+                maxWidth: '55%',
+                lineHeight: 1.3,
+                opacity: 0.8,
+              }}>
+                {aura.challenge}
+              </div>
+              
+              <div style={{
+                fontSize: '0.6rem',
+                color: 'rgba(255,255,255,0.4)',
+                letterSpacing: '1px',
+              }}>
+                aura-roast.com
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Tier Icon & Label */}
-        <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-          <div style={{
-            fontSize: '3rem',
-            marginBottom: '10px',
-            filter: `drop-shadow(0 0 25px ${config.accentColor})`,
-          }}>
-            {config.tierIcon}
-          </div>
-          
-          <h1 style={{
-            margin: '0',
-            fontSize: '2.5rem',
-            fontWeight: '900',
-            letterSpacing: '6px',
-            color: config.accentColor,
-            textShadow: `0 0 30px ${config.accentColor}, 0 0 60px ${config.accentColor}50`,
-          }}>
-            {config.tierLabel}
-          </h1>
-          
-          <p style={{
-            margin: '10px 0 0 0',
-            fontSize: '0.7rem',
-            letterSpacing: '3px',
-            color: config.secondaryColor,
-            opacity: 0.9,
-          }}>
-            {config.tierSubtext}
-          </p>
-        </div>
-
-        {/* Score */}
+        {/* SHARE BUTTONS */}
         <div style={{
-          textAlign: 'center',
-          margin: '25px 0',
-          position: 'relative',
-        }}>
-          <div style={{
-            fontSize: '5rem',
-            fontWeight: '900',
-            lineHeight: 1,
-            color: config.accentColor,
-            textShadow: `0 0 40px ${config.accentColor}, 0 0 80px ${config.accentColor}50`,
-          }}>
-            {aura.score}
-          </div>
-          
-          <div style={{
-            fontSize: '0.7rem',
-            color: config.accentColor,
-            letterSpacing: '4px',
-            marginTop: '10px',
-            opacity: 0.8,
-          }}>
-            AURA SCORE
-          </div>
-        </div>
-
-        {/* Roast Box */}
-        <div style={{
-          flex: 1,
+          width: '340px',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
+          gap: '12px',
         }}>
-          <div style={{
-            background: `${config.accentColor}10`,
-            border: `1px solid ${config.accentColor}40`,
-            borderRadius: '12px',
-            padding: '18px',
-            position: 'relative',
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-12px',
-              left: '20px',
-              background: '#0a0a0a',
-              padding: '0 10px',
-              color: config.accentColor,
-              fontSize: '1rem',
-            }}>
-              💬
-            </div>
-            
-            <p style={{
-              margin: 0,
+          <button
+            onClick={shareToInstagramStory}
+            disabled={isSharing}
+            style={{
+              width: '100%',
+              padding: '14px 20px',
+              background: 'linear-gradient(45deg, #833AB4, #FD1D1D, #F77737)',
+              border: 'none',
+              borderRadius: '12px',
+              color: '#fff',
               fontSize: '0.95rem',
-              lineHeight: 1.6,
-              color: 'rgba(255,255,255,0.95)',
-              fontStyle: 'italic',
-            }}>
-              {aura.roast}
-            </p>
-          </div>
-        </div>
+              fontWeight: '700',
+              cursor: isSharing ? 'wait' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              opacity: isSharing ? 0.7 : 1,
+              transition: 'all 0.2s',
+              boxShadow: '0 4px 20px rgba(131, 58, 180, 0.4)',
+            }}
+          >
+            {isSharing ? '⏳ Processing...' : '📸 Share to Instagram Story'}
+          </button>
 
-        {/* Motivation */}
-        <div style={{
-          textAlign: 'center',
-          marginTop: '15px',
-          padding: '12px',
-          borderTop: `1px solid ${config.accentColor}30`,
-        }}>
+          <button
+            onClick={shareToInstagramFeed}
+            disabled={isSharing}
+            style={{
+              width: '100%',
+              padding: '14px 20px',
+              background: 'linear-gradient(45deg, #405DE6, #5851DB, #833AB4)',
+              border: 'none',
+              borderRadius: '12px',
+              color: '#fff',
+              fontSize: '0.95rem',
+              fontWeight: '700',
+              cursor: isSharing ? 'wait' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              opacity: isSharing ? 0.7 : 1,
+              transition: 'all 0.2s',
+              boxShadow: '0 4px 20px rgba(64, 93, 230, 0.4)',
+            }}
+          >
+            {isSharing ? '⏳ Processing...' : '📷 Share to Instagram Feed'}
+          </button>
+
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              onClick={downloadCard}
+              disabled={isSharing}
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                background: 'rgba(255,255,255,0.1)',
+                border: `1px solid ${config.accentColor}50`,
+                borderRadius: '12px',
+                color: '#fff',
+                fontSize: '0.85rem',
+                fontWeight: '600',
+                cursor: isSharing ? 'wait' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+              }}
+            >
+              ⬇️ Download
+            </button>
+
+            <button
+              onClick={copyLink}
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                background: 'rgba(255,255,255,0.1)',
+                border: `1px solid ${config.accentColor}50`,
+                borderRadius: '12px',
+                color: '#fff',
+                fontSize: '0.85rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+              }}
+            >
+              🔗 Copy Link
+            </button>
+          </div>
+
           <p style={{
-            margin: 0,
-            fontSize: '0.8rem',
-            color: config.accentColor,
-            fontWeight: '600',
-          }}>
-            {config.motivationText}
-          </p>
-        </div>
-
-        {/* CTA Button */}
-        <button style={{
-          width: '100%',
-          marginTop: '15px',
-          padding: '14px 20px',
-          background: `linear-gradient(90deg, ${config.accentColor}, ${config.secondaryColor})`,
-          border: 'none',
-          borderRadius: '12px',
-          color: aura.rarity === 'legendary' || aura.rarity === 'noob' ? '#000' : '#FFF',
-          fontSize: '0.9rem',
-          fontWeight: '800',
-          letterSpacing: '2px',
-          cursor: 'pointer',
-          boxShadow: `0 5px 30px ${config.accentColor}60`,
-          textTransform: 'uppercase',
-        }}>
-          {config.ctaText}
-        </button>
-
-        {/* Footer */}
-        <div style={{
-          marginTop: '15px',
-          padding: '10px 0',
-          borderTop: `1px solid ${config.accentColor}20`,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-          <div style={{
-            fontSize: '0.5rem',
-            color: config.accentColor,
-            letterSpacing: '1px',
-            maxWidth: '55%',
-            lineHeight: 1.3,
-            opacity: 0.8,
-          }}>
-            {aura.challenge}
-          </div>
-          
-          <div style={{
-            fontSize: '0.6rem',
+            textAlign: 'center',
+            fontSize: '0.7rem',
             color: 'rgba(255,255,255,0.4)',
-            letterSpacing: '1px',
+            margin: '5px 0 0 0',
           }}>
-            aura-roast.com
-          </div>
+            📱 Works best on mobile • Tag @auraroast
+          </p>
         </div>
       </div>
 
       {/* ============================================ */}
-      {/* CSS ANIMATIONS */}
+      {/* AGGRESSIVE PLASMA ANIMATIONS */}
       {/* ============================================ */}
       <style jsx global>{`
-        @keyframes legendaryPulse {
+        /* LEGENDARY ANIMATIONS */
+        @keyframes legendaryMegaPulse {
           0%, 100% { 
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 60px rgba(255, 215, 0, 0.4), 0 0 100px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.6), 0 0 120px rgba(255, 215, 0, 0.4), 0 0 200px rgba(255, 215, 0, 0.2);
           }
           50% { 
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.5), 0 0 120px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 60px rgba(255, 215, 0, 1), 0 0 100px rgba(255, 215, 0, 0.8), 0 0 150px rgba(255, 215, 0, 0.5), 0 0 250px rgba(255, 215, 0, 0.3);
           }
         }
-        
-        @keyframes epicPulse {
+
+        /* EPIC ANIMATIONS */
+        @keyframes epicMegaPulse {
           0%, 100% { 
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5), 0 0 50px rgba(148, 0, 211, 0.4);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.7), 0 0 80px rgba(148, 0, 211, 0.5), 0 0 120px rgba(0, 255, 255, 0.3);
           }
           50% { 
-            box-shadow: 0 0 40px rgba(0, 255, 255, 0.7), 0 0 70px rgba(148, 0, 211, 0.5);
+            box-shadow: 0 0 60px rgba(0, 255, 255, 0.9), 0 0 100px rgba(148, 0, 211, 0.7), 0 0 150px rgba(0, 255, 255, 0.4);
           }
         }
-        
-        @keyframes midPulse {
+
+        /* MID ANIMATIONS */
+        @keyframes midMegaPulse {
           0%, 100% { 
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 40px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5), 0 0 60px rgba(135, 206, 235, 0.4), 0 0 100px rgba(255, 255, 255, 0.2);
           }
           50% { 
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5), 0 0 60px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 45px rgba(255, 255, 255, 0.7), 0 0 80px rgba(135, 206, 235, 0.5), 0 0 120px rgba(255, 255, 255, 0.3);
           }
         }
-        
-        @keyframes noobPulse {
+
+        /* NOOB ANIMATIONS */
+        @keyframes noobMegaPulse {
           0%, 100% { 
-            box-shadow: 0 0 25px rgba(255, 140, 0, 0.5), 0 0 50px rgba(255, 69, 0, 0.4);
+            box-shadow: 0 0 35px rgba(255, 140, 0, 0.7), 0 0 70px rgba(255, 69, 0, 0.5), 0 0 110px rgba(255, 140, 0, 0.3);
           }
           50% { 
-            box-shadow: 0 0 40px rgba(255, 140, 0, 0.7), 0 0 70px rgba(255, 69, 0, 0.5);
+            box-shadow: 0 0 50px rgba(255, 140, 0, 0.9), 0 0 90px rgba(255, 69, 0, 0.7), 0 0 140px rgba(255, 140, 0, 0.4);
           }
         }
-        
-        @keyframes npcFlicker {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.95; }
-          75% { opacity: 1; }
-          90% { opacity: 0.9; }
+
+        /* NPC ANIMATIONS */
+        @keyframes npcGlitchPulse {
+          0%, 100% { 
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.7), 0 0 80px rgba(139, 0, 0, 0.5);
+            transform: translate(0, 0);
+          }
+          25% { 
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.9), 0 0 100px rgba(139, 0, 0, 0.6);
+            transform: translate(-1px, 0);
+          }
+          50% { 
+            box-shadow: 0 0 35px rgba(255, 0, 0, 0.6), 0 0 70px rgba(139, 0, 0, 0.4);
+            transform: translate(1px, 0);
+          }
+          75% { 
+            box-shadow: 0 0 55px rgba(255, 0, 0, 0.85), 0 0 90px rgba(139, 0, 0, 0.55);
+            transform: translate(0, 0);
+          }
         }
-        
-        @keyframes electricFlow {
+
+        /* PLASMA ROTATION */
+        @keyframes plasmaRotate {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes plasmaRotateReverse {
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
+        }
+
+        @keyframes glitchRotate {
+          0% { transform: rotate(0deg); }
+          25% { transform: rotate(92deg) scale(1.01); }
+          50% { transform: rotate(180deg) scale(0.99); }
+          75% { transform: rotate(268deg) scale(1.01); }
+          100% { transform: rotate(360deg); }
+        }
+
+        @keyframes glitchRotateReverse {
+          0% { transform: rotate(360deg); }
+          33% { transform: rotate(238deg) translateX(1px); }
+          66% { transform: rotate(122deg) translateX(-1px); }
+          100% { transform: rotate(0deg); }
+        }
+
+        /* ELECTRIC FLOW */
+        @keyframes electricFlowFast {
           0% { background-position: 0% 50%; }
-          100% { background-position: 200% 50%; }
+          100% { background-position: 300% 50%; }
         }
-        
-        @keyframes glitchFlow {
-          0% { background-position: 0% 50%; }
-          25% { background-position: 100% 50%; transform: translateX(1px); }
-          50% { background-position: 200% 50%; transform: translateX(-1px); }
+
+        @keyframes glitchFlowFast {
+          0% { background-position: 0% 50%; transform: translateX(0); }
+          25% { background-position: 100% 50%; transform: translateX(2px); }
+          50% { background-position: 200% 50%; transform: translateX(-2px); }
           75% { background-position: 300% 50%; transform: translateX(1px); }
           100% { background-position: 0% 50%; transform: translateX(0); }
         }
-        
-        @keyframes plasmaShift {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.85; }
-        }
-        
-        @keyframes epicPlasma {
+
+        /* PLASMA SHIFT */
+        @keyframes plasmaShiftAggressive {
           0%, 100% { 
-            filter: hue-rotate(0deg);
             opacity: 1;
+            filter: brightness(1);
+          }
+          25% { 
+            opacity: 0.85;
+            filter: brightness(1.2);
           }
           50% { 
-            filter: hue-rotate(15deg);
+            opacity: 1;
+            filter: brightness(0.9);
+          }
+          75% { 
             opacity: 0.9;
+            filter: brightness(1.1);
           }
         }
-        
-        @keyframes noobPlasma {
-          0%, 100% { opacity: 1; }
-          25% { opacity: 0.9; }
-          50% { opacity: 1; }
-          75% { opacity: 0.85; }
+
+        @keyframes corruptedPlasmaAggressive {
+          0%, 100% { 
+            opacity: 1;
+            transform: scale(1) translate(0, 0);
+          }
+          20% { 
+            opacity: 0.7;
+            transform: scale(1.01) translate(1px, 0);
+          }
+          40% { 
+            opacity: 1;
+            transform: scale(0.99) translate(-1px, 0);
+          }
+          60% { 
+            opacity: 0.8;
+            transform: scale(1.005) translate(0, 1px);
+          }
+          80% { 
+            opacity: 0.9;
+            transform: scale(0.995) translate(0, -1px);
+          }
         }
-        
-        @keyframes corruptedPlasma {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          25% { opacity: 0.85; transform: scale(1.002); }
-          50% { opacity: 1; transform: scale(0.998); }
-          75% { opacity: 0.9; transform: scale(1.001); }
+
+        /* PARTICLE ANIMATIONS */
+        @keyframes particleOrbit {
+          0%, 100% { 
+            transform: translateY(0) translateX(0) scale(1); 
+            opacity: 0.9;
+          }
+          25% { 
+            transform: translateY(-15px) translateX(10px) scale(1.2); 
+            opacity: 0.6;
+          }
+          50% { 
+            transform: translateY(-25px) translateX(-5px) scale(0.8); 
+            opacity: 0.3;
+          }
+          75% { 
+            transform: translateY(-10px) translateX(-15px) scale(1.1); 
+            opacity: 0.7;
+          }
         }
-        
+
         @keyframes particleFloat {
           0%, 100% { 
             transform: translateY(0) translateX(0); 
@@ -1312,52 +1868,134 @@ const AuraCard = ({ aura }) => {
             opacity: 0.4;
           }
         }
-        
-        @keyframes crownFloat {
-          0%, 100% { transform: translateX(-50%) translateY(0); }
-          50% { transform: translateX(-50%) translateY(-10px); }
-        }
-        
-        @keyframes energyPulse {
-          0%, 100% { opacity: 0.8; }
-          50% { opacity: 1; }
-        }
-        
-        @keyframes energyFlicker {
-          0%, 100% { opacity: 1; }
-          25% { opacity: 0.8; }
-          50% { opacity: 1; }
-          75% { opacity: 0.85; }
-        }
-        
-        @keyframes glitchLine {
+
+        /* ENERGY BARS */
+        @keyframes energyBarPulse {
           0%, 100% { 
-            opacity: 0.3; 
-            transform: translateX(0) scaleX(1);
-          }
-          25% { 
-            opacity: 0.5; 
-            transform: translateX(-5px) scaleX(1.02);
+            opacity: 0.9;
+            box-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
           }
           50% { 
-            opacity: 0.2; 
-            transform: translateX(3px) scaleX(0.98);
+            opacity: 1;
+            box-shadow: 0 0 30px currentColor, 0 0 60px currentColor;
+          }
+        }
+
+        @keyframes energyFlickerFast {
+          0%, 100% { opacity: 1; }
+          10% { opacity: 0.7; }
+          20% { opacity: 1; }
+          30% { opacity: 0.8; }
+          40% { opacity: 1; }
+          50% { opacity: 0.6; }
+          60% { opacity: 1; }
+          70% { opacity: 0.75; }
+          80% { opacity: 1; }
+          90% { opacity: 0.85; }
+        }
+
+        /* LIGHTNING */
+        @keyframes lightningFlicker {
+          0%, 100% { opacity: 1; filter: brightness(1); }
+          10% { opacity: 0.3; filter: brightness(2); }
+          20% { opacity: 1; filter: brightness(1); }
+          30% { opacity: 0.6; filter: brightness(1.5); }
+          40% { opacity: 1; filter: brightness(1); }
+          50% { opacity: 0.2; filter: brightness(2.5); }
+          60% { opacity: 1; filter: brightness(1); }
+          70% { opacity: 0.5; filter: brightness(1.8); }
+          80% { opacity: 1; filter: brightness(1); }
+          90% { opacity: 0.4; filter: brightness(2); }
+        }
+
+        /* CROWN */
+        @keyframes crownFloat {
+          0%, 100% { transform: translateX(-50%) translateY(0) rotate(-5deg); }
+          50% { transform: translateX(-50%) translateY(-12px) rotate(5deg); }
+        }
+
+        /* CORNERS */
+        @keyframes cornerPulse {
+          0%, 100% { 
+            opacity: 1;
+            box-shadow: 0 0 20px currentColor;
+          }
+          50% { 
+            opacity: 0.7;
+            box-shadow: 0 0 35px currentColor;
+          }
+        }
+
+        @keyframes glitchCorner {
+          0%, 100% { opacity: 1; transform: translate(0, 0); }
+          20% { opacity: 0.5; transform: translate(2px, -1px); }
+          40% { opacity: 1; transform: translate(-1px, 1px); }
+          60% { opacity: 0.7; transform: translate(1px, 0); }
+          80% { opacity: 0.9; transform: translate(0, -1px); }
+        }
+
+        /* GLITCH LINES */
+        @keyframes glitchLine {
+          0%, 100% { 
+            opacity: 0.5; 
+            transform: translateX(0) scaleX(1);
+          }
+          20% { 
+            opacity: 0.8; 
+            transform: translateX(-10px) scaleX(1.05);
+          }
+          40% { 
+            opacity: 0.3; 
+            transform: translateX(5px) scaleX(0.95);
+          }
+          60% { 
+            opacity: 0.9; 
+            transform: translateX(-3px) scaleX(1.02);
+          }
+          80% { 
+            opacity: 0.4; 
+            transform: translateX(8px) scaleX(0.98);
+          }
+        }
+
+        /* UPGRADE HINT */
+        @keyframes upgradeHintPulse {
+          0%, 100% { 
+            opacity: 1;
+            box-shadow: 0 0 15px rgba(148, 0, 211, 0.4);
+          }
+          50% { 
+            opacity: 0.8;
+            box-shadow: 0 0 25px rgba(148, 0, 211, 0.6);
+          }
+        }
+
+        /* ERROR GLITCH */
+        @keyframes errorGlitch {
+          0%, 100% { 
+            opacity: 0.04;
+            transform: translate(-50%, -50%) rotate(-20deg) scale(1);
+          }
+          25% { 
+            opacity: 0.06;
+            transform: translate(-48%, -52%) rotate(-18deg) scale(1.02);
+          }
+          50% { 
+            opacity: 0.03;
+            transform: translate(-52%, -48%) rotate(-22deg) scale(0.98);
           }
           75% { 
-            opacity: 0.6; 
-            transform: translateX(-2px) scaleX(1.01);
+            opacity: 0.05;
+            transform: translate(-50%, -50%) rotate(-19deg) scale(1.01);
           }
         }
-        
-        @keyframes cornerGlitch {
-          0%, 100% { opacity: 1; }
-          10% { opacity: 0.5; }
-          20% { opacity: 1; }
-          30% { opacity: 0.7; }
-          40% { opacity: 1; }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
       `}</style>
-    </div>
+    </>
   );
 };
 
