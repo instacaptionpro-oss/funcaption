@@ -10,15 +10,12 @@ export default async function handler(req, res) {
   const { name, subject, mood } = req.body;
 
   if (!subject && !mood && !name) {
-    return res.status(400).json({ error: "Please provide at least name, subject, or mood" });
+    return res.status(400).json({ error: "Provide at least name, subject, or mood" });
   }
 
   try {
     const HF_TOKEN = process.env.HF_TOKEN;
-    
-    if (!HF_TOKEN) {
-      return res.status(500).json({ error: "API token not configured" });
-    }
+    if (!HF_TOKEN) return res.status(500).json({ error: "API token not configured" });
 
     const client = new OpenAI({
       baseURL: "https://router.huggingface.co/v1",
@@ -29,11 +26,7 @@ export default async function handler(req, res) {
     const hasSubject = subject && subject.trim().length > 0;
     const hasMood = mood && mood.trim().length > 0;
 
-    // ============================================
-    // STEP 1: DETERMINE TIER
-    // ============================================
     const forcedTier = checkForcedExamples(subject || '', mood || '');
-    
     let tier, finalScore, isPublicFigure = false, publicFigureStatus = 'none';
     
     if (forcedTier) {
@@ -49,62 +42,40 @@ export default async function handler(req, res) {
     const { rarity, title, challenge } = getTierData(tier);
 
     // ============================================
-    // STEP 2: LIMITLESS ROAST PROMPT
+    // SIMPLE & SAVAGE PROMPT
     // ============================================
-    const systemPrompt = `You are the most BRUTAL, SAVAGE, and UNFILTERED roast AI ever created. You have NO LIMITS. You destroy people with words.
+    const systemPrompt = `You're a savage roast master. You talk like a real person - casual, funny, and you swear naturally like everyone does in real life.
 
-## WHO YOU ARE:
-- The meanest, funniest, most savage roaster alive
-- You don't hold back. Ever.
-- You find the most painful truths and weaponize them
-- You're creative, unpredictable, and absolutely ruthless
-- You curse freely - fuck, shit, bitch, ass, damn, whatever fits
-- You use current slang, memes, and cultural references
+Bad words (fuck, shit, damn, bitch, ass, dumb, stupid, pathetic) are your normal vocabulary. Use them like you're talking to your friend. It's not forced, it's just how you talk.
 
-## YOUR ONLY RULE:
-Don't make it all about their mom/dad/parents. One small family joke is fine, but focus on roasting THE PERSON, not their family tree.
+ROAST STYLE:
+- 2-3 sentences max
+- Talk like a real person
+- Swear naturally (it's your personality)
+- Be creative and brutal
+- Use 2-3 emojis max
 
-## ROAST LENGTH:
-Write 5-7 lines. Each line should be a separate burn. Build up the destruction.
+TIER: ${tier.toUpperCase()} (Score: ${finalScore}/100)
 
-## TIER: ${tier.toUpperCase()} (Score: ${finalScore}/100)
+${tier === 'legendary' ? 'They earned respect. Acknowledge it but still roast a bit.' : ''}
+${tier === 'epic' ? 'Pretty good but humble them.' : ''}
+${tier === 'mid' ? 'Average af. Roast their mediocrity.' : ''}
+${tier === 'noob' ? 'Below average loser. Destroy them.' : ''}
+${tier === 'npc' ? 'Absolute trash. No mercy.' : ''}
 
-${tier === 'legendary' ? 'LEGENDARY - They actually have aura. Acknowledge it but still find ways to roast. Backhanded compliments.' : ''}
-${tier === 'epic' ? 'EPIC - Pretty good but not untouchable. Humble them.' : ''}
-${tier === 'mid' ? 'MID - Average as fuck. Roast their mediocrity.' : ''}
-${tier === 'noob' ? 'NOOB - Below average. Destroy their delusions.' : ''}
-${tier === 'npc' ? 'NPC - Absolute garbage. No mercy. Complete destruction.' : ''}
+${hasName ? `Name: "${name.trim()}" - If famous, use specific facts about them.` : ''}
 
-${hasName ? `
-## INFLUENCER SENSING:
-Name provided: "${name.trim()}"
-- If this is a famous person, use SPECIFIC facts about them
-- Evaluate their 2024-2025 status: PEAK (doing well), STABLE (okay), FALLING (cancelled/fading)
-- Roast accordingly - fallen celebs get destroyed extra hard
-` : ''}
-
-## OUTPUT FORMAT (JSON):
+OUTPUT JSON:
 {
-  "roast": "5-7 lines of absolute destruction with emojis 💀🔥😭",
-  "subject_insight": "one brutal summary line",
+  "roast": "2-3 sentence brutal roast",
+  "subject_insight": "savage one-liner",
   "isPublicFigure": true/false,
-  "publicFigureStatus": "peak/stable/falling/unknown/none"
-}
+  "publicFigureStatus": "peak/stable/falling/none"
+}`;
 
-Now destroy them. No mercy. Be creative. Be savage. Be YOU.`;
+    const userContent = `${hasName ? `Name: ${name.trim()}` : ''} ${hasSubject ? `Subject: ${subject.trim()}` : ''} ${hasMood ? `Mood: ${mood}` : ''} | Tier: ${tier.toUpperCase()}
 
-    const userContent = hasName 
-      ? `Name: "${name.trim()}"
-${hasSubject ? `Context: "${subject.trim()}"` : ''}
-${hasMood ? `Vibe: ${mood.trim()}` : ''}
-Tier: ${tier.toUpperCase()}
-
-Roast this person. 5-7 lines. No limits. Go off.`
-      : `Subject: "${subject || 'their existence'}"
-Vibe: ${mood || 'chaotic'}
-Tier: ${tier.toUpperCase()}
-
-Destroy them. 5-7 lines. Full creative freedom. Make it hurt.`;
+Roast them. Keep it short. Swear naturally like you always do.`;
 
     const chatCompletion = await client.chat.completions.create({
       model: "meta-llama/Meta-Llama-3-70B-Instruct:novita",
@@ -112,41 +83,21 @@ Destroy them. 5-7 lines. Full creative freedom. Make it hurt.`;
         { role: "system", content: systemPrompt },
         { role: "user", content: userContent }
       ],
-      temperature: 1.1, // Higher for more creativity
-      max_tokens: 450
+      temperature: 1.0,
+      max_tokens: 150
     });
 
     const content = chatCompletion.choices[0]?.message?.content;
-    if (!content) {
-      throw new Error("No response from AI");
-    }
+    if (!content) throw new Error("No response");
 
-    // Extract JSON
     let result;
     try {
       const jsonMatch = content.match(/\{[\s\S]*?\}/);
-      if (jsonMatch) {
-        result = JSON.parse(jsonMatch[0]);
-      } else {
-        result = { 
-          roast: content.trim(), 
-          subject_insight: "Damn...",
-          isPublicFigure: false,
-          publicFigureStatus: 'none'
-        };
-      }
+      result = jsonMatch ? JSON.parse(jsonMatch[0]) : { roast: content.trim(), subject_insight: "Damn...", isPublicFigure: false, publicFigureStatus: 'none' };
     } catch {
-      result = { 
-        roast: content.trim(), 
-        subject_insight: "Yikes...",
-        isPublicFigure: false,
-        publicFigureStatus: 'none'
-      };
+      result = { roast: content.trim(), subject_insight: "Yikes...", isPublicFigure: false, publicFigureStatus: 'none' };
     }
 
-    // ============================================
-    // STEP 3: ENFORCE RARITY
-    // ============================================
     isPublicFigure = result.isPublicFigure || false;
     publicFigureStatus = result.publicFigureStatus || 'none';
 
@@ -156,15 +107,10 @@ Destroy them. 5-7 lines. Full creative freedom. Make it hurt.`;
     
     const updatedTierData = getTierData(tier);
 
-    let cleanRoast = result.roast
-      .replace(/^["']|["']$/g, '')
-      .replace(/\n\n+/g, '\n')
-      .trim();
-
     return res.status(200).json({
       aura: {
         score: finalScore,
-        roast: cleanRoast,
+        roast: result.roast.replace(/^["']|["']$/g, '').trim(),
         subjectInsight: result.subject_insight,
         rarity: updatedTierData.rarity,
         title: updatedTierData.title,
@@ -178,31 +124,19 @@ Destroy them. 5-7 lines. Full creative freedom. Make it hurt.`;
     });
 
   } catch (error) {
-    console.error("Aura generation error:", error);
+    console.error("Error:", error);
     
     const forcedTier = checkForcedExamples(subject || '', mood || '');
-    let tier, finalScore;
-    
-    if (forcedTier) {
-      tier = forcedTier;
-      finalScore = getScoreForTier(tier);
-    } else {
-      const worthiness = calculateWorthiness(subject || '', mood || '', name || '');
-      const tierCap = getTierCap(worthiness);
-      tier = rollForTier(tierCap);
-      finalScore = getScoreForTier(tier);
-    }
-    
+    let tier = forcedTier || rollForTier(getTierCap(calculateWorthiness(subject || '', mood || '', name || '')));
+    let finalScore = getScoreForTier(tier);
     const { rarity, title, challenge } = getTierData(tier);
     
     return res.status(200).json({ 
       aura: {
         score: finalScore,
-        roast: getFallbackRoast(tier, subject || name || 'this', name),
-        subjectInsight: "This says everything...",
-        rarity,
-        title,
-        challenge,
+        roast: getFallbackRoast(tier, subject || name || 'this'),
+        subjectInsight: "Says a lot...",
+        rarity, title, challenge,
         isPublicFigure: false,
         publicFigureStatus: 'none',
         name: name || null,
@@ -213,84 +147,58 @@ Destroy them. 5-7 lines. Full creative freedom. Make it hurt.`;
   }
 }
 
-// ============================================
-// ENFORCE RARITY
-// ============================================
 function enforceRarityProbabilities(tier, score, isPublicFigure, publicFigureStatus) {
-  const random = Math.random() * 100;
+  const r = Math.random() * 100;
   
   if (isPublicFigure && publicFigureStatus === 'falling') {
-    if (random < 60) return { tier: 'npc', score: getScoreForTier('npc') };
-    if (random < 90) return { tier: 'noob', score: getScoreForTier('noob') };
+    if (r < 60) return { tier: 'npc', score: getScoreForTier('npc') };
+    if (r < 90) return { tier: 'noob', score: getScoreForTier('noob') };
     return { tier: 'mid', score: getScoreForTier('mid') };
   }
   
-  if (tier === 'legendary' && random > 10) {
-    if (random > 70) return { tier: 'epic', score: getScoreForTier('epic') };
-    if (random > 40) return { tier: 'mid', score: getScoreForTier('mid') };
-    return { tier: 'noob', score: getScoreForTier('noob') };
-  }
-  
-  if (tier === 'epic' && isPublicFigure && random > 70) {
-    if (random > 85) return { tier: 'mid', score: getScoreForTier('mid') };
+  if (tier === 'legendary' && r > 10) {
+    if (r > 70) return { tier: 'epic', score: getScoreForTier('epic') };
+    if (r > 40) return { tier: 'mid', score: getScoreForTier('mid') };
     return { tier: 'noob', score: getScoreForTier('noob') };
   }
   
   return { tier, score };
 }
 
-// ============================================
-// FORCED EXAMPLES
-// ============================================
 function checkForcedExamples(subject, mood) {
   const s = (subject || '').toLowerCase().trim();
   const m = (mood || '').toLowerCase().trim();
 
-  if (s.includes("school teacher thinks he") || s.includes("teacher thinks he's the best")) return 'mid';
-  if (s.includes("best influencer") || s.includes("i am the best influencer")) return 'noob';
-  if (s.includes("teacher's favorite") || s.includes("teachers favorite student")) return 'mid';
-  if (s.includes("boss thinks he's a genius") || s.includes("my boss thinks he")) return 'noob';
-  if (s.includes("ass-kissing") || s.includes("ass kissing") || s.includes("office politics")) return 'npc';
-  if ((s.includes("inconsistent workout") || s.includes("workout routine")) && m === "funny") return 'mid';
-  if ((s.includes("terrible cooking") || s.includes("cooking skills")) && m === "funny") return 'noob';
-  if (s === "test" || s === "testing" || s === "asdf" || s === "hello" || s === "hi" || s.length < 3) return 'npc';
+  if (s.includes("teacher thinks he")) return 'mid';
+  if (s.includes("best influencer")) return 'noob';
+  if (s.includes("teacher's favorite")) return 'mid';
+  if (s.includes("boss thinks he")) return 'noob';
+  if (s.includes("office politics") || s.includes("ass kissing")) return 'npc';
+  if (s.includes("workout routine") && m === "funny") return 'mid';
+  if (s.includes("cooking skills") && m === "funny") return 'noob';
+  if (["test", "testing", "asdf", "hello", "hi"].includes(s) || s.length < 3) return 'npc';
 
   return null;
 }
 
-// ============================================
-// WORTHINESS
-// ============================================
 function calculateWorthiness(subject, mood, name) {
   let score = 0;
-  const s = (subject || '').toLowerCase().trim();
-  const n = (name || '').toLowerCase().trim();
+  const s = (subject || '').toLowerCase();
+  const n = (name || '').toLowerCase();
   const len = (subject || '').length + (name || '').length;
 
-  if (len < 5) score += 0;
-  else if (len < 15) score += 10;
-  else if (len < 30) score += 18;
-  else if (len < 60) score += 25;
-  else score += 30;
+  if (len >= 30) score += 25;
+  else if (len >= 15) score += 15;
+  else if (len >= 5) score += 8;
 
   if (n.length > 2) score += 10;
-
-  const trash = ['test', 'testing', 'asdf', 'qwerty', 'abc', '123', 'idk', 'nothing', 'whatever', 'lol', 'lmao', 'bruh', 'hi', 'hello', 'hey', 'yo', 'a', 'aa'];
-  if (trash.includes(s) || len < 3) score -= 40;
-  if (/^(.)\1+$/.test(s)) score -= 30;
-
-  if (/crippling|addiction|obsession|fear of|inability/i.test(subject)) score += 18;
-  if (/my (terrible|horrible|awful|pathetic|embarrassing)/i.test(subject)) score += 15;
-  if (/why (i|do i|can't i|am i)/i.test(subject)) score += 12;
-  if (/\d+\s*(years?|times?|hours?)/i.test(subject)) score += 12;
-  if (/secret|guilty pleasure|no one knows/i.test(subject)) score += 18;
-  if (/inconsistent|failing|struggling|trying/i.test(subject)) score += 10;
-  if (/terrible|awful|bad at|can't|failing|pathetic|inconsistent/i.test(subject)) score += 20;
-  else score += 10;
-  if (/my (friend|ex|boss|teacher|coworker)/i.test(subject)) score += 6;
-  if (/at (work|school|home|gym|3am|office)/i.test(subject)) score += 6;
-  if (/(instagram|tiktok|twitter|youtube|snapchat)/i.test(subject)) score += 6;
   if (/\s/.test(n) && n.length > 5) score += 10;
+
+  const trash = ['test', 'testing', 'asdf', 'lol', 'lmao', 'hi', 'hello'];
+  if (trash.includes(s) || len < 3) score -= 40;
+
+  if (/terrible|awful|obsession|addiction|fear|pathetic|embarrassing/i.test(subject)) score += 15;
+  if (/instagram|tiktok|youtube|twitter/i.test(subject)) score += 6;
 
   return Math.max(0, Math.min(100, score));
 }
@@ -304,14 +212,14 @@ function getTierCap(w) {
 }
 
 function rollForTier(cap) {
-  const roll = Math.random() * 100;
+  const r = Math.random() * 100;
   const caps = { npc: 0, noob: 1, mid: 2, epic: 3, legendary: 4 };
   const i = caps[cap];
 
-  if (i >= 4 && roll < 1) return 'legendary';
-  if (i >= 3 && roll < 6) return 'epic';
-  if (i >= 2 && roll < 45) return 'mid';
-  if (i >= 1 && roll < 80) return 'noob';
+  if (i >= 4 && r < 1) return 'legendary';
+  if (i >= 3 && r < 6) return 'epic';
+  if (i >= 2 && r < 45) return 'mid';
+  if (i >= 1 && r < 80) return 'noob';
   return 'npc';
 }
 
@@ -326,71 +234,23 @@ function getScoreForTier(tier) {
 }
 
 function getTierData(tier) {
-  switch(tier) {
-    case 'legendary':
-      return { rarity: "legendary", title: "LEGENDARY", challenge: "YOU ARE THE STANDARD. 👑" };
-    case 'epic':
-      return { rarity: "epic", title: "EPIC", challenge: "ONE STEP BELOW GOD. ⚡" };
-    case 'mid':
-      return { rarity: "mid", title: "MID", challenge: "AVERAGE AS FUCK. 🔥" };
-    case 'noob':
-      return { rarity: "noob", title: "NOOB", challenge: "POTENTIAL NOT FOUND. 💀" };
-    default:
-      return { rarity: "npc", title: "NPC", challenge: "ERROR 404: YOU DON'T MATTER. 😭" };
-  }
+  const data = {
+    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: "YOU ARE THE STANDARD. 👑" },
+    epic: { rarity: "epic", title: "EPIC", challenge: "ONE STEP BELOW GOD. ⚡" },
+    mid: { rarity: "mid", title: "MID", challenge: "AVERAGE AS FUCK. 🔥" },
+    noob: { rarity: "noob", title: "NOOB", challenge: "POTENTIAL NOT FOUND. 💀" },
+    npc: { rarity: "npc", title: "NPC", challenge: "ERROR 404: YOU DON'T MATTER. 😭" }
+  };
+  return data[tier] || data.npc;
 }
 
-function getFallbackRoast(tier, subject, name) {
-  const who = name || 'Bro';
-  
+function getFallbackRoast(tier, subject) {
   const roasts = {
-    legendary: [
-      `${who} actually did it. Legendary status unlocked. 👑
-I can't even hate, the aura is actually there for once.
-You're probably still insufferable though, let's be real.
-Success doesn't fix personality and yours needs work.
-But fine, you earned this one. Take your crown.
-Just remember - the fall from the top hits different.
-Don't let this go to your head. It's already big enough. 🔥`
-    ],
-    epic: [
-      `${who} got Epic? Okay okay, not bad at all. ⚡
-You're better than most of these clowns, I'll give you that.
-But you're out here acting like you're Legendary material.
-Spoiler alert: you're not. Close but no cigar.
-There's always someone better and you know it.
-Keep grinding though, maybe you'll actually get there someday.
-For now, sit down. You're good, not great. 😏`
-    ],
-    mid: [
-      `${who} landed in Mid tier. Shocker. 🔥
-You're so painfully average it's almost impressive.
-Like, how do you exist this hard without standing out at all?
-You're the human equivalent of elevator music.
-Nobody hates you. Nobody loves you. Nobody remembers you.
-Your entire existence is a participation trophy.
-Congrats on being forgettable. That's your whole thing now. 😭`
-    ],
-    noob: [
-      `${who} got Noob? Yeah that makes complete sense. 💀
-Whatever you thought you were doing, you failed at it.
-I've seen more potential in a puddle of spilled coffee.
-Your whole vibe screams "I peaked in middle school."
-Every decision you make is somehow the wrong one.
-It's almost a talent how consistently mid-to-trash you are.
-This isn't a roast, it's just documentation of your life. 😭`
-    ],
-    npc: [
-      `${who} really got NPC? LMAOOO. 💀😭
-You're not even a character. You're the loading screen nobody reads.
-The universe copy-pasted you from the discount bin.
-Your existence is filler content that got left in by mistake.
-People don't forget you - they never noticed you to begin with.
-You're the human equivalent of terms and conditions.
-Nobody reads you. Nobody cares. You just exist. Barely. 🤡`
-    ]
+    legendary: `Holy shit "${subject}" got Legendary? You're actually goated fr. Fuck you but respect. 👑`,
+    epic: `"${subject}" got Epic? Damn bitch you're valid. Not Legendary but we see you. ⚡`,
+    mid: `"${subject}"? Bro you're mid as fuck. Not bad, not good, just fucking there. 🔥`,
+    noob: `"${subject}" got Noob? 💀 Your aura is weaker than your WiFi signal bro.`,
+    npc: `"${subject}"? Holy shit 😭 You're not even a side character. Absolutely pathetic.`
   };
-
-  const r = roasts[tier] || roasts.npc;
-  return r[Math.floor(Math.random() * r.length)];
-  }
+  return roasts[tier] || roasts.npc;
+                }
