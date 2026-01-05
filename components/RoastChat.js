@@ -19,22 +19,37 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
   const messagesEndRef = useRef(null);
 
   // ============================================
-  // 3 EXAMPLE PROMPTS - Simple & Clear
+  // 5 EXAMPLE PROMPTS - Different Roasting Topics
   // ============================================
   const examplePrompts = [
+    // 🔥 BRUTAL TIER - School/Teacher
     {
-      text: "I think I'm really good looking",
-      emoji: "😏",
+      text: "My school teacher thinks he's the best",
+      emoji: "📚",
       color: "#FF6B6B"
     },
+    // 🔥 BRUTAL TIER - Influencer Life
     {
-      text: "I'm smarter than most people",
-      emoji: "🧠",
-      color: "#9B59B6"
+      text: "I am the best influencer",
+      emoji: "📸",
+      color: "#E91E63"
     },
+    // 🔥 BRUTAL TIER - Teacher's Pet
     {
-      text: "My ex was wrong about me",
-      emoji: "💔",
+      text: "I'm the teacher's favorite student",
+      emoji: "⭐",
+      color: "#9C27B0"
+    },
+    // 😤 MID TIER - Boss/Work
+    {
+      text: "My boss thinks he's a genius",
+      emoji: "🤡",
+      color: "#FF9800"
+    },
+    // 🐣 NOOB TIER - Office Politics
+    {
+      text: "Office politics is just ass-kissing competition",
+      emoji: "🍑",
       color: "#3498DB"
     }
   ];
@@ -290,7 +305,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
         ))}
         
         {/* ============================================ */}
-        {/* EXAMPLE PROMPTS - 3 Big Buttons */}
+        {/* EXAMPLE PROMPTS - 5 Buttons */}
         {/* ============================================ */}
         {showExamples && (
           <div style={{
@@ -321,7 +336,7 @@ const RoastChat = ({ subject, mood, initialRoast, onClose }) => {
               </p>
             </div>
 
-            {/* 3 Example Buttons */}
+            {/* 5 Example Buttons */}
             {examplePrompts.map((example, index) => (
               <button
                 key={index}
