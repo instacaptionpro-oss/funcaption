@@ -1,6 +1,6 @@
 // /pages/api/generate-aura.js
 
-import { OpenAI } from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -14,13 +14,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const HF_TOKEN = process.env.HF_TOKEN;
-    if (!HF_TOKEN) return res.status(500).json({ error: "API token not configured" });
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+    if (!GEMINI_API_KEY) {
+      return res.status(500).json({ error: "Gemini API key not configured" });
+    }
 
-    const client = new OpenAI({
-      baseURL: "https://router.huggingface.co/v1",
-      apiKey: HF_TOKEN,
-    });
+    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
     const hasName = name && name.trim().length > 0;
     const hasSubject = subject && subject.trim().length > 0;
@@ -42,86 +41,119 @@ export default async function handler(req, res) {
     const { rarity, title, challenge } = getTierData(tier);
 
     // ============================================
-    // HINGLISH ROAST PROMPT
+    // GEMINI WITH GOOGLE SEARCH - NO CONTROVERSY
     // ============================================
-    const systemPrompt = `Tu ek savage roast master hai. Tu Hinglish mein baat karta hai - Hindi + English mix, just like real Indian friends talk.
+    
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash-exp",
+      tools: [{ googleSearch: {} }]
+    });
 
-LANGUAGE STYLE:
-- Mix Hindi and English naturally (Hinglish)
-- Some sentences pure Hindi, some pure English, some mixed
-- Use Hindi gaalis and English swear words both
-- Talk like urban Indian youth
+    const systemPrompt = `Tu ek savage roast master hai. Google Search use karke famous logon ke baare mein research kar, phir Hinglish mein roast kar.
 
-GAALIS/SWEAR WORDS TO USE NATURALLY:
-Hindi: bhai, yaar, bc, mc, chutiya, gadha, bewakoof, nalayak, wahiyat, bakwas, gandu, bkl
-English: fuck, shit, damn, bitch, ass, dumb, stupid, pathetic, trash, loser
+## RESEARCH KARNA HAI (Agar name diya hai):
+${hasName ? `
+Name: "${name.trim()}"
+1. Google search kar is person ke baare mein
+2. Dekh ye famous hai ya nahi
+3. Unka kaam kya hai, personality kaisi hai, content kaisa hai
+` : 'No name, subject pe roast kar.'}
 
-IMPORTANT RULES:
-- Maximum 40-50 words only
-- 2-3 sentences max
-- Be brutal and creative
-- Use 2-3 emojis
-- Don't go too much on family/parents
+## ROAST SIRF IN CHEEZON PE (ACCEPTABLE THINGS):
+✅ Unka content/videos/work
+✅ Unki public personality
+✅ Unka style, dressing, way of talking
+✅ Unke achievements (backhanded compliments)
+✅ Unka fanbase
+✅ Unki catchphrases/famous dialogues
+✅ Unka career journey
+✅ Funny public moments
+✅ How they present themselves
+✅ Their ego/confidence
 
-TIER: ${tier.toUpperCase()} (Score: ${finalScore}/100)
+## ROAST MAT KAR IN PE (AVOID STRICTLY):
+❌ Controversies (court cases, legal issues)
+❌ Scandals (snake case, drugs, etc.)
+❌ Personal family matters
+❌ Relationships/breakups
+❌ Religious/political sensitive topics
+❌ Health issues
+❌ Anything that could be defamatory
 
-${tier === 'legendary' ? 'Respect de but thoda roast bhi kar.' : ''}
-${tier === 'epic' ? 'Achi hai but humble kar isko.' : ''}
-${tier === 'mid' ? 'Average hai bc. Mediocrity roast kar.' : ''}
-${tier === 'noob' ? 'Below average loser hai. Destroy kar.' : ''}
-${tier === 'npc' ? 'Bilkul bekar hai. No mercy.' : ''}
+## LANGUAGE - HINGLISH:
+Hindi + English mix jaise real friends baat karte hain.
 
-${hasName ? `Name: "${name.trim()}" - Agar famous hai toh specific facts use kar.` : ''}
+Bad words naturally use kar jaise normal baat karte hai:
+- bc, mc, chutiya, gadha, bewakoof, bkl, gandu
+- fuck, shit, damn, bitch, ass, pathetic, dumb
 
-EXAMPLE ROASTS (for style reference):
+Ye gaaliyan forced nahi honi chahiye, naturally flow mein aani chahiye jaise tu apne dost se baat kar raha hai.
 
-NPC Example:
-"Bhai tune ye kya likh diya? 💀 Tera existence itna irrelevant hai ki Google bhi tujhe search nahi karta. Wahiyat insaan."
+## ROAST RULES:
+- 40-50 words MAX
+- 2-3 sentences
+- 2-3 emojis
+- Creative aur funny
+- Specific facts use kar (unka kaam, personality)
+- NO controversy mention
 
-MID Example:
-"Average as fuck yaar. Tu woh banda hai jisko log party mein invite karte hai bus headcount ke liye. 🔥"
+## TIER: ${tier.toUpperCase()} (Score: ${finalScore}/100)
 
-NOOB Example:
-"Teri life mein potential dhundhna is like finding wifi in a village. Bc kuch nahi milega. 💀"
+${tier === 'legendary' ? 'Respect de but thoda roast bhi. Backhanded compliments.' : ''}
+${tier === 'epic' ? 'Accha hai but ego thoda kam kar uska.' : ''}
+${tier === 'mid' ? 'Average hai bc. Mediocrity pe roast.' : ''}
+${tier === 'noob' ? 'Below average. Maar de isko.' : ''}
+${tier === 'npc' ? 'Bekar hai. Full destruction. No mercy.' : ''}
 
-EPIC Example:
-"Not bad bhai, tu actually better hai most chutiyon se. But Legendary? Abhi bahut door hai tu. ⚡"
+## EXAMPLES:
 
-OUTPUT JSON ONLY:
+For YouTuber/Influencer:
+"Bhai tera content itna repetitive hai ki YouTube ne autoplay band kar diya. 💀 Bc har video same thumbnail, same shocked face. Thoda creative ho ja yaar."
+
+For Celebrity:
+"Acting toh theek hai teri but bhai itna overacting mat kar. 😭 Har scene mein lagta hai paise ginti kar raha hai dialogue ke beech mein. Bc thoda natural reh."
+
+For Cricketer:
+"Bhai batting toh acchi hai teri but bc form aati jaati rehti hai jaise tera WiFi signal. 🔥 Consistent ho ja thoda."
+
+## OUTPUT JSON:
 {
-  "roast": "40-50 words max Hinglish roast",
-  "subject_insight": "one savage Hinglish line",
+  "roast": "40-50 words Hinglish roast on acceptable things only",
+  "subject_insight": "one line savage",
   "isPublicFigure": true/false,
   "publicFigureStatus": "peak/stable/falling/none"
 }`;
 
-    const userContent = `${hasName ? `Name: ${name.trim()}` : ''} ${hasSubject ? `Subject: ${subject.trim()}` : ''} ${hasMood ? `Mood: ${mood}` : ''} | Tier: ${tier.toUpperCase()}
+    const userPrompt = `${hasName ? `Name: ${name.trim()}` : ''} ${hasSubject ? `Subject: ${subject.trim()}` : ''} ${hasMood ? `Mood: ${mood}` : ''} | Tier: ${tier.toUpperCase()}
 
-Hinglish mein roast kar. 40-50 words max. Gaali use kar naturally.`;
+${hasName ? `Google search kar "${name.trim()}" ke baare mein. Unka kaam, content, personality dekh. Phir unke WORK aur PUBLIC PERSONA pe roast kar. CONTROVERSY MAT MENTION KARNA. Gaaliyan naturally use kar.` : 'Hinglish mein roast kar. Gaaliyan naturally daal.'}`;
 
-    const chatCompletion = await client.chat.completions.create({
-      model: "meta-llama/Meta-Llama-3-70B-Instruct:novita",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userContent }
-      ],
-      temperature: 1.0,
-      max_tokens: 180
-    });
+    const result = await model.generateContent(userPrompt + "\n\n" + systemPrompt);
+    const response = await result.response;
+    const content = response.text();
 
-    const content = chatCompletion.choices[0]?.message?.content;
     if (!content) throw new Error("No response");
 
-    let result;
+    let parsedResult;
     try {
       const jsonMatch = content.match(/\{[\s\S]*?\}/);
-      result = jsonMatch ? JSON.parse(jsonMatch[0]) : { roast: content.trim(), subject_insight: "Kya hi bole...", isPublicFigure: false, publicFigureStatus: 'none' };
+      parsedResult = jsonMatch ? JSON.parse(jsonMatch[0]) : { 
+        roast: content.trim(), 
+        subject_insight: "Kya hi bole...", 
+        isPublicFigure: false, 
+        publicFigureStatus: 'none'
+      };
     } catch {
-      result = { roast: content.trim(), subject_insight: "Wahiyat...", isPublicFigure: false, publicFigureStatus: 'none' };
+      parsedResult = { 
+        roast: content.trim(), 
+        subject_insight: "Wahiyat...", 
+        isPublicFigure: false, 
+        publicFigureStatus: 'none'
+      };
     }
 
-    isPublicFigure = result.isPublicFigure || false;
-    publicFigureStatus = result.publicFigureStatus || 'none';
+    isPublicFigure = parsedResult.isPublicFigure || false;
+    publicFigureStatus = parsedResult.publicFigureStatus || 'none';
 
     const enforcedData = enforceRarityProbabilities(tier, finalScore, isPublicFigure, publicFigureStatus);
     tier = enforcedData.tier;
@@ -132,8 +164,8 @@ Hinglish mein roast kar. 40-50 words max. Gaali use kar naturally.`;
     return res.status(200).json({
       aura: {
         score: finalScore,
-        roast: result.roast.replace(/^["']|["']$/g, '').trim(),
-        subjectInsight: result.subject_insight,
+        roast: parsedResult.roast.replace(/^["']|["']$/g, '').trim(),
+        subjectInsight: parsedResult.subject_insight,
         rarity: updatedTierData.rarity,
         title: updatedTierData.title,
         challenge: updatedTierData.challenge,
@@ -157,7 +189,7 @@ Hinglish mein roast kar. 40-50 words max. Gaali use kar naturally.`;
       aura: {
         score: finalScore,
         roast: getFallbackRoast(tier, subject || name || 'ye'),
-        subjectInsight: "Bahut kuch bolta hai ye...",
+        subjectInsight: "Bahut kuch bolta hai...",
         rarity, title, challenge,
         isPublicFigure: false,
         publicFigureStatus: 'none',
@@ -173,9 +205,9 @@ function enforceRarityProbabilities(tier, score, isPublicFigure, publicFigureSta
   const r = Math.random() * 100;
   
   if (isPublicFigure && publicFigureStatus === 'falling') {
-    if (r < 60) return { tier: 'npc', score: getScoreForTier('npc') };
-    if (r < 90) return { tier: 'noob', score: getScoreForTier('noob') };
-    return { tier: 'mid', score: getScoreForTier('mid') };
+    if (r < 50) return { tier: 'mid', score: getScoreForTier('mid') };
+    if (r < 80) return { tier: 'noob', score: getScoreForTier('noob') };
+    return { tier: 'npc', score: getScoreForTier('npc') };
   }
   
   if (tier === 'legendary' && r > 10) {
@@ -214,7 +246,7 @@ function calculateWorthiness(subject, mood, name) {
   else if (len >= 5) score += 8;
 
   if (n.length > 2) score += 10;
-  if (/\s/.test(n) && n.length > 5) score += 10;
+  if (/\s/.test(n) && n.length > 5) score += 15;
 
   const trash = ['test', 'testing', 'asdf', 'lol', 'lmao', 'hi', 'hello'];
   if (trash.includes(s) || len < 3) score -= 40;
@@ -257,22 +289,22 @@ function getScoreForTier(tier) {
 
 function getTierData(tier) {
   const data = {
-    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: "TU STANDARD HAI. BAKIYON KI AUKAAT NAHI. 👑" },
-    epic: { rarity: "epic", title: "EPIC", challenge: "ALMOST GODLIKE. BAS THODA AUR GRIND KAR. ⚡" },
+    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: "TU STANDARD HAI BC. BAKIYON KI AUKAAT NAHI. 👑" },
+    epic: { rarity: "epic", title: "EPIC", challenge: "ALMOST GODLIKE. BAS THODA AUR GRIND KAR BHAI. ⚡" },
     mid: { rarity: "mid", title: "MID", challenge: "AVERAGE AF. NA GHAR KA NA GHAAT KA. 🔥" },
-    noob: { rarity: "noob", title: "NOOB", challenge: "POTENTIAL NOT FOUND. GPS BHI CONFUSED HAI. 💀" },
-    npc: { rarity: "npc", title: "NPC", challenge: "ERROR 404: EXISTENCE NOT FOUND. TU HAI HI NAHI. 😭" }
+    noob: { rarity: "noob", title: "NOOB", challenge: "POTENTIAL NOT FOUND BC. GPS BHI CONFUSED HAI. 💀" },
+    npc: { rarity: "npc", title: "NPC", challenge: "ERROR 404: TU HAI HI NAHI. WAHIYAT EXISTENCE. 😭" }
   };
   return data[tier] || data.npc;
 }
 
 function getFallbackRoast(tier, subject) {
   const roasts = {
-    legendary: `"${subject}" ko Legendary mila? Holy shit bhai tu actually goated hai. Tujhe gaali dene ka mann nahi kar raha. Respect. 👑`,
-    epic: `"${subject}" got Epic? Dekh bhai tu valid hai. Most logon se better hai but Legendary? Abhi door hai. ⚡`,
-    mid: `"${subject}"? Bhai tu mid hai bc. Na accha na bura, bus hai. Jaise room temperature paani. 🔥`,
-    noob: `"${subject}" got Noob? 💀 Teri life mein potential dhundhna is like finding signal in basement. Kuch nahi milega.`,
-    npc: `"${subject}"? Bhai tune kya likh diya ye? 😭 Tu side character bhi nahi hai, tu loading screen hai jisko koi read nahi karta.`
+    legendary: `"${subject}" ko Legendary mila? Bc tu actually goated hai. Gaali dene ka mann nahi kar raha. Respect yaar. 👑`,
+    epic: `"${subject}" got Epic? Dekh bhai tu valid hai. Bc most logon se better hai but Legendary nahi hai tu abhi. ⚡`,
+    mid: `"${subject}"? Bhai tu mid hai bc. Na accha na bura, bus hai jaise bland khana. Kuch taste nahi. 🔥`,
+    noob: `"${subject}" got Noob? 💀 Bc teri life mein potential dhundhna WiFi signal dhundhne jaisa hai. Kuch nahi milega.`,
+    npc: `"${subject}"? Bhai tune kya likh diya ye? 😭 Tu loading screen hai bc jisko koi skip karna chahta hai.`
   };
   return roasts[tier] || roasts.npc;
-}
+                                               }
