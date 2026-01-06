@@ -1,6 +1,5 @@
 // /pages/api/generate-aura.js
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { OpenAI } from "openai";
 
 export default async function handler(req, res) {
@@ -35,46 +34,47 @@ export default async function handler(req, res) {
   let isPublicFigure = false;
   let publicFigureStatus = 'none';
 
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-  
-  if (GEMINI_API_KEY && hasName) {
-    try {
-      result = await tryGemini(GEMINI_API_KEY, name, subject, mood, tier, finalScore);
-      if (result && result.roast && result.roast.length > 20) {
-        isPublicFigure = result.isPublicFigure || false;
-        publicFigureStatus = result.publicFigureStatus || 'none';
-      } else {
-        result = null;
-      }
-    } catch (error) {
-      console.log("Gemini failed:", error.message);
-      result = null;
-    }
+  const HF_TOKEN = process.env.HF_TOKEN;
+
+  if (!HF_TOKEN) {
+    return res.status(500).json({ error: "API token not configured" });
   }
 
-  if (!result) {
-    const HF_TOKEN = process.env.HF_TOKEN;
+  try {
+    // ============================================
+    // STEP 1: DEEPSEEK R1 - RESEARCH THE PERSON
+    // ============================================
+    let researchData = null;
     
-    if (HF_TOKEN) {
-      try {
-        result = await tryHuggingFace(HF_TOKEN, name, subject, mood, tier, finalScore, hasName, hasSubject, hasMood);
-        if (result && result.roast && result.roast.length > 20) {
-          isPublicFigure = result.isPublicFigure || false;
-          publicFigureStatus = result.publicFigureStatus || 'none';
-        } else {
-          result = null;
-        }
-      } catch (error) {
-        console.log("HuggingFace failed:", error.message);
-        result = null;
+    if (hasName) {
+      researchData = await researchWithDeepSeek(HF_TOKEN, name.trim());
+      console.log("Research Data:", researchData);
+      
+      if (researchData && researchData.isFamous) {
+        isPublicFigure = true;
+        publicFigureStatus = researchData.status || 'stable';
       }
     }
-  }
 
-  if (!result) {
+    // ============================================
+    // STEP 2: LLAMA - CREATE THE ROAST
+    // ============================================
+    result = await createRoastWithLlama(HF_TOKEN, name, subject, mood, tier, finalScore, researchData, hasName, hasSubject, hasMood);
+
+    if (!result || !result.roast || result.roast.length < 20) {
+      result = {
+        roast: getFallbackRoast(tier, subject || name || 'ye'),
+        subject_insight: "Waah bhai waah...",
+        isPublicFigure,
+        publicFigureStatus
+      };
+    }
+
+  } catch (error) {
+    console.log("Error:", error.message);
     result = {
       roast: getFallbackRoast(tier, subject || name || 'ye'),
-      subject_insight: "Waah bhai waah...",
+      subject_insight: "Kya baat hai...",
       isPublicFigure: false,
       publicFigureStatus: 'none'
     };
@@ -104,185 +104,189 @@ export default async function handler(req, res) {
 }
 
 // ============================================
-// GEMINI - CREATIVE ROAST WITH RESEARCH
+// DEEPSEEK R1 - RESEARCH TOOL
 // ============================================
-async function tryGemini(apiKey, name, subject, mood, tier, finalScore) {
-  const genAI = new GoogleGenerativeAI(apiKey);
-  
-  const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
-    tools: [{ googleSearch: {} }]
-  });
-
-  const prompt = `Tu ek CREATIVE roast comedian hai. Tujhe FUNNY roast banana hai, bad words sirf masala hai.
-
-## IMPORTANT - YE SAMAJH:
-
-❌ WRONG WAY (sirf gaali):
-"Bc tu chutiya hai. Fuck wahiyat. Damn loser."
-- Ye roast nahi hai, ye sirf gaaliyan hain
-
-✅ RIGHT WAY (creative roast with gaali as masala):
-"Carry bhai YouTube vs TikTok banaya, itna viral hua ki YouTube ne khud delete kar diya bc 🙄 Roaster ka roast - irony ki dukan khul gayi damn"
-- Ye actual roast hai jisme gaali naturally fit ho rahi hai
-
-## STEP 1: RESEARCH "${name.trim()}"
-
-Google search kar:
-1. Ye famous kyun hai? (YouTuber, Actor, Cricketer, etc.)
-2. Sabse famous kaam? (Hit video, movie, match)
-3. Signature style? (Cap, dialogue, look, way of talking)
-4. Koi funny/ironic moment? (Backfire, meme, embarrassing)
-5. Fans kaise hain? (Toxic, blind, funny)
-
-## STEP 2: CREATIVE ROAST BANAO
-
-ROAST FORMULA:
-[Sarcastic opener] + [Specific fact about them] + [Funny twist/punchline with gaali]
-
-## GAALI = SEASONING (not main dish):
-Bad words naturally daalo jaise friends mein baat karte ho:
-- "bhai itna viral hua bc ki..."
-- "YouTube ne delete kar diya damn..."
-- "irony ki dukan khul gayi yaar fuck..."
-- "fans bhi pagal hain chutiye..."
-
-## EXAMPLES - RIGHT WAY:
-
-CARRYMINATI:
-"Waah Carry bhai YouTube vs TikTok itna hit tha ki YouTube ne delete karke khud roast kar diya bc 🙄 Roaster roasted - irony ki dukan damn. 💀"
-
-DHONI:
-"Bhai helicopter shot toh legendary hai but match mein itna slow khelta hai ki helicopter bhi land ho jaaye bc 🙄 Captain Cool nahi Captain Slow bol damn. 💀"
-
-VIRAT KOHLI:
-"King Kohli bhai aggression toh 🔥 hai but runs utne nahi aate jitni baar bat ghuma ke pose deta hai bc 🙄 Attitude > Average damn. 💀"
-
-RANVEER SINGH:
-"Bhai acting toh zabardast hai but kapde itne loud hain ki dialogue sunai nahi dete bc 🙄 Fashion icon? Confusion icon bol damn. 💀"
-
-SHAH RUKH KHAN:
-"SRK bhai arms kholke romance 30 saal se but bc ab 50+ mein bhi wahi pose 🙄 Pathaan hit hai but innovation kab damn. 💀"
-
-SALMAN KHAN:
-"Bhai shirt utaarta hai toh hit but acting kabhi try ki bc? 🙄 Being Human likhta hai but being actor try kar damn. 💀"
-
-## ROAST RULES:
-- 25-40 words
-- 2 sentences max  
-- CREATIVE roast pehle, gaali naturally beech mein
-- Specific fact use kar (research se)
-- 2 emojis
-- Sarcastic "Waah" "Kya baat hai" tone
-
-## TIER: ${tier.toUpperCase()}
-
-## NO ROAST ON:
-❌ Court cases, legal issues
-❌ Family
-❌ Religion/Politics
-❌ Health
-
-## OUTPUT JSON:
-{
-  "roast": "creative roast with gaali as natural seasoning",
-  "subject_insight": "funny one liner",
-  "isPublicFigure": true,
-  "publicFigureStatus": "peak/stable/falling/none"
-}`;
-
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  const content = response.text();
-
-  if (!content) return null;
-
-  try {
-    const jsonMatch = content.match(/\{[\s\S]*?\}/);
-    return jsonMatch ? JSON.parse(jsonMatch[0]) : { roast: content.trim(), subject_insight: "Waah bc...", isPublicFigure: true, publicFigureStatus: 'stable' };
-  } catch {
-    return { roast: content.trim(), subject_insight: "Kya baat hai...", isPublicFigure: true, publicFigureStatus: 'stable' };
-  }
-}
-
-// ============================================
-// HUGGINGFACE - CREATIVE ROASTING
-// ============================================
-async function tryHuggingFace(token, name, subject, mood, tier, finalScore, hasName, hasSubject, hasMood) {
+async function researchWithDeepSeek(token, name) {
   const client = new OpenAI({
     baseURL: "https://router.huggingface.co/v1",
     apiKey: token,
   });
 
-  const systemPrompt = `Tu ek CREATIVE roast comedian hai. Funny roast banana hai, gaali sirf masala hai.
+  const researchPrompt = `You are a research assistant. Find roast material about "${name}".
 
-## SAMAJH LE:
+Answer these questions:
 
-❌ GALAT (sirf gaali):
-"Bc chutiya hai tu. Fuck. Wahiyat loser."
+1. IS FAMOUS? (Yes/No)
+2. PROFESSION? (YouTuber/Actor/Cricketer/Singer/Politician/Influencer/etc)
+3. MOST FAMOUS FOR? (Their biggest hit/viral moment/achievement)
+4. SIGNATURE THING? (Cap/Dialogue/Look/Style/Catchphrase)
+5. IRONIC/FUNNY MOMENT? (Something that backfired/meme/embarrassing but not illegal)
+6. STATUS? (Peak/Stable/Falling)
 
-✅ SAHI (creative roast + gaali naturally):
-"Bhai itna average hai tu ki room temperature water bhi exciting lagta hai tere saamne bc 🙄 Personality ki jagah placeholder daal diya damn"
+EXAMPLES:
+
+Name: CarryMinati
+1. IS FAMOUS? Yes
+2. PROFESSION? YouTuber, Roaster
+3. MOST FAMOUS FOR? "YouTube vs TikTok" video - Most liked non-music video in India, but YouTube deleted it
+4. SIGNATURE THING? Always wears cap, loud screaming style, "Toh kaise hai aap log" catchphrase
+5. IRONIC/FUNNY MOMENT? His biggest video got deleted by YouTube - the roaster got roasted by the platform
+6. STATUS? Peak
+
+Name: MS Dhoni
+1. IS FAMOUS? Yes
+2. PROFESSION? Cricketer
+3. MOST FAMOUS FOR? Helicopter shot, World Cup 2011 winning six
+4. SIGNATURE THING? Long hair (earlier), Calm personality "Captain Cool", keeping wickets
+5. IRONIC/FUNNY MOMENT? Known for slow batting in T20s, people joke "thala for a reason" for everything
+6. STATUS? Stable (retired but loved)
+
+Name: Virat Kohli
+1. IS FAMOUS? Yes
+2. PROFESSION? Cricketer
+3. MOST FAMOUS FOR? Aggressive batting, chasing records, 2016 T20 World Cup innings vs Pakistan
+4. SIGNATURE THING? Aggression on field, bc gesture celebrations, tattoos, fitness freak
+5. IRONIC/FUNNY MOMENT? Recent form struggles, gets out on same shots, attitude bigger than recent average
+6. STATUS? Stable
+
+Name: Shah Rukh Khan
+1. IS FAMOUS? Yes
+2. PROFESSION? Actor
+3. MOST FAMOUS FOR? DDLJ, romance king, "Palat" scene, arms open pose
+4. SIGNATURE THING? Arms spread open pose, romantic dialogues, dimples
+5. IRONIC/FUNNY MOMENT? Same romantic pose for 30 years, still doing romance at 55+
+6. STATUS? Peak (Pathaan success)
+
+Name: Random Unknown Person
+1. IS FAMOUS? No
+2-6. Not applicable
+
+NOW RESEARCH: "${name}"
+
+OUTPUT JSON ONLY:
+{
+  "isFamous": true/false,
+  "profession": "...",
+  "mostFamousFor": "specific achievement with detail",
+  "signatureThing": "what makes them recognizable",
+  "ironicMoment": "funny/backfire moment (no legal issues)",
+  "status": "peak/stable/falling",
+  "bestRoastAngle": "the funniest thing to roast them on"
+}`;
+
+  try {
+    const completion = await client.chat.completions.create({
+      model: "deepseek-ai/DeepSeek-R1:hyperbolic",
+      messages: [
+        { role: "user", content: researchPrompt }
+      ],
+      temperature: 0.7,
+      max_tokens: 500
+    });
+
+    const content = completion.choices[0]?.message?.content;
+    if (!content) return null;
+
+    // Extract JSON from response
+    const jsonMatch = content.match(/\{[\s\S]*?\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
+    }
+    return null;
+  } catch (error) {
+    console.log("DeepSeek Research Error:", error.message);
+    return null;
+  }
+}
+
+// ============================================
+// LLAMA - ROAST GENERATOR
+// ============================================
+async function createRoastWithLlama(token, name, subject, mood, tier, finalScore, researchData, hasName, hasSubject, hasMood) {
+  const client = new OpenAI({
+    baseURL: "https://router.huggingface.co/v1",
+    apiKey: token,
+  });
+
+  // Build context from research
+  let researchContext = '';
+  if (researchData && researchData.isFamous) {
+    researchContext = `
+## RESEARCH RESULTS FOR "${name}":
+- Profession: ${researchData.profession}
+- Famous For: ${researchData.mostFamousFor}
+- Signature: ${researchData.signatureThing}
+- Ironic Moment: ${researchData.ironicMoment}
+- Best Roast Angle: ${researchData.bestRoastAngle}
+
+USE THIS SPECIFIC INFO IN YOUR ROAST. Reference their actual famous moment.
+`;
+  }
+
+  const systemPrompt = `Tu ek CREATIVE sarcastic roast comedian hai. Hinglish mein roast kar.
+
+${researchContext}
+
+## ROAST RULES:
+- 25-40 words
+- 2 sentences max
+- Sarcastic tone: "Waah bhai" "Kya baat hai" 🙄
+- Gaali naturally beech mein: bc, damn, fuck, chutiya, wahiyat
+- 2 emojis
+- USE THE SPECIFIC RESEARCH INFO - reference their actual famous thing
 
 ## ROAST FORMULA:
-[Funny observation] + [Specific detail] + [Punchline with gaali naturally]
+[Sarcastic opener] + [Reference their SPECIFIC famous thing] + [Funny twist with gaali]
 
-## GAALI AS SEASONING:
-- "itna boring hai bc ki..."
-- "average hai damn..."  
-- "personality nahi hai yaar fuck..."
-- "wahiyat existence bc..."
+## EXAMPLE USING RESEARCH:
 
-## EXAMPLES:
+If research says: "CarryMinati - YouTube vs TikTok video deleted"
+Roast: "Waah Carry bhai YouTube vs TikTok itna hit tha ki YouTube ne khud delete kar diya bc 🙄 Roaster ka roast - irony ki dukan damn. 💀"
 
-MID TIER:
-"Bhai tu itna average hai ki Excel sheet mein bhi grey cell jaisa dikhta hai bc 🙄 Personality? Error 404 damn. 🔥"
+If research says: "Dhoni - Helicopter shot famous, but slow batting"
+Roast: "Bhai helicopter shot legendary hai but itna slow khelta hai ki helicopter bhi land ho jaaye bc 🙄 Captain Cool? Captain Slow bol damn. 💀"
 
-NOOB TIER:
-"Tera potential dhundhna is like WiFi in basement bc 🙄 Signal nahi milega kabhi bhi damn wahiyat. 💀"
+## TIER: ${tier.toUpperCase()} (Score: ${finalScore}/100)
 
-NPC TIER:
-"Bhai tu exist bhi karta hai ya loading screen hai bc 🙄 Skip button dhoondh raha hai sab damn. 😭"
-
-## RULES:
-- 25-40 words
-- 2 sentences
-- Creative roast FIRST, gaali naturally beech mein
-- Sarcastic tone: "Waah" "Kya baat hai" 🙄
-- 2 emojis
-
-## TIER: ${tier.toUpperCase()}
+${tier === 'legendary' ? 'Backhanded respect using their achievement' : ''}
+${tier === 'epic' ? 'Acknowledge good but find flaw in their famous thing' : ''}
+${tier === 'mid' ? 'Roast their famous thing as overrated' : ''}
+${tier === 'noob' ? 'Use their ironic moment against them' : ''}
+${tier === 'npc' ? 'Full destruction using their fail' : ''}
 
 OUTPUT JSON:
 {
-  "roast": "creative roast with natural gaali",
-  "subject_insight": "funny line",
-  "isPublicFigure": false,
-  "publicFigureStatus": "none"
+  "roast": "creative roast using specific research",
+  "subject_insight": "sarcastic one liner"
 }`;
 
-  const userContent = `${hasName ? `Name: ${name.trim()}` : ''} ${hasSubject ? `Subject: ${subject.trim()}` : ''} ${hasMood ? `Mood: ${mood}` : ''} | Tier: ${tier.toUpperCase()}
+  const userContent = hasName && researchData?.isFamous
+    ? `Celebrity: "${name}" | Research: ${researchData.bestRoastAngle} | Tier: ${tier.toUpperCase()}
 
-CREATIVE roast bana. Gaali sirf masala ki tarah use kar, main dish nahi. Funny hona chahiye.`;
+Use the research to make a specific roast about their famous moment. Make it sarcastic with gaali naturally.`
+    : `${hasName ? `Name: ${name}` : ''} ${hasSubject ? `Subject: ${subject}` : ''} ${hasMood ? `Mood: ${mood}` : ''} | Tier: ${tier.toUpperCase()}
 
-  const completion = await client.chat.completions.create({
-    model: "meta-llama/Meta-Llama-3-70B-Instruct:novita",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userContent }
-    ],
-    temperature: 1.0,
-    max_tokens: 150
-  });
-
-  const content = completion.choices[0]?.message?.content;
-  if (!content) return null;
+Sarcastic Hinglish roast bana. 25-40 words.`;
 
   try {
+    const completion = await client.chat.completions.create({
+      model: "meta-llama/Meta-Llama-3-70B-Instruct:novita",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userContent }
+      ],
+      temperature: 1.0,
+      max_tokens: 150
+    });
+
+    const content = completion.choices[0]?.message?.content;
+    if (!content) return null;
+
     const jsonMatch = content.match(/\{[\s\S]*?\}/);
-    return jsonMatch ? JSON.parse(jsonMatch[0]) : { roast: content.trim(), subject_insight: "Waah bc...", isPublicFigure: false, publicFigureStatus: 'none' };
-  } catch {
-    return { roast: content.trim(), subject_insight: "Kya baat hai...", isPublicFigure: false, publicFigureStatus: 'none' };
+    return jsonMatch ? JSON.parse(jsonMatch[0]) : { roast: content.trim(), subject_insight: "Waah bc..." };
+  } catch (error) {
+    console.log("Llama Roast Error:", error.message);
+    return null;
   }
 }
 
@@ -378,22 +382,22 @@ function getScoreForTier(tier) {
 
 function getTierData(tier) {
   const data = {
-    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: "GOATED HAI TU BC RESPECT 👑" },
-    epic: { rarity: "epic", title: "EPIC", challenge: "ALMOST LEGEND BHAI DAMN ⚡" },
-    mid: { rarity: "mid", title: "MID", challenge: "AVERAGE KA BAAP HAI TU BC 🔥" },
-    noob: { rarity: "noob", title: "NOOB", challenge: "POTENTIAL GAYAB HAI DAMN 💀" },
-    npc: { rarity: "npc", title: "NPC", challenge: "EXIST BHI KARTA HAI BC? 😭" }
+    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: "GOATED HAI TU BC 👑" },
+    epic: { rarity: "epic", title: "EPIC", challenge: "ALMOST LEGEND DAMN ⚡" },
+    mid: { rarity: "mid", title: "MID", challenge: "AVERAGE BC 🔥" },
+    noob: { rarity: "noob", title: "NOOB", challenge: "POTENTIAL GAYAB 💀" },
+    npc: { rarity: "npc", title: "NPC", challenge: "EXIST KARTA HAI? 😭" }
   };
   return data[tier] || data.npc;
 }
 
 function getFallbackRoast(tier, subject) {
   const roasts = {
-    legendary: `Waah "${subject}" bhai actually goated hai tu bc 🙄 Gaali dene ka mann nahi kar raha damn respect. 👑`,
-    epic: `"${subject}" almost legend hai bhai 🙄 Thoda aur grind kar bc legendary ban jayega damn. ⚡`,
-    mid: `Bhai "${subject}" itna average hai ki Excel sheet bhi bore ho jaaye bc 🙄 Personality 404 damn. 🔥`,
-    noob: `"${subject}" ka potential dhundhna WiFi in basement jaisa hai bc 🙄 Signal nahi milega damn. 💀`,
-    npc: `Bhai "${subject}" exist bhi karta hai ya sirf loading screen hai bc 🙄 Skip button chahiye damn. 😭`
+    legendary: `Waah "${subject}" bhai actually goated hai bc 🙄 Gaali dene ka mann nahi damn respect. 👑`,
+    epic: `"${subject}" almost legend hai 🙄 Thoda aur try kar bc damn. ⚡`,
+    mid: `Bhai "${subject}" itna average hai ki Excel sheet bore ho jaaye bc 🙄 Personality 404 damn. 🔥`,
+    noob: `"${subject}" ka potential WiFi in basement jaisa hai bc 🙄 Signal nahi milega damn. 💀`,
+    npc: `Bhai "${subject}" exist bhi karta hai ya loading screen hai bc 🙄 Skip button damn. 😭`
   };
   return roasts[tier] || roasts.npc;
-                }
+      }
