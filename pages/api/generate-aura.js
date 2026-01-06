@@ -35,19 +35,17 @@ export default async function handler(req, res) {
   let isPublicFigure = false;
   let publicFigureStatus = 'none';
 
-  // ============================================
-  // TRY GEMINI FIRST (for famous people research)
-  // ============================================
+  // TRY GEMINI FIRST
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   
   if (GEMINI_API_KEY && hasName) {
     try {
       result = await tryGemini(GEMINI_API_KEY, name, subject, mood, tier, finalScore, hasName, hasSubject, hasMood);
-      if (result && result.roast && result.roast.length > 30) {
+      if (result && result.roast && result.roast.length > 20) {
         isPublicFigure = result.isPublicFigure || false;
         publicFigureStatus = result.publicFigureStatus || 'none';
       } else {
-        result = null; // Force fallback if roast too short
+        result = null;
       }
     } catch (error) {
       console.log("Gemini failed:", error.message);
@@ -55,16 +53,14 @@ export default async function handler(req, res) {
     }
   }
 
-  // ============================================
   // FALLBACK TO HUGGINGFACE
-  // ============================================
   if (!result) {
     const HF_TOKEN = process.env.HF_TOKEN;
     
     if (HF_TOKEN) {
       try {
         result = await tryHuggingFace(HF_TOKEN, name, subject, mood, tier, finalScore, hasName, hasSubject, hasMood);
-        if (result && result.roast && result.roast.length > 30) {
+        if (result && result.roast && result.roast.length > 20) {
           isPublicFigure = result.isPublicFigure || false;
           publicFigureStatus = result.publicFigureStatus || 'none';
         } else {
@@ -77,13 +73,11 @@ export default async function handler(req, res) {
     }
   }
 
-  // ============================================
   // FINAL FALLBACK
-  // ============================================
   if (!result) {
     result = {
       roast: getFallbackRoast(tier, subject || name || 'ye'),
-      subject_insight: "Kya hi bole yaar...",
+      subject_insight: "Waah bhai waah...",
       isPublicFigure: false,
       publicFigureStatus: 'none'
     };
@@ -99,7 +93,7 @@ export default async function handler(req, res) {
     aura: {
       score: finalScore,
       roast: result.roast.replace(/^["']|["']$/g, '').trim(),
-      subjectInsight: result.subject_insight || "Bahut kuch bolta hai...",
+      subjectInsight: result.subject_insight || "Kya baat hai...",
       rarity,
       title,
       challenge,
@@ -113,7 +107,7 @@ export default async function handler(req, res) {
 }
 
 // ============================================
-// GEMINI - CELEBRITY RESEARCH + ROAST
+// GEMINI - SARCASTIC CELEBRITY ROAST
 // ============================================
 async function tryGemini(apiKey, name, subject, mood, tier, finalScore, hasName, hasSubject, hasMood) {
   const genAI = new GoogleGenerativeAI(apiKey);
@@ -123,73 +117,54 @@ async function tryGemini(apiKey, name, subject, mood, tier, finalScore, hasName,
     tools: [{ googleSearch: {} }]
   });
 
-  const prompt = `Tu ek savage roast comedian hai jo Hinglish mein roast karta hai (Hindi + English mixed).
+  const prompt = `Tu ek SARCASTIC roast master hai. Hinglish mein sarcastic roast karta hai.
 
-## TERA KAAM:
-NAME DIYA HAI: "${name.trim()}"
+## SARCASM STYLE:
+- Fake praise jo actually insult ho
+- "Waah bhai" "Kya baat hai" "Amazing yaar" type sarcasm
+- Taunt maarke roast kar
+- Indirect insults with sweet tone
+- Eye roll energy 🙄
 
-1. PEHLE GOOGLE SEARCH KAR aur dhundh:
-   - Ye famous kyun hai? (YouTube, Acting, Singing, Cricket, etc.)
-   - Iska BEST MOMENT kya hai? (Biggest hit, famous dialogue, signature style)
-   - Isko kis cheez ke liye log jaante hain?
-   - Iska content style kaisa hai?
-   - Iska personality trait kya hai?
+## CELEBRITY: "${name.trim()}"
 
-2. ROAST SIRF INPE KAR (positive/neutral things):
-   ✅ Unka famous content/work
-   ✅ Unka signature style/dialogue
-   ✅ Unka best achievement (backhanded compliment)
-   ✅ Unki personality/ego
-   ✅ Unke fans
-   ✅ Unka way of talking/dressing
-   
-3. ROAST MAT KAR:
-   ❌ Court cases, controversies, scandals
-   ❌ Family/relationships
-   ❌ Political/religious
+GOOGLE SEARCH KAR:
+- Ye famous kyun hai?
+- Iska best work/hit kya hai?
+- Signature style kya hai?
+- NO controversies/court cases
 
-## LANGUAGE STYLE:
-Hinglish = Hindi + English naturally mixed
+## GAALIYAN MIX KAR:
+Hindi: bc, mc, chutiya, gadha, bewakoof, wahiyat, bakwas
+English: fuck, shit, damn, bitch, pathetic, dumb
 
-GAALIYAN DONO USE KAR:
-- Hindi: bc, mc, chutiya, gadha, bewakoof, nalayak, wahiyat, bakwas, gandu, bhosdike, madarchod, behenchod
-- English: fuck, shit, damn, bitch, ass, dumb, stupid, pathetic, trash, loser, idiot
+## ROAST LENGTH:
+- 25-40 words (MEDIUM length)
+- 2 sentences max
+- 2 emojis
 
-Example mixing: "Bc tera content itna repetitive hai ki fuck yaar boring ho gaya. Chutiya jaisi same video har baar."
+## SARCASTIC ROAST EXAMPLES:
 
-## ROAST FORMAT:
-- 2-3 FULL sentences (not just one line)
-- 40-60 words
-- Mix Hindi + English gaaliyan naturally
-- 2-3 emojis
-- Reference their ACTUAL famous work/moment
+"Waah ${name.trim()} bhai waah, content toh amazing hai tera 🙄 Bc har video same hai but fans ko kya pata chutiya log. Damn creativity toh overflow ho rahi hai yaar. 💀"
 
-## TIER: ${tier.toUpperCase()} (Score: ${finalScore}/100)
+"Kya acting hai yaar, Oscar deserve karta hai tu 🙄 Bc itni overacting karta hai ki cringe bhi cringe ho jaata hai. Waah talent. 💀"
 
-${tier === 'legendary' ? 'Respect de but backhanded compliment with gaali. Example: "Bc tune actually kar dikhaya, respect hai tere liye damn."' : ''}
-${tier === 'epic' ? 'Good hai but humble kar. Example: "Theek hai yaar accha hai tu but itna bhi special nahi hai bc."' : ''}
-${tier === 'mid' ? 'Average bc. Roast hard. Example: "Bhai tu mid hai fucking average jaise bland khana."' : ''}
-${tier === 'noob' ? 'Below average. Destroy. Example: "Teri life mein potential dhundhna bc impossible hai chutiya."' : ''}
-${tier === 'npc' ? 'Bekar hai. Full gaali. Example: "Bc tu hai hi nahi madarchod loading screen jaisa wahiyat."' : ''}
+"Amazing bhai, itna original content 🙄 Bc copy paste karke bhi itna famous, respect hai damn. Wahiyat effort but kaam chal gaya. 💀"
 
-## EXAMPLE ROASTS:
+## TIER: ${tier.toUpperCase()}
 
-For Carry Minati:
-"Bc Carry bhai roasting king toh hai but har video mein same formula - loud = funny? 💀 Itni cheekh ke bolega toh mic bhi suicide kar lega. Content accha hai but thoda variety la yaar damn."
+${tier === 'legendary' ? 'Sarcastic respect: "Waah bc actually accha hai, fuck kya karun gaali du ya respect 🙄👑"' : ''}
+${tier === 'epic' ? 'Sarcastic praise: "Kya baat hai almost famous, thoda aur try kar bhai 🙄⚡"' : ''}
+${tier === 'mid' ? 'Full sarcasm: "Amazing yaar kitna average hai tu, damn inspiration 🙄🔥"' : ''}
+${tier === 'noob' ? 'Heavy sarcasm: "Waah talent dekho, bc itna below average bhi koi hota hai 🙄💀"' : ''}
+${tier === 'npc' ? 'Brutal sarcasm: "Kya existence hai yaar, truly wahiyat masterpiece 🙄😭"' : ''}
 
-For Dhoni:
-"Bhai helicopter shot toh legendary hai but bc itna slow batting karta hai ki audience so jaati hai. 😭 Captain Cool? Bhai itna cool ki match bhi thanda kar deta hai. Respect hai but fuck yaar thoda fast khel."
-
-For Shah Rukh:
-"Bc SRK ki acting toh iconic hai but har movie mein arms failake romance? 💀 Bhai 50+ ki umar mein bhi wahi pose. Pathaan hit hai but chutiya jaisi overacting kam kar thodi."
-
-## OUTPUT JSON ONLY:
+OUTPUT JSON:
 {
-  "roast": "2-3 sentence Hinglish roast with Hindi+English gaalis about their FAMOUS work",
-  "subject_insight": "one savage line with gaali",
+  "roast": "25-40 words sarcastic Hinglish roast",
+  "subject_insight": "one sarcastic line",
   "isPublicFigure": true,
-  "publicFigureStatus": "peak/stable/falling/none",
-  "famousFor": "what they are known for"
+  "publicFigureStatus": "peak/stable/falling/none"
 }`;
 
   const result = await model.generateContent(prompt);
@@ -200,14 +175,14 @@ For Shah Rukh:
 
   try {
     const jsonMatch = content.match(/\{[\s\S]*?\}/);
-    return jsonMatch ? JSON.parse(jsonMatch[0]) : { roast: content.trim(), subject_insight: "Damn bc...", isPublicFigure: true, publicFigureStatus: 'stable' };
+    return jsonMatch ? JSON.parse(jsonMatch[0]) : { roast: content.trim(), subject_insight: "Waah bc...", isPublicFigure: true, publicFigureStatus: 'stable' };
   } catch {
-    return { roast: content.trim(), subject_insight: "Yikes bc...", isPublicFigure: true, publicFigureStatus: 'stable' };
+    return { roast: content.trim(), subject_insight: "Kya baat hai...", isPublicFigure: true, publicFigureStatus: 'stable' };
   }
 }
 
 // ============================================
-// HUGGINGFACE - GENERAL ROASTING
+// HUGGINGFACE - SARCASTIC ROASTING
 // ============================================
 async function tryHuggingFace(token, name, subject, mood, tier, finalScore, hasName, hasSubject, hasMood) {
   const client = new OpenAI({
@@ -215,66 +190,50 @@ async function tryHuggingFace(token, name, subject, mood, tier, finalScore, hasN
     apiKey: token,
   });
 
-  const systemPrompt = `Tu ek savage roast master hai. Hinglish mein roast karta hai - Hindi aur English dono mix karke.
+  const systemPrompt = `Tu ek SARCASTIC roast master hai. Hinglish mein sarcastic taunt maarta hai.
 
-## IMPORTANT - GAALIYAN:
-Tu Hindi aur English DONO gaaliyan use karta hai naturally jaise friends baat karte hain:
+## SARCASM KAISE KARNA HAI:
+- Fake tareef jo actually insult ho
+- "Waah bhai" "Kya baat hai" "Amazing" "Bohot accha" use kar sarcastically
+- Sweet tone mein brutal insult
+- Eye roll energy with 🙄
+- Indirect taunt maaro
 
-HINDI GAALIS: bc, mc, chutiya, gadha, bewakoof, nalayak, wahiyat, bakwas, gandu, bhosdike, behenchod, madarchod, saala, kamina
-ENGLISH GAALIS: fuck, shit, damn, bitch, ass, dumb, stupid, pathetic, trash, loser, idiot, asshole, bastard
+## SARCASM EXAMPLES:
+- "Waah bhai waah, kitna talented hai tu 🙄"
+- "Kya baat hai yaar, amazing existence 🙄"  
+- "Bohot accha hai tu, truly inspiring 🙄"
+- "Damn bhai respect, kitna unique hai 🙄"
 
-Mix karke use kar:
-- "Bc tera content shit hai yaar"
-- "Fuck yaar tu chutiya hai"  
-- "Damn bhai itna wahiyat kaise ho sakta hai"
-- "Stupid gadha saala"
+## GAALIYAN (Mix both):
+Hindi: bc, mc, chutiya, gadha, bewakoof, wahiyat, bakwas, gandu
+English: fuck, shit, damn, bitch, pathetic, dumb, trash, loser
 
-## ROAST RULES:
-- 2-3 FULL sentences likho (minimum 40 words)
-- Dono language ki gaaliyan mix karo
-- 2-3 emojis
-- Creative aur brutal
-- Family pe zyada mat jao
+## ROAST FORMAT:
+- 25-40 words only (MEDIUM)
+- 2 sentences max
+- 2 emojis (use 🙄 for sarcasm)
+- Sarcastic tone throughout
 
-## TIER: ${tier.toUpperCase()} (Score: ${finalScore}/100)
+## TIER: ${tier.toUpperCase()}
 
-${tier === 'legendary' ? 'LEGENDARY: Respect with backhanded gaali. "Bc tu actually goated hai damn respect yaar but ego thoda kam kar."' : ''}
-${tier === 'epic' ? 'EPIC: Good but humble with gaali. "Theek hai bhai accha hai tu fuck but legendary nahi hai abhi chutiya."' : ''}
-${tier === 'mid' ? 'MID: Average roast with full gaali. "Bc tu mid hai yaar fucking average. Na idhar ka na udhar ka wahiyat existence."' : ''}
-${tier === 'noob' ? 'NOOB: Below average destruction. "Shit yaar teri life mein potential nahi hai bc. Chutiya jaisa chal raha hai sab."' : ''}
-${tier === 'npc' ? 'NPC: Full destruction mode. "Bc tu exist bhi karta hai? Madarchod loading screen jaisa hai tu. Wahiyat shit existence."' : ''}
-
-## EXAMPLE ROASTS:
-
-MID Example:
-"Bc tera vibe itna average hai ki room temperature water bhi interesting lagta hai tere saamne. 🔥 Damn yaar tu woh banda hai jisko party mein koi yaad nahi rakhta. Fucking mid existence hai teri chutiya."
-
-NOOB Example:  
-"Shit yaar tujhe dekh ke lagta hai potential tera GPS bhi nahi dhundh sakta. 💀 Bc itna below average hai tu ki even autocorrect ne haath khade kar diye. Wahiyat loser saala."
-
-NPC Example:
-"Madarchod tu hai bhi ya nahi? 😭 Bc loading screen jaisa existence hai tera jisko koi skip karna chahta hai. Fuck yaar itna irrelevant banda nahi dekha maine. Chutiya wahiyat trash."
-
-## OUTPUT FORMAT:
-Write 2-3 full sentences with mixed Hindi+English gaalis. Be savage and creative.
+${tier === 'legendary' ? 'Sarcastic respect: "Waah bc tu toh actually kuch hai, damn kya karun insult bhi nahi kar sakta 🙄 Fuck respect yaar. 👑"' : ''}
+${tier === 'epic' ? 'Sarcastic praise: "Kya baat hai bhai almost great hai tu 🙄 Bc thoda aur try kar legendary ban jayega wahiyat. ⚡"' : ''}
+${tier === 'mid' ? 'Full sarcasm: "Amazing yaar tu toh bohot special hai 🙄 Bc itna average existence damn inspiring hai chutiya. 🔥"' : ''}
+${tier === 'noob' ? 'Heavy sarcasm: "Waah talent dekho yaar 🙄 Bc itna below average bhi koi hota hai, fuck truly wahiyat. 💀"' : ''}
+${tier === 'npc' ? 'Brutal sarcasm: "Kya existence hai bhai masterpiece 🙄 Bc tu toh legend hai wahiyat category mein damn. 😭"' : ''}
 
 OUTPUT JSON:
 {
-  "roast": "2-3 sentence roast with Hindi+English gaalis mixed",
-  "subject_insight": "one line savage with gaali",
+  "roast": "25-40 words sarcastic roast with mixed gaalis",
+  "subject_insight": "sarcastic one liner",
   "isPublicFigure": false,
   "publicFigureStatus": "none"
 }`;
 
   const userContent = `${hasName ? `Name: ${name.trim()}` : ''} ${hasSubject ? `Subject: ${subject.trim()}` : ''} ${hasMood ? `Mood: ${mood}` : ''} | Tier: ${tier.toUpperCase()}
 
-IMPORTANT: 
-1. Write 2-3 FULL sentences (not one line)
-2. Mix Hindi gaalis (bc, mc, chutiya) AND English gaalis (fuck, shit, damn)
-3. Be savage and creative
-4. Minimum 40 words
-
-Hinglish mein roast kar with mixed gaaliyan. GO HARD.`;
+SARCASTIC roast kar. Fake praise with real insult. 25-40 words. Mix Hindi+English gaalis. Use 🙄 emoji.`;
 
   const completion = await client.chat.completions.create({
     model: "meta-llama/Meta-Llama-3-70B-Instruct:novita",
@@ -283,7 +242,7 @@ Hinglish mein roast kar with mixed gaaliyan. GO HARD.`;
       { role: "user", content: userContent }
     ],
     temperature: 1.0,
-    max_tokens: 250
+    max_tokens: 150
   });
 
   const content = completion.choices[0]?.message?.content;
@@ -291,9 +250,9 @@ Hinglish mein roast kar with mixed gaaliyan. GO HARD.`;
 
   try {
     const jsonMatch = content.match(/\{[\s\S]*?\}/);
-    return jsonMatch ? JSON.parse(jsonMatch[0]) : { roast: content.trim(), subject_insight: "Damn bc...", isPublicFigure: false, publicFigureStatus: 'none' };
+    return jsonMatch ? JSON.parse(jsonMatch[0]) : { roast: content.trim(), subject_insight: "Waah bc...", isPublicFigure: false, publicFigureStatus: 'none' };
   } catch {
-    return { roast: content.trim(), subject_insight: "Shit yaar...", isPublicFigure: false, publicFigureStatus: 'none' };
+    return { roast: content.trim(), subject_insight: "Kya baat hai...", isPublicFigure: false, publicFigureStatus: 'none' };
   }
 }
 
@@ -389,22 +348,22 @@ function getScoreForTier(tier) {
 
 function getTierData(tier) {
   const data = {
-    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: "BC TU STANDARD HAI. BAKIYON KI AUKAAT NAHI. 👑" },
-    epic: { rarity: "epic", title: "EPIC", challenge: "ALMOST GODLIKE BHAI. FUCK THODA AUR GRIND KAR. ⚡" },
-    mid: { rarity: "mid", title: "MID", challenge: "AVERAGE AF BC. NA GHAR KA NA GHAAT KA. 🔥" },
-    noob: { rarity: "noob", title: "NOOB", challenge: "SHIT YAAR POTENTIAL NOT FOUND. GPS BHI CONFUSED. 💀" },
-    npc: { rarity: "npc", title: "NPC", challenge: "BC TU HAI HI NAHI. WAHIYAT EXISTENCE. FUCK. 😭" }
+    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: "WAAH BC TU TOH SACH MEIN KUCH HAI 🙄👑" },
+    epic: { rarity: "epic", title: "EPIC", challenge: "KYA BAAT HAI ALMOST GREAT 🙄⚡" },
+    mid: { rarity: "mid", title: "MID", challenge: "AMAZING YAAR KITNA AVERAGE 🙄🔥" },
+    noob: { rarity: "noob", title: "NOOB", challenge: "BOHOT ACCHA POTENTIAL NAHI HAI 🙄💀" },
+    npc: { rarity: "npc", title: "NPC", challenge: "TRULY INSPIRING WAHIYAT EXISTENCE 🙄😭" }
   };
   return data[tier] || data.npc;
 }
 
 function getFallbackRoast(tier, subject) {
   const roasts = {
-    legendary: `Bc "${subject}" ko Legendary mila? Holy shit yaar tu actually goated hai. Damn respect tere liye chutiya. But ego thoda kam kar saale. 👑`,
-    epic: `"${subject}" got Epic? Fuck yaar tu valid hai bc. Most logon se better hai but Legendary? Abhi door hai bhai wahiyat. ⚡`,
-    mid: `"${subject}"? Bc tu mid hai yaar fucking average. Na accha na bura, bus hai jaise bland khana. Shit existence chutiya. 🔥`,
-    noob: `"${subject}" got Noob? 💀 Shit yaar teri life mein potential dhundhna bc impossible hai. Wahiyat loser saala gadha.`,
-    npc: `"${subject}"? Bc tune kya likha ye? 😭 Madarchod tu loading screen hai jisko koi dekhta nahi. Fuck wahiyat existence chutiya trash.`
+    legendary: `Waah "${subject}" bhai waah, tu toh actually kuch hai 🙄 Bc damn kya karun insult du ya respect, fuck confused hun. 👑`,
+    epic: `Kya baat hai "${subject}" almost great hai tu 🙄 Bc thoda aur try kar legendary ban jayega damn wahiyat. ⚡`,
+    mid: `Amazing yaar "${subject}" kitna special hai tu 🙄 Bc itna average existence fuck truly inspiring chutiya. 🔥`,
+    noob: `Waah "${subject}" talent dekho yaar 🙄 Bc itna below average damn kaise possible hai wahiyat. 💀`,
+    npc: `Kya existence hai "${subject}" bhai masterpiece 🙄 Bc tu legend hai wahiyat category mein fuck damn. 😭`
   };
   return roasts[tier] || roasts.npc;
-      }
+    }
