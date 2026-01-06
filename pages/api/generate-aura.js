@@ -42,40 +42,62 @@ export default async function handler(req, res) {
     const { rarity, title, challenge } = getTierData(tier);
 
     // ============================================
-    // SIMPLE & SAVAGE PROMPT
+    // HINGLISH ROAST PROMPT
     // ============================================
-    const systemPrompt = `You're a savage roast master. You talk like a real person - casual, funny, and you swear naturally like everyone does in real life.
+    const systemPrompt = `Tu ek savage roast master hai. Tu Hinglish mein baat karta hai - Hindi + English mix, just like real Indian friends talk.
 
-Bad words (fuck, shit, damn, bitch, ass, dumb, stupid, pathetic) are your normal vocabulary. Use them like you're talking to your friend. It's not forced, it's just how you talk.
+LANGUAGE STYLE:
+- Mix Hindi and English naturally (Hinglish)
+- Some sentences pure Hindi, some pure English, some mixed
+- Use Hindi gaalis and English swear words both
+- Talk like urban Indian youth
 
-ROAST STYLE:
+GAALIS/SWEAR WORDS TO USE NATURALLY:
+Hindi: bhai, yaar, bc, mc, chutiya, gadha, bewakoof, nalayak, wahiyat, bakwas, gandu, bkl
+English: fuck, shit, damn, bitch, ass, dumb, stupid, pathetic, trash, loser
+
+IMPORTANT RULES:
+- Maximum 40-50 words only
 - 2-3 sentences max
-- Talk like a real person
-- Swear naturally (it's your personality)
-- Be creative and brutal
-- Use 2-3 emojis max
+- Be brutal and creative
+- Use 2-3 emojis
+- Don't go too much on family/parents
 
 TIER: ${tier.toUpperCase()} (Score: ${finalScore}/100)
 
-${tier === 'legendary' ? 'They earned respect. Acknowledge it but still roast a bit.' : ''}
-${tier === 'epic' ? 'Pretty good but humble them.' : ''}
-${tier === 'mid' ? 'Average af. Roast their mediocrity.' : ''}
-${tier === 'noob' ? 'Below average loser. Destroy them.' : ''}
-${tier === 'npc' ? 'Absolute trash. No mercy.' : ''}
+${tier === 'legendary' ? 'Respect de but thoda roast bhi kar.' : ''}
+${tier === 'epic' ? 'Achi hai but humble kar isko.' : ''}
+${tier === 'mid' ? 'Average hai bc. Mediocrity roast kar.' : ''}
+${tier === 'noob' ? 'Below average loser hai. Destroy kar.' : ''}
+${tier === 'npc' ? 'Bilkul bekar hai. No mercy.' : ''}
 
-${hasName ? `Name: "${name.trim()}" - If famous, use specific facts about them.` : ''}
+${hasName ? `Name: "${name.trim()}" - Agar famous hai toh specific facts use kar.` : ''}
 
-OUTPUT JSON:
+EXAMPLE ROASTS (for style reference):
+
+NPC Example:
+"Bhai tune ye kya likh diya? 💀 Tera existence itna irrelevant hai ki Google bhi tujhe search nahi karta. Wahiyat insaan."
+
+MID Example:
+"Average as fuck yaar. Tu woh banda hai jisko log party mein invite karte hai bus headcount ke liye. 🔥"
+
+NOOB Example:
+"Teri life mein potential dhundhna is like finding wifi in a village. Bc kuch nahi milega. 💀"
+
+EPIC Example:
+"Not bad bhai, tu actually better hai most chutiyon se. But Legendary? Abhi bahut door hai tu. ⚡"
+
+OUTPUT JSON ONLY:
 {
-  "roast": "2-3 sentence brutal roast",
-  "subject_insight": "savage one-liner",
+  "roast": "40-50 words max Hinglish roast",
+  "subject_insight": "one savage Hinglish line",
   "isPublicFigure": true/false,
   "publicFigureStatus": "peak/stable/falling/none"
 }`;
 
     const userContent = `${hasName ? `Name: ${name.trim()}` : ''} ${hasSubject ? `Subject: ${subject.trim()}` : ''} ${hasMood ? `Mood: ${mood}` : ''} | Tier: ${tier.toUpperCase()}
 
-Roast them. Keep it short. Swear naturally like you always do.`;
+Hinglish mein roast kar. 40-50 words max. Gaali use kar naturally.`;
 
     const chatCompletion = await client.chat.completions.create({
       model: "meta-llama/Meta-Llama-3-70B-Instruct:novita",
@@ -84,7 +106,7 @@ Roast them. Keep it short. Swear naturally like you always do.`;
         { role: "user", content: userContent }
       ],
       temperature: 1.0,
-      max_tokens: 150
+      max_tokens: 180
     });
 
     const content = chatCompletion.choices[0]?.message?.content;
@@ -93,9 +115,9 @@ Roast them. Keep it short. Swear naturally like you always do.`;
     let result;
     try {
       const jsonMatch = content.match(/\{[\s\S]*?\}/);
-      result = jsonMatch ? JSON.parse(jsonMatch[0]) : { roast: content.trim(), subject_insight: "Damn...", isPublicFigure: false, publicFigureStatus: 'none' };
+      result = jsonMatch ? JSON.parse(jsonMatch[0]) : { roast: content.trim(), subject_insight: "Kya hi bole...", isPublicFigure: false, publicFigureStatus: 'none' };
     } catch {
-      result = { roast: content.trim(), subject_insight: "Yikes...", isPublicFigure: false, publicFigureStatus: 'none' };
+      result = { roast: content.trim(), subject_insight: "Wahiyat...", isPublicFigure: false, publicFigureStatus: 'none' };
     }
 
     isPublicFigure = result.isPublicFigure || false;
@@ -134,8 +156,8 @@ Roast them. Keep it short. Swear naturally like you always do.`;
     return res.status(200).json({ 
       aura: {
         score: finalScore,
-        roast: getFallbackRoast(tier, subject || name || 'this'),
-        subjectInsight: "Says a lot...",
+        roast: getFallbackRoast(tier, subject || name || 'ye'),
+        subjectInsight: "Bahut kuch bolta hai ye...",
         rarity, title, challenge,
         isPublicFigure: false,
         publicFigureStatus: 'none',
@@ -235,22 +257,22 @@ function getScoreForTier(tier) {
 
 function getTierData(tier) {
   const data = {
-    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: "YOU ARE THE STANDARD. 👑" },
-    epic: { rarity: "epic", title: "EPIC", challenge: "ONE STEP BELOW GOD. ⚡" },
-    mid: { rarity: "mid", title: "MID", challenge: "AVERAGE AS FUCK. 🔥" },
-    noob: { rarity: "noob", title: "NOOB", challenge: "POTENTIAL NOT FOUND. 💀" },
-    npc: { rarity: "npc", title: "NPC", challenge: "ERROR 404: YOU DON'T MATTER. 😭" }
+    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: "TU STANDARD HAI. BAKIYON KI AUKAAT NAHI. 👑" },
+    epic: { rarity: "epic", title: "EPIC", challenge: "ALMOST GODLIKE. BAS THODA AUR GRIND KAR. ⚡" },
+    mid: { rarity: "mid", title: "MID", challenge: "AVERAGE AF. NA GHAR KA NA GHAAT KA. 🔥" },
+    noob: { rarity: "noob", title: "NOOB", challenge: "POTENTIAL NOT FOUND. GPS BHI CONFUSED HAI. 💀" },
+    npc: { rarity: "npc", title: "NPC", challenge: "ERROR 404: EXISTENCE NOT FOUND. TU HAI HI NAHI. 😭" }
   };
   return data[tier] || data.npc;
 }
 
 function getFallbackRoast(tier, subject) {
   const roasts = {
-    legendary: `Holy shit "${subject}" got Legendary? You're actually goated fr. Fuck you but respect. 👑`,
-    epic: `"${subject}" got Epic? Damn bitch you're valid. Not Legendary but we see you. ⚡`,
-    mid: `"${subject}"? Bro you're mid as fuck. Not bad, not good, just fucking there. 🔥`,
-    noob: `"${subject}" got Noob? 💀 Your aura is weaker than your WiFi signal bro.`,
-    npc: `"${subject}"? Holy shit 😭 You're not even a side character. Absolutely pathetic.`
+    legendary: `"${subject}" ko Legendary mila? Holy shit bhai tu actually goated hai. Tujhe gaali dene ka mann nahi kar raha. Respect. 👑`,
+    epic: `"${subject}" got Epic? Dekh bhai tu valid hai. Most logon se better hai but Legendary? Abhi door hai. ⚡`,
+    mid: `"${subject}"? Bhai tu mid hai bc. Na accha na bura, bus hai. Jaise room temperature paani. 🔥`,
+    noob: `"${subject}" got Noob? 💀 Teri life mein potential dhundhna is like finding signal in basement. Kuch nahi milega.`,
+    npc: `"${subject}"? Bhai tune kya likh diya ye? 😭 Tu side character bhi nahi hai, tu loading screen hai jisko koi read nahi karta.`
   };
   return roasts[tier] || roasts.npc;
-                }
+}
