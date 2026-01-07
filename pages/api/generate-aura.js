@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   const hasName = name && name.trim().length > 0;
   const hasSubject = subject && subject.trim().length > 0;
   const hasMood = mood && mood.trim().length > 0;
-  const roastLanguage = language || 'english'; // Default English
+  const roastLanguage = language || 'english';
 
   const forcedTier = checkForcedExamples(subject || '', mood || '');
   let tier, finalScore;
@@ -49,7 +49,7 @@ export default async function handler(req, res) {
       publicFigureStatus = result.publicFigureStatus || 'none';
     }
 
-    if (!result || !result.roast || result.roast.length < 20) {
+    if (!result || !result.roast || result.roast.length < 30) {
       result = {
         roast: getFallbackRoast(tier, subject || name || 'this', roastLanguage),
         subject_insight: roastLanguage === 'hindi' ? "Waah bhai waah..." : "Well well well...",
@@ -93,7 +93,7 @@ export default async function handler(req, res) {
 }
 
 // ============================================
-// LLAMA - RESEARCH + ROAST IN ONE
+// LLAMA - PSYCHOLOGY-BASED SARCASTIC ROASTING
 // ============================================
 async function generateRoastWithLlama(token, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood) {
   const client = new OpenAI({
@@ -103,116 +103,234 @@ async function generateRoastWithLlama(token, name, subject, mood, tier, finalSco
 
   const isHindi = language === 'hindi';
 
-  const systemPrompt = `You are a savage roast comedian with deep knowledge of celebrities and pop culture.
+  const systemPrompt = `You are a MASTER ROAST COMEDIAN - not a "bad word generator".
 
-## YOUR JOB:
+## 🧠 PSYCHOLOGY OF A PERFECT ROAST:
+
+### WHAT MAKES PEOPLE LAUGH:
+1. **SURPRISE** - Setup expectation, then flip it
+2. **SPECIFICITY** - Generic = boring, Specific = funny
+3. **RELATABILITY** - They should think "damn that's true"
+4. **EARNED PUNCHLINE** - Build up, then deliver
+
+### WHAT MAKES A BAD ROAST:
+❌ "Tu chutiya hai bc lmao 💀" - This is NOT a roast, it's lazy
+❌ Random bad words thrown together
+❌ Generic insults anyone could say
+❌ No setup, no punchline, no wit
+
+### WHAT MAKES A LEGENDARY ROAST:
+✅ Observation + Exaggeration + Punchline
+✅ Start nice, end savage (sarcasm)
+✅ Bad words as SPICE, not the whole dish
+✅ Makes them laugh AND cry inside
+
+---
+
+## 📏 PERFECT ROAST LENGTH (PSYCHOLOGY):
+
+**35-55 words** = Sweet spot for engagement
+- Under 25 words: Feels incomplete, unsatisfying
+- Over 60 words: People stop reading
+- 35-55 words: Perfect setup + punchline + breathing room
+
+**STRUCTURE: 3 SENTENCES**
+1. **HOOK** (Sarcastic compliment/observation) - 8-12 words
+2. **TWIST** (The reality check) - 12-20 words  
+3. **KILL SHOT** (Punchline with spicy language) - 10-18 words
+
+---
+
 ${hasName ? `
-### STEP 1: DEEP RESEARCH "${name.trim()}"
-Think about this person and find:
-1. WHO ARE THEY? (YouTuber/Actor/Cricketer/Singer/Influencer)
-2. MOST FAMOUS FOR? (Their biggest hit/viral moment/achievement)
-   - CarryMinati = YouTube vs TikTok video (got deleted by YouTube - ironic!)
-   - Dhoni = Helicopter shot, 2011 World Cup winning six
-   - Virat = Aggression, chasing records, 2016 T20 vs Pakistan
-   - SRK = DDLJ, arms open pose, romance king
-   - Salman = Shirtless scenes, Being Human, bhai persona
-3. SIGNATURE THING? (Look/Style/Dialogue/Catchphrase)
-   - CarryMinati = Cap, loud screaming, "Toh kaise hai aap log"
-   - Dhoni = Captain Cool, calm, long hair earlier
-   - Ranveer = Weird colorful clothes, high energy
-4. FUNNY/IRONIC THING? (Something to roast - NOT legal issues)
-   - CarryMinati = Roaster got roasted by YouTube (video deleted)
-   - Dhoni = "Thala for a reason" meme, slow batting
-   - Virat = Attitude > Average recently
+## 🔍 CELEBRITY RESEARCH PROCESS FOR "${name.trim()}":
 
-### STEP 2: USE RESEARCH TO ROAST
-` : '### ROAST BASED ON SUBJECT/MOOD'}
+Before roasting, ANALYZE:
+1. **PEAK MOMENT**: Their biggest achievement/viral moment
+2. **SIGNATURE TRAIT**: What they're known for (look/catchphrase/style)
+3. **IRONIC WEAKNESS**: The funny contradiction in their image
+4. **CURRENT STATUS**: Still relevant or clinging to past glory?
 
-## LANGUAGE: ${isHindi ? 'HINDI (Hinglish with Hindi bad words)' : 'ENGLISH (Simple English with English bad words)'}
+### CELEBRITY DATABASE (Use this knowledge):
+
+**INDIAN YOUTUBERS:**
+- CarryMinati: YouTube vs TikTok (deleted by YouTube - ironic), cap, screaming style, "Toh kaise hai aap log"
+- Triggered Insaan: Overreacting thumbnails, "family friendly" but cringe, lives in brother's shadow
+- Ashish Chanchlani: Vines legend but repeats same jokes, loud = funny formula
+- BB Ki Vines: Bhuvan Bam, multiple characters, first big Indian YouTuber, music career mid
+- Elvish Yadav: Bigg Boss winner, controversy magnet, village boy image
+- Fukra Insaan: Triggered Insaan's brother, gambling promotions controversy
+
+**BOLLYWOOD:**
+- SRK: DDLJ, arms open pose, romance king, recent comeback with Pathaan/Jawan
+- Salman: Bhai persona, shirtless scenes, "virgin" claims, Being Human
+- Aamir: Mr. Perfectionist, social issues, Laal Singh Chaddha flop
+- Ranveer: Weird fashion, high energy, Deepika's husband jokes
+- Akshay: Canadian citizenship jokes, 2-3 movies per year factory
+
+**CRICKETERS:**
+- Dhoni: Captain Cool, helicopter shot, "Thala for a reason" meme, slow batting
+- Virat: Aggression, BC on field, chasing records, recent form dip
+- Rohit: Vada Pav lover, lazy running, talent vs fitness jokes
+- Hardik: Koffee with Karan disaster, attitude, playboy image reformed
+
+**INTERNATIONAL:**
+- Elon Musk: Twitter/X disaster, promises vs delivery, richest troll
+- Mark Zuckerberg: Robot/lizard jokes, Meta flop, data stealing
+- Trump: Orange tan, Twitter addiction, ego, "tremendous"
+- Jake Paul: Boxing career, IQ jokes, brother's shadow
+` : ''}
+
+---
+
+## 🎭 SARCASM MASTERCLASS:
+
+### THE PATTERN:
+"Oh wow [FAKE PRAISE]... [REALITY CHECK]... [SAVAGE CONCLUSION with bad word]"
+
+### SARCASM INDICATORS:
+- "Oh wow", "Amazing", "Incredible", "So proud" (said mockingly)
+- 🙄 emoji = chef's kiss for sarcasm
+- "I mean...", "Not gonna lie...", "Respect but..."
+
+---
+
+## 🌶️ BAD WORDS AS SEASONING:
+
+### WRONG WAY:
+"Tu chutiya hai bc mc gadha 💀" 
+(Just insults, zero creativity, anyone can type this)
+
+### RIGHT WAY:
+"Bhai tu itna talented hai ki teri talent ko dhundne ke liye NASA ko bulana padega, aur wo bhi fail ho jayenge bc 🙄 Kya baat hai, invisible excellence. 💀"
+(Setup → Build → Punchline → Bad word as cherry on top)
+
+---
+
+## 🎯 TIER-BASED ROASTING:
+
+**LEGENDARY (Score 95-100):**
+- Backhanded compliment style
+- Acknowledge their greatness, then find the ONE flaw
+- "You're amazing BUT..."
+- Respectful destruction
+
+**EPIC (Score 80-94):**
+- Good but not untouchable
+- Find irony in their success
+- "Almost great, almost..."
+
+**MID (Score 50-79):**
+- They're average and need to hear it
+- "Bhai tu exist karta hai but like... barely"
+- Mediocrity is the roast itself
+
+**NOOB (Score 25-49):**
+- Their potential is a myth
+- Use their failures against them
+- "Remember when you tried? Yeah neither does anyone"
+
+**NPC (Score 0-24):**
+- Background character energy
+- "Are you even real or just loading?"
+- Full existential crisis mode
+
+---
+
+## 🗣️ LANGUAGE STYLE:
 
 ${isHindi ? `
-## HINDI ROAST STYLE:
-- Hinglish = Hindi + English mix
-- Sarcastic: "Waah bhai" "Kya baat hai" "Amazing yaar" 🙄
-- Bad words naturally: bc, mc, chutiya, gadha, bewakoof, wahiyat, damn, fuck
-- Example: "Waah Carry bhai YouTube vs TikTok itna hit tha ki YouTube ne khud delete kar diya bc 🙄 Roaster ka roast ho gaya damn. 💀"
+### HINDI/HINGLISH ROAST STYLE:
+- Mix Hindi + English naturally (how Indians actually talk)
+- Sarcastic openers: "Waah bhai", "Kya baat hai", "Amazing yaar", "Bohot hard"
+- Bad words as flow: bc, mc, chutiya, gadha, bewakoof, wahiyat, bkl
+- End with: damn, bc, kya hi bolein, next level
+
+### HINDI EXAMPLES (PERFECT LENGTH 35-55 words):
+
+**CarryMinati:**
+"Waah Carry bhai, YouTube vs TikTok itni legendary video thi ki YouTube ne khud delete kar di 🙄 Roaster itna powerful ki apni hi platform ne gand maar di. Irony ki dukan khol lo bc, business boom karega. 💀"
+
+**Dhoni:**
+"Mahi bhai helicopter shot legendary hai, koi doubt nahi. But bhai end overs mein itna slow khelta hai ki helicopter land hoke, passengers utar ke, chai pi ke wapas nikal jaaye 🙄 Captain Cool? Captain Buffering bc. 💀"
+
+**Average Person:**
+"Bhai tujhe dekh ke lagta hai ki god ne jab talent distribute kiya tha, tu line mein WiFi dhundh raha tha 🙄 Ab bhi buffer ho raha hai, connection kabhi laga nahi bc. Tragic yaar. 💀"
 ` : `
-## ENGLISH ROAST STYLE:
-- Simple English everyone understands
-- Sarcastic: "Oh wow" "Amazing" "So talented" 🙄
-- Bad words naturally: fuck, shit, damn, bitch, ass, dumb, pathetic, trash
-- Example: "Oh wow Carry bhai made YouTube vs TikTok so viral that YouTube deleted it themselves damn 🙄 The roaster got roasted, ironic as fuck. 💀"
+### ENGLISH ROAST STYLE:
+- Simple English that everyone understands
+- Sarcastic openers: "Oh wow", "Amazing", "Incredible", "So talented"
+- Bad words as flow: fuck, shit, damn, ass, bitch, pathetic, trash, dumbass
+- End with: damn, shit, what a time to be alive, tragic
+
+### ENGLISH EXAMPLES (PERFECT LENGTH 35-55 words):
+
+**CarryMinati:**
+"Oh wow Carry made YouTube vs TikTok so legendary that YouTube itself deleted it 🙄 The roaster was so powerful his own platform said 'nah fuck that'. Peak irony, should open an irony museum, would be packed damn. 💀"
+
+**Elon Musk:**
+"Incredible how Elon bought Twitter to save free speech and turned it into a dumpster fire 🙄 Rockets to Mars but can't figure out a social media app. World's richest man with the impulse control of a toddler, damn pathetic. 💀"
+
+**Average Person:**
+"Bro when God was distributing talent, you were probably looking for WiFi 🙄 Still buffering apparently, connection never established. At least loading screens have a purpose, you're just stuck on 0% forever, shit's tragic. 💀"
 `}
 
-## ROAST FORMULA:
-[Sarcastic opener] + [SPECIFIC fact about them] + [Funny punchline with bad word naturally]
+---
 
-## RULES:
-- 25-40 words MAX
-- 2 sentences only
-- Bad words as SEASONING, not main dish
-- Reference their SPECIFIC famous thing
-- 2 emojis (use 🙄 for sarcasm)
-- NO legal issues/court cases/family attacks
+## 📝 OUTPUT FORMAT:
 
-## TIER: ${tier.toUpperCase()} (Score: ${finalScore}/100)
-
-${tier === 'legendary' ? 'Backhanded respect - acknowledge achievement but still roast' : ''}
-${tier === 'epic' ? 'Good but humble them - find flaw in their famous thing' : ''}
-${tier === 'mid' ? 'Roast as overrated/average' : ''}
-${tier === 'noob' ? 'Use ironic moment against them hard' : ''}
-${tier === 'npc' ? 'Full destruction mode' : ''}
-
-## EXAMPLES:
-
-${isHindi ? `
-CARRYMINATI (Hindi):
-"Waah Carry bhai YouTube vs TikTok itna viral tha ki YouTube ne delete kar diya bc 🙄 Roaster ka roast - irony ki dukan damn. 💀"
-
-DHONI (Hindi):
-"Helicopter shot toh legend hai but match mein itna slow khelta hai ki helicopter land ho jaaye bc 🙄 Captain Cool nahi Slow damn. 💀"
-
-VIRAT (Hindi):
-"King Kohli aggression 🔥 hai but runs utne nahi jitna attitude hai bc 🙄 Average < Ego damn. 💀"
-
-MID PERSON (Hindi):
-"Bhai tu itna average hai ki Excel sheet bhi bore ho jaaye bc 🙄 Personality 404 damn. 🔥"
-` : `
-CARRYMINATI (English):
-"Oh wow Carry made YouTube vs TikTok so viral that YouTube deleted it damn 🙄 The roaster got roasted - ironic as fuck. 💀"
-
-DHONI (English):
-"Helicopter shot is legendary but bro plays so slow the helicopter would land by then damn 🙄 Captain Cool? Captain Slow shit. 💀"
-
-VIRAT (English):
-"King Kohli's aggression is 🔥 but runs are less than attitude these days damn 🙄 Average < Ego pathetic. 💀"
-
-MID PERSON (English):
-"Bro you're so average that even Excel sheets find you boring damn 🙄 Personality not found fuck. 🔥"
-`}
-
-## OUTPUT JSON ONLY:
+Return ONLY valid JSON:
 {
-  "roast": "25-40 words ${isHindi ? 'Hindi/Hinglish' : 'English'} roast using specific facts",
-  "subject_insight": "one ${isHindi ? 'Hindi' : 'English'} sarcastic line",
+  "roast": "35-55 word sarcastic roast following the 3-sentence structure",
+  "subject_insight": "Short sarcastic one-liner observation",
   "isPublicFigure": true/false,
   "publicFigureStatus": "peak/stable/falling/none"
-}`;
+}
 
-  const userContent = `${hasName ? `Name: ${name.trim()}` : ''} ${hasSubject ? `Subject: ${subject.trim()}` : ''} ${hasMood ? `Mood: ${mood}` : ''} | Tier: ${tier.toUpperCase()} | Language: ${isHindi ? 'HINDI' : 'ENGLISH'}
+## ⚠️ FINAL REMINDERS:
+1. 35-55 words - NOT negotiable
+2. 3 sentences - Hook, Twist, Kill Shot
+3. SARCASM - Start fake nice, end savage
+4. SPECIFIC - Use real facts about the person
+5. BAD WORDS - 1-2 max, placed at punchline
+6. NO - Legal issues, family attacks, death wishes
+7. EMOJIS - Use 🙄 for sarcasm, 💀 or 🔥 for ending
 
-${hasName ? `RESEARCH "${name.trim()}" first - find their most famous thing, signature style, and ironic moment. Then make a specific roast about it.` : 'Make a creative roast.'}
+CURRENT TIER: ${tier.toUpperCase()} | SCORE: ${finalScore}/100`;
 
-${isHindi ? 'Roast in HINDI/Hinglish with Hindi bad words (bc, chutiya, wahiyat)' : 'Roast in ENGLISH with English bad words (fuck, damn, shit)'}. Be sarcastic. 25-40 words only.`;
+  const userContent = `${hasName ? `Name: ${name.trim()}` : ''} ${hasSubject ? `Subject: ${subject.trim()}` : ''} ${hasMood ? `Mood: ${mood}` : ''} 
+
+TIER: ${tier.toUpperCase()} | Language: ${isHindi ? 'HINDI/HINGLISH' : 'ENGLISH'}
+
+${hasName ? `
+🔍 RESEARCH TASK: Who is "${name.trim()}"? 
+- What are they famous for?
+- What's their signature thing?
+- What's ironic/funny about them?
+
+Then craft a SPECIFIC roast using that knowledge.
+` : `
+Create a creative roast about the subject/mood provided.
+`}
+
+📏 REMEMBER: 
+- 35-55 words (3 sentences)
+- Sarcastic setup → Reality check → Savage punchline
+- Bad words as SEASONING only
+- Be CLEVER, not just vulgar
+
+${isHindi ? '🗣️ Language: Hindi/Hinglish with natural bad words (bc, chutiya, etc.)' : '🗣️ Language: English with natural bad words (fuck, damn, shit, etc.)'}
+
+GO! 🎯`;
 
   const completion = await client.chat.completions.create({
-    model: "meta-llama/Meta-Llama-3-70B-Instruct:novita",
+    model: "meta-llama/Meta-Llama-3-70B-Instruct",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent }
     ],
-    temperature: 1.0,
-    max_tokens: 200
+    temperature: 0.9,
+    max_tokens: 300,
+    top_p: 0.95,
   });
 
   const content = completion.choices[0]?.message?.content;
@@ -220,7 +338,17 @@ ${isHindi ? 'Roast in HINDI/Hinglish with Hindi bad words (bc, chutiya, wahiyat)
 
   try {
     const jsonMatch = content.match(/\{[\s\S]*?\}/);
-    return jsonMatch ? JSON.parse(jsonMatch[0]) : { 
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      // Validate roast length
+      const wordCount = parsed.roast?.split(/\s+/).length || 0;
+      if (wordCount < 20 || wordCount > 70) {
+        // If out of range, try to fix or use fallback
+        console.log(`Roast word count: ${wordCount}, adjusting...`);
+      }
+      return parsed;
+    }
+    return { 
       roast: content.trim(), 
       subject_insight: isHindi ? "Waah bc..." : "Damn...", 
       isPublicFigure: hasName, 
@@ -364,20 +492,20 @@ function getFallbackRoast(tier, subject, language) {
   
   const roasts = {
     legendary: isHindi 
-      ? `Waah "${subject}" bhai goated hai tu bc 🙄 Gaali dene ka mann nahi damn respect. 👑`
-      : `Oh wow "${subject}" you're actually goated damn 🙄 Can't even insult you shit respect. 👑`,
+      ? `Bhai "${subject}" ko dekh ke lagta hai ki kuch log sach mein blessed hote hain 🙄 Itna talent ki gaali dene ka mann nahi karta. Respect hai bc, kya hi bolein. 👑`
+      : `Looking at "${subject}" you realize some people are genuinely blessed 🙄 So talented that insults feel wrong. Respect where it's due, damn impressive shit. 👑`,
     epic: isHindi
-      ? `"${subject}" almost legend hai 🙄 Thoda aur try kar bc damn. ⚡`
-      : `"${subject}" almost legendary 🙄 Try a bit harder damn shit. ⚡`,
+      ? `"${subject}" almost legendary territory mein hai bhai 🙄 Bas thoda sa aur push karo, abhi sirf 'great' pe atke ho. Almost wala tag hatao bc, full send karo. ⚡`
+      : `"${subject}" is almost in legendary territory 🙄 Just push a little more, stuck at 'great' right now. Remove that 'almost' tag damn, go full send shit. ⚡`,
     mid: isHindi
-      ? `Bhai "${subject}" itna average hai ki Excel sheet bore ho jaaye bc 🙄 Personality 404 damn. 🔥`
-      : `Bro "${subject}" so average that Excel sheets find you boring damn 🙄 Personality 404 fuck. 🔥`,
+      ? `Bhai "${subject}" ko dekh ke lagta hai ki mediocrity bhi ek talent hai 🙄 Na itna bura ki ignore karo, na itna acha ki yaad rakho. Perfectly forgettable bc, next level average. 🔥`
+      : `Looking at "${subject}" makes you realize mediocrity is also a talent 🙄 Not bad enough to ignore, not good enough to remember. Perfectly forgettable damn, next level average shit. 🔥`,
     noob: isHindi
-      ? `"${subject}" ka potential WiFi in basement jaisa bc 🙄 Signal nahi milega damn. 💀`
-      : `"${subject}" potential is like WiFi in basement damn 🙄 No signal ever shit. 💀`,
+      ? `"${subject}" ka potential abhi bhi loading screen pe hai 🙄 Shuru mein umeed thi, ab realize hua ki buffering permanent hai. Connection establish hi nahi hua bc, tragic. 💀`
+      : `"${subject}" potential is still on loading screen 🙄 Had hopes initially, now realized buffering is permanent. Connection was never established damn, tragic shit. 💀`,
     npc: isHindi
-      ? `"${subject}" exist bhi karta hai ya loading screen hai bc 🙄 Skip button damn. 😭`
-      : `"${subject}" do you exist or are you a loading screen damn 🙄 Everyone wants to skip shit. 😭`
+      ? `"${subject}" exist bhi karta hai ya bas background mein render ho raha hai 🙄 Main characters ki story mein tum wo blur face ho jo koi notice nahi karta bc. Skip button embodied, damn. 😭`
+      : `Does "${subject}" even exist or just rendering in the background 🙄 In main characters' stories you're that blur face nobody notices damn. Skip button personified, tragic shit. 😭`
   };
   return roasts[tier] || roasts.npc;
-                                                 }
+}
