@@ -63,7 +63,7 @@ export default async function handler(req, res) {
 }
 
 // ============================================
-// MAIN ROAST GENERATOR - CLEAN OUTPUT
+// MAIN ROAST GENERATOR - SIMPLE ENGLISH
 // ============================================
 async function generateRoastWithLlama(token, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood) {
   const client = new OpenAI({
@@ -74,30 +74,57 @@ async function generateRoastWithLlama(token, name, subject, mood, tier, finalSco
   const isHindi = language === 'hindi';
   const targetName = hasName ? name.trim() : (hasSubject ? subject.trim() : 'bro');
 
-  const systemPrompt = `You are a roast comedian. Output ONLY a JSON object with the roast. No explanations, no research notes, no thinking - JUST THE FINAL ROAST.
+  const systemPrompt = `You are a roast comedian for INDIAN audience. Output ONLY JSON with the roast.
 
-## RULES:
-- 35-50 words roast (3 sentences)
-- Sarcastic style: fake praise → reality check → punchline
-- 1-2 bad words maximum (at punchline)
+## IMPORTANT - LANGUAGE STYLE:
+
+${isHindi ? `
+### HINDI/HINGLISH:
+- Mix Hindi + English like Indians talk
+- Sarcasm: "Waah bhai", "Kya baat hai", "Bohot hard" 🙄
+- Bad words: bc, mc, chutiya (only 1-2, at punchline)
+- Example: "Waah bhai itna talent hai ki talent bhi sharma jaaye 🙄 God was busy that day bc. 💀"
+` : `
+### SIMPLE ENGLISH (For Indians):
+- Use SIMPLE words Indians use daily
+- Mix "bro", "yaar", "bhai" naturally  
+- Sarcasm: "Oh wow", "So nice", "Very good" 🙄
+- Bad words: damn, shit, fuck (only 1-2, at punchline)
+- NO fancy/difficult English words
+- Write like Indians speak English
+
+#### WRONG ❌ (Too hard):
+"Your mediocrity transcends conventional boundaries of human incompetence"
+
+#### RIGHT ✅ (Simple):
+"Bro you're so average that even average people feel better about themselves 🙄 Thanks for the confidence boost damn. 💀"
+
+#### MORE EXAMPLES (Simple English):
+- "Oh wow so talented 🙄 Talent left the chat when you joined bro. Sad life damn. 💀"
+- "Very hardworking yaar 🙄 Too bad hard work can't fix no talent shit. 💀"  
+- "Bro thinks he's main character 🙄 You're not even in the movie damn. Background extra vibes. 💀"
+`}
+
+## ROAST RULES:
+- 35-50 words only (2-3 sentences)
+- Start with sarcasm → then reality check → end with punchline
+- 1-2 bad words MAX (at the end)
 - Use 🙄 for sarcasm, end with 💀 or 🔥
-- Be SPECIFIC if celebrity, be CREATIVE if not
-
-## LANGUAGE: ${isHindi ? 'HINDI/HINGLISH (use bc, chutiya naturally)' : 'ENGLISH (use damn, fuck naturally)'}
+- Keep it SIMPLE and FUNNY
 
 ## TIER: ${tier.toUpperCase()}
-${tier === 'legendary' ? 'Backhanded compliment - respect but still roast' : ''}
-${tier === 'epic' ? 'Almost great - find the one flaw' : ''}
-${tier === 'mid' ? 'Average roast - nothing special about them' : ''}
-${tier === 'noob' ? 'Below average - use their failures' : ''}
-${tier === 'npc' ? 'Full destruction - they barely exist' : ''}
+${tier === 'legendary' ? '→ Respect but still roast' : ''}
+${tier === 'epic' ? '→ Almost great, find one flaw' : ''}
+${tier === 'mid' ? '→ Average, nothing special' : ''}
+${tier === 'noob' ? '→ Below average, use failures' : ''}
+${tier === 'npc' ? '→ Full destroy mode' : ''}
 
-## OUTPUT FORMAT (ONLY THIS, NOTHING ELSE):
-{"roast": "your 35-50 word sarcastic roast here", "subject_insight": "one sarcastic line", "isPublicFigure": true/false, "publicFigureStatus": "peak/stable/falling/none"}`;
+## OUTPUT (ONLY JSON, NO EXPLANATION):
+{"roast": "simple 35-50 word roast", "subject_insight": "short sarcastic line", "isPublicFigure": true/false, "publicFigureStatus": "peak/stable/falling/none"}`;
 
   const userContent = `Roast: ${targetName}${hasSubject && hasName ? ` (${subject.trim()})` : ''}${hasMood ? ` | Mood: ${mood}` : ''}
 
-OUTPUT ONLY THE JSON. No research, no explanation, no thinking. Just the roast.`;
+Remember: ${isHindi ? 'Hindi/Hinglish' : 'SIMPLE English for Indians - no difficult words'}. Only output JSON.`;
 
   const completion = await client.chat.completions.create({
     model: "meta-llama/Meta-Llama-3-70B-Instruct",
@@ -113,11 +140,9 @@ OUTPUT ONLY THE JSON. No research, no explanation, no thinking. Just the roast.`
   if (!content) return null;
 
   try {
-    // Extract only the JSON part
     const jsonMatch = content.match(/\{[\s\S]*?\}/);
     if (jsonMatch) {
       const parsed = JSON.parse(jsonMatch[0]);
-      // Clean the roast - remove any research/explanation if leaked
       parsed.roast = cleanRoast(parsed.roast);
       return parsed;
     }
@@ -127,13 +152,11 @@ OUTPUT ONLY THE JSON. No research, no explanation, no thinking. Just the roast.`
   }
 }
 
-// Clean any research/explanation from roast
+// Clean any extra stuff from roast
 function cleanRoast(roast) {
-  // Remove common research patterns that might leak
   const patterns = [
     /^(okay|alright|so|let me|here's|based on|research shows|looking at|analyzing)/i,
     /^(step \d|first|the person|this person|they are)/i,
-    /(famous for|known for|signature|peak moment|ironic).*?:/gi,
   ];
   
   let cleaned = roast;
@@ -141,9 +164,8 @@ function cleanRoast(roast) {
     cleaned = cleaned.replace(p, '');
   });
   
-  // If roast is too long (over 80 words), take first 3 sentences
   const words = cleaned.trim().split(/\s+/);
-  if (words.length > 80) {
+  if (words.length > 70) {
     const sentences = cleaned.match(/[^.!?]+[.!?]+/g) || [cleaned];
     cleaned = sentences.slice(0, 3).join(' ');
   }
@@ -208,11 +230,11 @@ function getScoreForTier(tier) {
 function getTierData(tier, language) {
   const h = language === 'hindi';
   const data = {
-    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: h ? "GOATED HAI TU BC 👑" : "YOU'RE GOATED DAMN 👑" },
-    epic: { rarity: "epic", title: "EPIC", challenge: h ? "ALMOST LEGEND BHAI ⚡" : "ALMOST LEGENDARY ⚡" },
-    mid: { rarity: "mid", title: "MID", challenge: h ? "AVERAGE HAI BC 🔥" : "AVERAGE AS FUCK 🔥" },
-    noob: { rarity: "noob", title: "NOOB", challenge: h ? "POTENTIAL GAYAB 💀" : "POTENTIAL NOT FOUND 💀" },
-    npc: { rarity: "npc", title: "NPC", challenge: h ? "EXIST KARTA HAI? 😭" : "DO YOU EXIST? 😭" }
+    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: h ? "GOATED HAI TU BC 👑" : "BRO YOU'RE GOATED 👑" },
+    epic: { rarity: "epic", title: "EPIC", challenge: h ? "ALMOST LEGEND BHAI ⚡" : "ALMOST LEGEND BRO ⚡" },
+    mid: { rarity: "mid", title: "MID", challenge: h ? "AVERAGE HAI BC 🔥" : "SO AVERAGE BRO 🔥" },
+    noob: { rarity: "noob", title: "NOOB", challenge: h ? "POTENTIAL GAYAB 💀" : "NO POTENTIAL BRO 💀" },
+    npc: { rarity: "npc", title: "NPC", challenge: h ? "EXIST KARTA HAI? 😭" : "DO YOU EVEN EXIST? 😭" }
   };
   return data[tier] || data.npc;
 }
@@ -220,11 +242,21 @@ function getTierData(tier, language) {
 function getFallbackRoast(tier, subject, language) {
   const h = language === 'hindi';
   const roasts = {
-    legendary: h ? `Waah "${subject}" bhai goated hai 🙄 Itna talent ki gaali dene ka mann nahi bc. Respect. 👑` : `Oh wow "${subject}" actually goated 🙄 Can't even insult, damn respect. 👑`,
-    epic: h ? `"${subject}" almost legend hai 🙄 Thoda aur try kar bc, almost hatao. ⚡` : `"${subject}" almost legendary 🙄 Push harder, remove that 'almost' damn. ⚡`,
-    mid: h ? `Bhai "${subject}" itna average ki Excel bore ho jaaye 🙄 Personality 404 bc. 🔥` : `"${subject}" so average Excel sheets find you boring 🙄 Personality 404 damn. 🔥`,
-    noob: h ? `"${subject}" ka potential WiFi in basement jaisa 🙄 Signal nahi milega bc. 💀` : `"${subject}" potential like WiFi in basement 🙄 No signal ever damn. 💀`,
-    npc: h ? `"${subject}" exist karta hai ya loading screen hai 🙄 Skip button bc. 😭` : `"${subject}" exist or just a loading screen 🙄 Everyone wants to skip damn. 😭`
+    legendary: h 
+      ? `Waah "${subject}" bhai goated hai 🙄 Itna talent ki gaali dene ka mann nahi bc. Respect. 👑` 
+      : `Oh wow "${subject}" you're actually good bro 🙄 Can't even roast you properly damn. Respect. 👑`,
+    epic: h
+      ? `"${subject}" almost legend hai 🙄 Thoda aur try kar bc, almost hatao. ⚡`
+      : `"${subject}" almost legend bro 🙄 Just a little more push and you'll make it damn. Almost there. ⚡`,
+    mid: h
+      ? `Bhai "${subject}" itna average ki Excel bore ho jaaye 🙄 Personality 404 bc. 🔥`
+      : `Bro "${subject}" so average that even boring people find you boring 🙄 Personality not found damn. 🔥`,
+    noob: h
+      ? `"${subject}" ka potential WiFi in basement jaisa 🙄 Signal nahi milega bc. 💀`
+      : `"${subject}" your potential is like WiFi in basement bro 🙄 No signal ever damn. Sad life. 💀`,
+    npc: h
+      ? `"${subject}" exist karta hai ya loading screen hai 🙄 Skip button bc. 😭`
+      : `"${subject}" do you exist or are you just loading screen bro 🙄 Everyone wants to skip you damn. 😭`
   };
   return roasts[tier] || roasts.npc;
-             }
+                                         }
