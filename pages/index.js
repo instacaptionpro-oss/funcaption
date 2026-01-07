@@ -49,6 +49,7 @@ export default function Home() {
   const [name, setName] = useState('');
   const [subject, setSubject] = useState('');
   const [selectedMood, setSelectedMood] = useState('fire');
+  const [language, setLanguage] = useState('english'); // Added language state - defaults to English
   const [showExtendedMoods, setShowExtendedMoods] = useState(false);
   const [currentExample, setCurrentExample] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -120,7 +121,8 @@ export default function Home() {
         body: JSON.stringify({ 
           name: name.trim(),
           subject: subject.trim(), 
-          mood: selectedMood 
+          mood: selectedMood,
+          language: language // Added language to the request
         })
       });
 
@@ -268,6 +270,66 @@ export default function Home() {
               border: '1px solid rgba(255,255,255,0.1)'
             }}>
               
+              {/* Language Selector */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  fontSize: '1rem',
+                  fontWeight: '700',
+                  color: '#9400D3',
+                  marginBottom: '12px'
+                }}>
+                  <span style={{ fontSize: '1.4rem' }}>🌐</span>
+                  Language
+                </label>
+                
+                <div style={{
+                  display: 'flex',
+                  gap: '10px'
+                }}>
+                  <button
+                    onClick={() => setLanguage('english')}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      borderRadius: '12px',
+                      background: language === 'english' 
+                        ? 'linear-gradient(45deg, #9400D3, #4B0082)' 
+                        : 'rgba(40, 40, 60, 0.8)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: language === 'english' ? '#ffffff' : '#a0a0a0',
+                      fontSize: '0.9rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    English
+                  </button>
+                  <button
+                    onClick={() => setLanguage('hindi')}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      borderRadius: '12px',
+                      background: language === 'hindi' 
+                        ? 'linear-gradient(45deg, #9400D3, #4B0082)' 
+                        : 'rgba(40, 40, 60, 0.8)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: language === 'hindi' ? '#ffffff' : '#a0a0a0',
+                      fontSize: '0.9rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    हिंदी
+                  </button>
+                </div>
+              </div>
+
               {/* ============================================ */}
               {/* NAME FIELD (Optional) - NEW! */}
               {/* ============================================ */}
