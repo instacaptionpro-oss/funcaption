@@ -30,7 +30,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    result = await generateRoastWithLlama(HF_TOKEN, name, subject, mood, tier, finalScore, roastLanguage, hasName, hasSubject, hasMood);
+    result = await generateRoast(HF_TOKEN, name, subject, mood, tier, finalScore, roastLanguage, hasName, hasSubject, hasMood);
     
     if (!result?.roast || result.roast.length < 30) {
       result = { roast: getFallbackRoast(tier, subject || name || 'this', roastLanguage), subject_insight: "Interesting...", isPublicFigure: false, publicFigureStatus: 'none' };
@@ -63,9 +63,51 @@ export default async function handler(req, res) {
 }
 
 // ============================================
-// MAIN ROAST GENERATOR - SIMPLE ENGLISH
+// AI MODELS CONFIG
 // ============================================
-async function generateRoastWithLlama(token, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood) {
+const AI_MODELS = {
+  primary: "meta-llama/Llama-3.3-70B-Instruct:groq",    // Fast, try first
+  backup: "meta-llama/Meta-Llama-3-70B-Instruct"         // Fallback when primary fails
+};
+
+// ============================================
+// MAIN ROAST GENERATOR WITH FALLBACK
+// ============================================
+async function generateRoast(token, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood) {
+  
+  // Try PRIMARY model first
+  try {
+    console.log("Trying PRIMARY model:", AI_MODELS.primary);
+    const result = await callAI(token, AI_MODELS.primary, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood);
+    if (result?.roast) {
+      console.log("PRIMARY model success ✅");
+      return result;
+    }
+  } catch (error) {
+    console.log("PRIMARY model failed:", error.message);
+  }
+
+  // Try BACKUP model if primary fails
+  try {
+    console.log("Trying BACKUP model:", AI_MODELS.backup);
+    const result = await callAI(token, AI_MODELS.backup, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood);
+    if (result?.roast) {
+      console.log("BACKUP model success ✅");
+      return result;
+    }
+  } catch (error) {
+    console.log("BACKUP model failed:", error.message);
+  }
+
+  // Both failed, return null (will use fallback roast)
+  console.log("All models failed, using fallback roast");
+  return null;
+}
+
+// ============================================
+// AI CALLER FUNCTION
+// ============================================
+async function callAI(token, model, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood) {
   const client = new OpenAI({
     baseURL: "https://router.huggingface.co/v1",
     apiKey: token,
@@ -76,7 +118,7 @@ async function generateRoastWithLlama(token, name, subject, mood, tier, finalSco
 
   const systemPrompt = `You are a roast comedian for INDIAN audience. Output ONLY JSON with the roast.
 
-## IMPORTANT - LANGUAGE STYLE:
+## LANGUAGE STYLE:
 
 ${isHindi ? `
 ### HINDI/HINGLISH:
@@ -91,43 +133,30 @@ ${isHindi ? `
 - Sarcasm: "Oh wow", "So nice", "Very good" 🙄
 - Bad words: damn, shit, fuck (only 1-2, at punchline)
 - NO fancy/difficult English words
-- Write like Indians speak English
 
-#### WRONG ❌ (Too hard):
-"Your mediocrity transcends conventional boundaries of human incompetence"
-
-#### RIGHT ✅ (Simple):
-"Bro you're so average that even average people feel better about themselves 🙄 Thanks for the confidence boost damn. 💀"
-
-#### MORE EXAMPLES (Simple English):
+#### EXAMPLES:
 - "Oh wow so talented 🙄 Talent left the chat when you joined bro. Sad life damn. 💀"
-- "Very hardworking yaar 🙄 Too bad hard work can't fix no talent shit. 💀"  
 - "Bro thinks he's main character 🙄 You're not even in the movie damn. Background extra vibes. 💀"
 `}
 
 ## ROAST RULES:
 - 35-50 words only (2-3 sentences)
-- Start with sarcasm → then reality check → end with punchline
+- Sarcasm → reality check → punchline
 - 1-2 bad words MAX (at the end)
 - Use 🙄 for sarcasm, end with 💀 or 🔥
-- Keep it SIMPLE and FUNNY
 
 ## TIER: ${tier.toUpperCase()}
-${tier === 'legendary' ? '→ Respect but still roast' : ''}
-${tier === 'epic' ? '→ Almost great, find one flaw' : ''}
-${tier === 'mid' ? '→ Average, nothing special' : ''}
-${tier === 'noob' ? '→ Below average, use failures' : ''}
-${tier === 'npc' ? '→ Full destroy mode' : ''}
+${tier === 'legendary' ? '→ Respect but still roast' : tier === 'epic' ? '→ Almost great, find flaw' : tier === 'mid' ? '→ Average, nothing special' : tier === 'noob' ? '→ Below average' : '→ Full destroy'}
 
-## OUTPUT (ONLY JSON, NO EXPLANATION):
-{"roast": "simple 35-50 word roast", "subject_insight": "short sarcastic line", "isPublicFigure": true/false, "publicFigureStatus": "peak/stable/falling/none"}`;
+## OUTPUT (ONLY JSON):
+{"roast": "35-50 word roast", "subject_insight": "short line", "isPublicFigure": true/false, "publicFigureStatus": "peak/stable/falling/none"}`;
 
   const userContent = `Roast: ${targetName}${hasSubject && hasName ? ` (${subject.trim()})` : ''}${hasMood ? ` | Mood: ${mood}` : ''}
 
-Remember: ${isHindi ? 'Hindi/Hinglish' : 'SIMPLE English for Indians - no difficult words'}. Only output JSON.`;
+${isHindi ? 'Hindi/Hinglish' : 'SIMPLE English'}. Only output JSON.`;
 
   const completion = await client.chat.completions.create({
-    model: "meta-llama/Meta-Llama-3-70B-Instruct",
+    model: model,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent }
@@ -152,30 +181,22 @@ Remember: ${isHindi ? 'Hindi/Hinglish' : 'SIMPLE English for Indians - no diffic
   }
 }
 
-// Clean any extra stuff from roast
+// ============================================
+// HELPERS
+// ============================================
 function cleanRoast(roast) {
-  const patterns = [
-    /^(okay|alright|so|let me|here's|based on|research shows|looking at|analyzing)/i,
-    /^(step \d|first|the person|this person|they are)/i,
-  ];
-  
   let cleaned = roast;
-  patterns.forEach(p => {
+  [/^(okay|alright|so|let me|here's|based on)/i, /^(step \d|first|the person)/i].forEach(p => {
     cleaned = cleaned.replace(p, '');
   });
-  
   const words = cleaned.trim().split(/\s+/);
   if (words.length > 70) {
     const sentences = cleaned.match(/[^.!?]+[.!?]+/g) || [cleaned];
     cleaned = sentences.slice(0, 3).join(' ');
   }
-  
   return cleaned.trim();
 }
 
-// ============================================
-// HELPERS
-// ============================================
 function enforceRarityProbabilities(tier, score, isPublicFigure, publicFigureStatus) {
   const r = Math.random() * 100;
   if (isPublicFigure && publicFigureStatus === 'falling') {
@@ -242,21 +263,11 @@ function getTierData(tier, language) {
 function getFallbackRoast(tier, subject, language) {
   const h = language === 'hindi';
   const roasts = {
-    legendary: h 
-      ? `Waah "${subject}" bhai goated hai 🙄 Itna talent ki gaali dene ka mann nahi bc. Respect. 👑` 
-      : `Oh wow "${subject}" you're actually good bro 🙄 Can't even roast you properly damn. Respect. 👑`,
-    epic: h
-      ? `"${subject}" almost legend hai 🙄 Thoda aur try kar bc, almost hatao. ⚡`
-      : `"${subject}" almost legend bro 🙄 Just a little more push and you'll make it damn. Almost there. ⚡`,
-    mid: h
-      ? `Bhai "${subject}" itna average ki Excel bore ho jaaye 🙄 Personality 404 bc. 🔥`
-      : `Bro "${subject}" so average that even boring people find you boring 🙄 Personality not found damn. 🔥`,
-    noob: h
-      ? `"${subject}" ka potential WiFi in basement jaisa 🙄 Signal nahi milega bc. 💀`
-      : `"${subject}" your potential is like WiFi in basement bro 🙄 No signal ever damn. Sad life. 💀`,
-    npc: h
-      ? `"${subject}" exist karta hai ya loading screen hai 🙄 Skip button bc. 😭`
-      : `"${subject}" do you exist or are you just loading screen bro 🙄 Everyone wants to skip you damn. 😭`
+    legendary: h ? `Waah "${subject}" bhai goated hai 🙄 Gaali dene ka mann nahi bc. Respect. 👑` : `Oh wow "${subject}" you're actually good bro 🙄 Can't roast you damn. Respect. 👑`,
+    epic: h ? `"${subject}" almost legend hai 🙄 Thoda aur try kar bc. ⚡` : `"${subject}" almost legend bro 🙄 Little more push damn. ⚡`,
+    mid: h ? `"${subject}" itna average ki Excel bore ho jaaye 🙄 Personality 404 bc. 🔥` : `"${subject}" so average bro 🙄 Personality not found damn. 🔥`,
+    noob: h ? `"${subject}" ka potential WiFi in basement jaisa 🙄 No signal bc. 💀` : `"${subject}" potential like WiFi in basement bro 🙄 No signal damn. 💀`,
+    npc: h ? `"${subject}" exist karta hai ya loading screen 🙄 Skip button bc. 😭` : `"${subject}" do you exist bro or just loading 🙄 Skip button damn. 😭`
   };
   return roasts[tier] || roasts.npc;
-                                         }
+        }
