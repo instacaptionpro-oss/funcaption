@@ -68,7 +68,6 @@ export default async function handler(req, res) {
 }
 
 async function generateRoast(token, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood) {
-  
   try {
     const result = await callAI(token, AI_MODELS.primary, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood);
     if (result?.roast) return result;
@@ -86,9 +85,6 @@ async function generateRoast(token, name, subject, mood, tier, finalScore, langu
   return null;
 }
 
-// ============================================
-// CORE ROAST ENGINE
-// ============================================
 async function callAI(token, model, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood) {
   const client = new OpenAI({
     baseURL: "https://router.huggingface.co/v1",
@@ -98,114 +94,68 @@ async function callAI(token, model, name, subject, mood, tier, finalScore, langu
   const isHindi = language === 'hindi';
   const targetName = hasName ? name.trim() : (hasSubject ? subject.trim() : 'bro');
 
-  const systemPrompt = `You're a savage roast comedian. Your roasts are SMART, not random insults.
+  const systemPrompt = `You're a savage roast comedian. Smart roasts, not random insults.
 
-## 3 GOLDEN RULES:
+## RULES:
 
-### RULE 1: Find ONE truth
-Don't throw random insults. Find ONE specific thing about the person and attack THAT.
-- Celebrity? Attack their famous work/moment
-- Random person? Attack universal relatable things
+1. Find ONE truth about the person
+2. Observe don't insult: "You're the type who..." not "You suck"
+3. Write 3-4 lines (40-70 words) - not too short, not too long
 
-### RULE 2: Observe, don't insult directly
-BAD: "Tu bekaar hai" / "You suck"
-GOOD: "Tu woh type hai jo..." / "You're the kind of guy who..."
+## ROAST STRUCTURE:
 
-### RULE 3: Simple words, hard punch
-Write like you're talking to a friend. Short sentences. Simple words. But the meaning should HURT.
-
----
-
-## HOW TO BUILD A ROAST:
-
-### Step 1: Pick ONE truth
-Example for Emiway: "He has beef with everyone"
-Example for random: "He's boring"
-
-### Step 2: Make an observation about it
-"Emiway ke itne beefs hai ki..."
-"You're so boring that..."
-
-### Step 3: Exaggerate to make it funny
-"...usse butcher shop kholni chahiye"
-"...even your alarm gives up on you"
-
----
+Line 1: Opening observation (hook them)
+Line 2: Twist the knife (make it worse)
+Line 3: Another angle or comparison
+Line 4: Kill shot with bad word
 
 ${isHindi ? `
 ## HINDI STYLE:
-- Hinglish natural mix
-- Simple words
-- Bad words at END only: bc, mc, chutiya (1-2 max)
+- Hinglish mix naturally
+- Bad words at end: bc, chutiya (1-2 only)
 - Sound like Delhi friend roasting
 
-GOOD HINDI ROASTS:
-- "Bantai ke itne beefs hai, meat shop khol le seedha 💀"
-- "Tera content dekhne se better hai main wall ko ghoorun, kam se kam wo reply nahi karta bc 😭"
-- "Tu woh banda hai jisko log seen karke chhod dete hai, reply ka toh sawaal hi nahi 🔥"
-- "Bhai tu itna forgettable hai ki tera naam bhi bhool gaya main likhte likhte 💀"
+EXAMPLES:
+
+"Bantai ke itne beefs hai ki meat shop khol le 💀 Independent hai kyunki koi sign nahi karna chahta tujhe. Teri rap sunne se behtar main silence enjoy karun, wo bhi better sound karti hai bc 🔥"
+
+"Bhai tu woh type hai jisko log 'haan bro' bolke ignore karte hai 💀 Tera phone sirf OTP ke liye bajta hai, real calls toh sapne mein bhi nahi. Group photo mein crop hone wala pehla banda tu hai bc 😭"
+
+"Tu influencer hai? Sirf teri mummy influenced hai 💀 Followers fake, engagement fake, bas tera ego real hai. Content dekhne se better hai wall ghoorna, kam se kam wo bore nahi karti damn 🔥"
 ` : `
 ## ENGLISH STYLE:
-- Simple English + bro/yaar naturally
-- Short punchy sentences
-- Bad words at END only: damn, shit, fuck (1-2 max)
-- Sound like Indian friend roasting in English
+- Simple English + bro/yaar mix
+- Bad words at end: damn, shit, fuck (1-2 only)
+- Sound like Indian friend roasting
 
-GOOD ENGLISH ROASTS:
-- "Bantai has so many beefs he should just open a meat shop at this point 💀"
-- "I'd rather stare at a wall than watch your content, at least the wall doesn't reply back damn 😭"
-- "You're the type of guy people leave on seen, reply isn't even a question bro 🔥"  
-- "Bro you're so forgettable I forgot your name while typing this 💀"
+EXAMPLES:
+
+"Bantai has so many beefs he should open a meat shop 💀 You're independent because nobody wants to sign you bro. I'd rather enjoy silence than your music, at least that doesn't hurt my ears damn 🔥"
+
+"You're the type of guy people say 'yeah bro' to and completely forget 💀 Your phone only rings for OTPs, real calls are just a dream. You're always first to get cropped from group photos damn 😭"
+
+"You're an influencer? Only your mom is influenced bro 💀 Followers fake, engagement fake, only your ego is real. I'd rather watch paint dry than your content, less boring honestly shit 🔥"
 `}
-
----
-
-## MAKE IT POWERFUL:
-
-### Dominance lines (use sometimes):
-${isHindi ? `
-- "Tu bad hai? Main tera baap hoon"
-- "Meri ek line teri puri career se heavy"
-- "Tu list mein bhi nahi hai bhai"
-` : `
-- "You think you're bad? I'm your dad"
-- "My one line hits harder than your whole career"
-- "You're not even on the list bro"
-`}
-
-### Preference roasts (hit hard):
-${isHindi ? `
-- "Teri music sunne se behtar main chup rahun"
-- "Tere saath time spend karne se acha main bore ho jaun"
-` : `
-- "I'd rather sit in silence than listen to your music"
-- "I'd rather be bored alone than spend time with you"
-`}
-
----
 
 ## TIER: ${tier.toUpperCase()}
-${tier === 'legendary' ? 'They are good. Find that ONE flaw and poke it.' : ''}
-${tier === 'epic' ? 'Almost good. Roast the gap between them and greatness.' : ''}
-${tier === 'mid' ? 'Average. Make them feel invisible.' : ''}
-${tier === 'noob' ? 'Below average. Their failures are the joke.' : ''}
-${tier === 'npc' ? 'Irrelevant. Question if they even exist.' : ''}
-
----
+${tier === 'legendary' ? 'Backhanded respect - good but find that one flaw' : ''}
+${tier === 'epic' ? 'Almost great - roast the gap' : ''}
+${tier === 'mid' ? 'Average - make them feel invisible' : ''}
+${tier === 'noob' ? 'Below average - stack their failures' : ''}
+${tier === 'npc' ? 'Irrelevant - question their existence' : ''}
 
 ## FORMAT:
-- 25-45 words
-- 2 sentences max
-- Observation + Punchline
-- 1 emoji at end (💀 😭 🔥)
-- 1-2 bad words MAX, at the end
+- 40-70 words (3-4 lines)
+- Readable, enjoyable length
+- 1-2 emojis (💀 😭 🔥)
+- Bad word at the end for impact
 
-## OUTPUT (JSON):
-{"roast": "your roast here", "subject_insight": "the one truth you found", "isPublicFigure": true/false, "publicFigureStatus": "peak/stable/falling/none"}`;
+## OUTPUT (JSON only):
+{"roast": "3-4 line roast here", "subject_insight": "truth you found", "isPublicFigure": true/false, "publicFigureStatus": "peak/stable/falling/none"}`;
 
   const userContent = `Roast: ${targetName}${hasSubject && hasName ? ` (${subject.trim()})` : ''}${hasMood ? ` | Mood: ${mood}` : ''}
 
-Find ONE truth. Make ONE observation. Deliver ONE punchline.
+3-4 lines. Not too long, not too short. Make it enjoyable to read.
 ${isHindi ? 'Hinglish.' : 'Simple English.'}
 JSON only.`;
 
@@ -216,7 +166,7 @@ JSON only.`;
       { role: "user", content: userContent }
     ],
     temperature: 1.0,
-    max_tokens: 200,
+    max_tokens: 250,
     top_p: 0.95
   });
 
@@ -244,17 +194,14 @@ function cleanRoast(roast) {
   });
   
   const words = cleaned.trim().split(/\s+/);
-  if (words.length > 55) {
+  if (words.length > 80) {
     const sentences = cleaned.match(/[^.!?]+[.!?]+/g) || [cleaned];
-    cleaned = sentences.slice(0, 2).join(' ');
+    cleaned = sentences.slice(0, 4).join(' ');
   }
   
   return cleaned.trim();
 }
 
-// ============================================
-// HELPERS
-// ============================================
 function enforceRarityProbabilities(tier, score, isPublicFigure, publicFigureStatus) {
   const r = Math.random() * 100;
   if (isPublicFigure && publicFigureStatus === 'falling') {
@@ -311,7 +258,7 @@ function getTierData(tier, language) {
     epic: { rarity: "epic", title: "EPIC", challenge: h ? "ALMOST BHAI ⚡" : "ALMOST THERE ⚡" },
     mid: { rarity: "mid", title: "MID", challenge: h ? "KON HAI TU? 🔥" : "WHO ARE YOU? 🔥" },
     noob: { rarity: "noob", title: "NOOB", challenge: h ? "SAD LIFE 💀" : "SAD LIFE 💀" },
-    npc: { rarity: "npc", title: "NPC", challenge: h ? "EXIST KARTA HAI? 😭" : "DO YOU EXIST? 😭" }
+    npc: { rarity: "npc", title: "NPC", challenge: h ? "EXIST BHI KARTA HAI? 😭" : "DO YOU EXIST? 😭" }
   }[tier] || { rarity: "npc", title: "NPC", challenge: "😭" };
 }
 
@@ -320,40 +267,40 @@ function getFallbackRoast(tier, subject, language) {
   
   const roasts = {
     legendary: h 
-      ? [`"${subject}" tu acha hai, but meri ek line teri career se heavy hai 💀`]
-      : [`"${subject}" you're good, but my one line hits harder than your career 💀`],
+      ? [`"${subject}" tu acha hai no doubt 💀 But meri ek line teri career se heavy hai. Talent hai tujhme, bas thoda aur mehnat kar. Abhi toh sirf almost legendary hai tu bc 🔥`]
+      : [`"${subject}" you're good no doubt 💀 But my one line hits harder than your career bro. You got talent, just need more work. Right now you're just almost legendary damn 🔥`],
     epic: h
-      ? [`"${subject}" tu almost kuch tha, almost mein hi reh gaya 😭`]
-      : [`"${subject}" you were almost something, got stuck at almost 😭`],
+      ? [`"${subject}" tu almost kuch tha bhai 💀 Itna paas aake ruk gaya, finish line dekh ke dar gaya kya? Potential hai but execution zero hai. Almost mein hi marr jayega tu bc 😭`]
+      : [`"${subject}" you were almost something bro 💀 Got so close then stopped, scared of the finish line? Got potential but zero execution. You'll die in the 'almost' zone damn 😭`],
     mid: h
       ? [
-          `"${subject}" tu woh hai jisko log seen karke chhod dete hai 💀`,
-          `"${subject}" tera phone sirf OTP ke liye bajta hai 😭`,
+          `"${subject}" tu woh hai jisko log 'haan bro' bolke ignore karte hai 💀 Tera phone sirf OTP ke liye bajta hai, calls toh sapne mein bhi nahi. Group photo mein sabse pehle crop hone wala tu hai bc 😭`,
+          `"${subject}" teri personality itni dry hai ki Rajasthan jealous hai 💀 Tu exist karta hai but kisi ko farak nahi padta. Background mein blur face hai tu bas, notice nahi karta koi damn 🔥`,
         ]
       : [
-          `"${subject}" you're the type people leave on seen 💀`,
-          `"${subject}" your phone only rings for OTPs damn 😭`,
+          `"${subject}" you're the type people say 'yeah bro' to and forget 💀 Your phone only rings for OTPs, real calls are just dreams. Always first to get cropped from group photos damn 😭`,
+          `"${subject}" your personality is so dry Rajasthan is jealous 💀 You exist but nobody cares honestly. You're just a blur face in the background, nobody notices you bro shit 🔥`,
         ],
     noob: h
       ? [
-          `"${subject}" tu itna forgettable hai ki tera naam bhool gaya likhte likhte 💀`,
-          `"${subject}" log tujhse baat karte hai kyunki tu pehle se group mein hai 😭`,
+          `"${subject}" tu itna forgettable hai ki tera naam bhool gaya likhte likhte 💀 Log tujhse baat karte hai kyunki tu pehle se group mein hai. Nikal de toh kisi ko yaad bhi nahi aayega tu bc 😭`,
+          `"${subject}" tera potential toh hai bhai, bas kisi ne dekha nahi 💀 Shayad exist hi nahi karta wo. Tu woh loading screen hai jo kabhi complete nahi hoti damn 🔥`,
         ]
       : [
-          `"${subject}" you're so forgettable I forgot your name while typing 💀`,
-          `"${subject}" people only talk to you because you're already in the group 😭`,
+          `"${subject}" you're so forgettable I forgot your name while typing 💀 People only talk to you because you're already in the group. Remove yourself and nobody will even notice bro damn 😭`,
+          `"${subject}" you got potential bro, nobody has seen it though 💀 Maybe it doesn't exist at all. You're that loading screen that never completes shit 🔥`,
         ],
     npc: h
       ? [
-          `"${subject}" tu exist karta hai? Google ko bhi nahi pata 💀`,
-          `"${subject}" tu woh NPC hai jisko main skip karta hoon 😭`,
+          `"${subject}" tu exist bhi karta hai? Google ko bhi nahi pata 💀 Tu woh NPC hai jisko main dialogue skip karta hoon. Teri puri life ek loading screen hai jo buffer pe atki hai bc 😭`,
+          `"${subject}" tujhe dekhne se behtar main wall ghoorun 💀 Kam se kam wo reply nahi karti, tu toh boring reply bhi karta hai. Tera existence ek waste of space hai honestly bc 🔥`,
         ]
       : [
-          `"${subject}" do you exist? Even Google doesn't know 💀`,
-          `"${subject}" you're that NPC everyone skips damn 😭`,
+          `"${subject}" do you even exist? Google doesn't know either 💀 You're that NPC whose dialogue I always skip. Your whole life is a loading screen stuck on buffer damn 😭`,
+          `"${subject}" I'd rather stare at a wall than look at you 💀 At least the wall doesn't give boring replies like you do. Your existence is literally a waste of space bro shit 🔥`,
         ]
   };
   
   const tierRoasts = roasts[tier] || roasts.npc;
   return tierRoasts[Math.floor(Math.random() * tierRoasts.length)];
-}
+  }
