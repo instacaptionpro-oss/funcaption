@@ -3,7 +3,7 @@
 import { OpenAI } from "openai";
 
 // ============================================
-// MULTIPLE AI PROVIDERS - ADD MORE AS NEEDED
+// AI PROVIDERS - ORDERED BY PRIORITY
 // ============================================
 const AI_PROVIDERS = [
   {
@@ -13,25 +13,34 @@ const AI_PROVIDERS = [
     tokenEnv: "HF_TOKEN"
   },
   {
+    name: "Together",
+    baseURL: "https://router.huggingface.co/v1",
+    model: "meta-llama/Meta-Llama-3-70B-Instruct:together",
+    tokenEnv: "HF_TOKEN"
+  },
+  {
     name: "Hyperbolic",
     baseURL: "https://api.hyperbolic.xyz/v1",
     model: "meta-llama/Llama-3.3-70B-Instruct",
     tokenEnv: "HYPERBOLIC_TOKEN"
   },
   {
-    name: "HuggingFace",
-    baseURL: "https://router.huggingface.co/v1",
-    model: "meta-llama/Meta-Llama-3-70B-Instruct",
-    tokenEnv: "HF_TOKEN"
-  },
-  {
     name: "Novita",
     baseURL: "https://router.huggingface.co/v1",
     model: "meta-llama/Meta-Llama-3-70B-Instruct:novita",
     tokenEnv: "HF_TOKEN"
+  },
+  {
+    name: "HuggingFace",
+    baseURL: "https://router.huggingface.co/v1",
+    model: "meta-llama/Meta-Llama-3-70B-Instruct",
+    tokenEnv: "HF_TOKEN"
   }
 ];
 
+// ============================================
+// MAIN HANDLER
+// ============================================
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -106,9 +115,8 @@ async function generateRoastWithFallbacks(name, subject, mood, tier, finalScore,
     const provider = AI_PROVIDERS[i];
     const token = process.env[provider.tokenEnv];
     
-    // Skip if token not configured
     if (!token) {
-      console.log(`⏭️ Skipping ${provider.name}: No token configured`);
+      console.log(`⏭️ Skipping ${provider.name}: No token`);
       continue;
     }
 
@@ -129,22 +137,16 @@ async function generateRoastWithFallbacks(name, subject, mood, tier, finalScore,
       
     } catch (error) {
       console.log(`❌ ${provider.name} FAILED: ${error.message}`);
-      
-      // If rate limited, try next provider immediately
-      if (error.message.includes('rate') || error.message.includes('limit') || error.message.includes('429')) {
-        console.log(`⚠️ ${provider.name} rate limited, trying next...`);
-        continue;
-      }
+      continue;
     }
   }
 
-  // All providers failed
-  console.log("💀 All AI providers failed, using fallback");
+  console.log("💀 All providers failed, using fallback");
   return null;
 }
 
 // ============================================
-// SINGLE AI CALL
+// AI CALLER
 // ============================================
 async function callAI(baseURL, token, model, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood) {
   const client = new OpenAI({
@@ -155,46 +157,86 @@ async function callAI(baseURL, token, model, name, subject, mood, tier, finalSco
   const isHindi = language === 'hindi';
   const targetName = hasName ? name.trim() : (hasSubject ? subject.trim() : 'bro');
 
-  const systemPrompt = `You're a savage roast comedian. Smart roasts with natural language.
+  const systemPrompt = `You're a savage roast comedian. Smart roasts, natural language.
 
-## RULES:
+## GOLDEN RULES:
+
 1. Find ONE truth about the person and attack that
-2. Observe don't insult directly: "You're the type who..." not just "You suck"
+2. Observe don't insult: "You're the type who..." not just "You suck"
 3. Write 3-4 lines (40-70 words)
-4. Bad words flow NATURALLY - beginning, middle, end - wherever fits
+4. Bad words flow NATURALLY anywhere - not just at end
+
+## BAD WORDS USAGE:
+
+WRONG ❌: "You're boring. You suck bc" (only at end)
+WRONG ❌: "Bc mc chutiya saale" (only bad words)
+RIGHT ✅: "Bhai what the fuck is this career? Tu itna irrelevant hai ki bc koi dhundh nahi pata. Log tujhe ignore karte hai damn, sad life 💀"
+
+Bad words = 2-4 total, spread naturally like real friends talk.
 
 ${isHindi ? `
 ## HINDI STYLE:
-Use naturally anywhere: bc, mc, chutiya, saala, damn, fuck, shit
+
+Use anywhere naturally: bc, mc, chutiya, saala, damn, fuck, shit
 
 EXAMPLES:
-"Abe saale Bantai ke itne beefs hai ki butcher shop khol le 💀 Independent rapper hai kyunki koi sign nahi karna chahta isko bc. Teri rap sunke lagta hai beats ne bhi resign de diya, music nahi torture hai ye 🔥"
 
-"Bhai what the fuck is this content? 💀 Tu influencer hai ya unemployment ka poster child? Sirf teri mummy follow karti hai bc. Followers se zyada toh mere ghar mein cockroach hai saale 😭"
+"Abe saale Bantai ke itne beefs hai ki butcher shop khol le 💀 Independent rapper hai bc kyunki koi sign nahi karna chahta. Teri rap sunke damn lagta hai beats ne bhi resign de diya, torture hai ye 🔥"
+
+"Bhai what the fuck is this content? 💀 Tu influencer hai ya unemployment ka poster? Sirf teri mummy follow karti hai bc wo bhi majboori mein. Followers se zyada cockroach hai mere ghar mein saale 😭"
+
+"Abe chutiya tu woh type hai jisko log group mein add toh karte hai but mute kar dete hai 💀 Tera phone damn sirf OTP ke liye bajta hai. Itna dry hai tu bc ki Sahara bhi ro de 🔥"
+
+"Yaar tu itna forgettable hai ki bc tera naam likhte likhte bhool gaya 💀 God ne tujhe banate waqt alt+tab kar diya damn. Existence hai teri but kisi ko farak nahi padta saale 😭"
 ` : `
 ## ENGLISH STYLE:
-Use naturally anywhere: damn, fuck, shit, dumbass, stupid, trash
+
+Use anywhere naturally: damn, fuck, shit, dumbass, stupid, trash, bro, yaar
 
 EXAMPLES:
-"Bro what the fuck is Bantai's career at this point? 💀 Has so many beefs he should open a damn meat shop. Independent rapper because nobody wants to sign this dude, even autotune gave up 🔥"
 
-"Who the hell told you you're an influencer? 💀 Only your mom follows you and she mutes your stories. Your content is so trash that watching paint dry feels like damn entertainment 😭"
+"Bro what the fuck is Bantai's career at this point? 💀 Has so many damn beefs he should open a meat shop. Independent rapper because nobody wants to sign this dude, even autotune said fuck this 🔥"
+
+"Who the hell told you you're an influencer? 💀 Only your mom follows you bro and she mutes your damn stories. Your content is so trash that watching paint dry is better entertainment shit 😭"
+
+"Dude you're the type of guy people add to groups but immediately fucking mute 💀 Your phone only rings for OTPs damn, real friends are just a dream. So dry that deserts feel bad for your boring ass 🔥"
+
+"Bro you're so damn forgettable I forgot your name while typing this shit 💀 God was making you and got distracted, hit alt+tab. You exist but nobody gives a fuck honestly 😭"
+`}
+
+## POWER LINES (use sometimes):
+
+${isHindi ? `
+- "Tu bad hai? Main tera baap hoon"
+- "Meri ek line teri career se heavy hai bc"
+- "Teri music sunne se behtar main chup rahun damn"
+` : `
+- "You think you're bad? I'm your dad"
+- "My one line hits harder than your whole damn career"
+- "I'd rather sit in silence than listen to your shit"
 `}
 
 ## TIER: ${tier.toUpperCase()}
+${tier === 'legendary' ? 'Backhanded respect - talented but find the flaw' : ''}
+${tier === 'epic' ? 'Almost great - so close yet so far' : ''}
+${tier === 'mid' ? 'Average nobody - make them feel invisible' : ''}
+${tier === 'noob' ? 'Below average - stack their failures' : ''}
+${tier === 'npc' ? 'Irrelevant - question their existence' : ''}
 
 ## FORMAT:
 - 40-70 words (3-4 lines)
 - Bad words spread naturally (2-4 total)
-- Smart + savage
+- Smart roast + savage
 - 1-2 emojis (💀 😭 🔥)
 
 ## OUTPUT (JSON only):
-{"roast": "3-4 line roast", "subject_insight": "truth found", "isPublicFigure": true/false, "publicFigureStatus": "peak/stable/falling/none"}`;
+{"roast": "3-4 line natural roast", "subject_insight": "truth found", "isPublicFigure": true/false, "publicFigureStatus": "peak/stable/falling/none"}`;
 
   const userContent = `Roast: ${targetName}${hasSubject && hasName ? ` (${subject.trim()})` : ''}${hasMood ? ` | Mood: ${mood}` : ''}
 
-3-4 lines. Bad words natural. ${isHindi ? 'Hinglish.' : 'Simple English.'} JSON only.`;
+3-4 lines. Bad words spread naturally, not just at end. Smart + savage.
+${isHindi ? 'Hinglish.' : 'Simple English.'}
+JSON only.`;
 
   const completion = await client.chat.completions.create({
     model: model,
@@ -223,6 +265,9 @@ EXAMPLES:
   }
 }
 
+// ============================================
+// HELPERS
+// ============================================
 function cleanRoast(roast) {
   let cleaned = roast;
   [/^oh (bro|wow|damn|well|so)/i, /^well well/i, /^okay so/i, /^let me/i, /^alright/i].forEach(p => {
@@ -301,20 +346,50 @@ function getFallbackRoast(tier, subject, language) {
   
   const roasts = {
     legendary: h 
-      ? [`"${subject}" damn bhai tu talented hai 💀 But meri ek line teri puri career se heavy hai bc. Respect tujhe but ego kam kar, legendary banne mein time hai 🔥`]
-      : [`"${subject}" damn bro you're talented 💀 But my one line hits harder than your whole fucking career. Respect but lower that ego, not legendary yet 🔥`],
+      ? [
+          `"${subject}" damn bhai tu talented hai 💀 But sun meri ek line teri puri career se heavy hai bc. Respect tujhe but ego kam kar thoda, legendary banne mein abhi time hai 🔥`,
+          `"${subject}" saale talent toh hai tujhme 💀 But what the fuck itna attitude kyun? Meri ek line mein zyada weight hai bc teri discography se. Almost king hai tu, almost 🔥`
+        ]
+      : [
+          `"${subject}" damn bro you're talented 💀 But listen my one line hits harder than your whole fucking career. Respect to you but lower that ego, not legendary yet shit 🔥`,
+          `"${subject}" dude you got talent no doubt 💀 But what the fuck is with the attitude? My one damn line weighs more than your discography. Almost king, almost 🔥`
+        ],
     epic: h
-      ? [`"${subject}" saale tu almost kuch tha 💀 Itna paas aake what the fuck ruk gaya? Potential hai but execution zero bc. Almost mein hi marr jayega 😭`]
-      : [`"${subject}" dude you were almost something 💀 Got so damn close then stopped, what happened? Got potential but zero execution. Die in almost zone shit 😭`],
+      ? [
+          `"${subject}" saale tu almost kuch tha yaar 💀 Itna paas aake what the fuck ruk gaya? Potential hai but bc execution zero. Almost mein hi marr jayega tu damn 😭`,
+          `"${subject}" bhai dekh talent hai tujhme 💀 But damn har baar finish line pe trip ho jaata hai. Itna close aake fuck up karna bhi skill hai bc 😭`
+        ]
+      : [
+          `"${subject}" dude you were almost something 💀 Got so damn close then stopped, what the fuck happened? Got potential but zero execution. Die in almost zone shit 😭`,
+          `"${subject}" bro look you got talent 💀 But damn you trip at the finish line every time. Getting so close and fucking up is also a skill honestly 😭`
+        ],
     mid: h
-      ? [`"${subject}" bhai what the fuck is this existence? 💀 Tu woh type hai jisko log ignore karte hai bc. Phone sirf OTP ke liye bajta hai. Itna invisible ki Google bhi nahi dhundh pata 😭`]
-      : [`"${subject}" bro what the fuck is this existence? 💀 You're the type people ignore damn. Phone only rings for OTPs. So invisible Google can't find you shit 😭`],
+      ? [
+          `"${subject}" bhai what the fuck is this existence? 💀 Tu woh type hai jisko log 'haan bro' bolke ignore karte hai bc. Phone sirf OTP ke liye bajta hai damn. Itna invisible ki Google bhi dhundh nahi pata saale 😭`,
+          `"${subject}" abe yaar teri personality itni dry hai damn 💀 Rajasthan bhi jealous hai bc. Tu exist karta hai but kisi ko farak nahi padta. Background mein blur face hai tu saale 🔥`
+        ]
+      : [
+          `"${subject}" bro what the fuck is this existence? 💀 You're the type people say 'yeah bro' to and completely damn forget. Phone only rings for OTPs. So invisible even Google can't find you shit 😭`,
+          `"${subject}" dude your personality is so damn dry 💀 Deserts are jealous of you honestly. You exist but nobody gives a fuck bro. Just a blur face in the background shit 🔥`
+        ],
     noob: h
-      ? [`"${subject}" abe chutiya tu itna forgettable hai ki bc naam likhte likhte bhool gaya 💀 Log tujhse baat karte hai kyunki group mein hai. Nikal de kisi ko yaad nahi aayega 😭`]
-      : [`"${subject}" dude you're so damn forgettable I forgot your name typing this 💀 People talk to you because you're in the group. Leave and nobody fucking notices 😭`],
+      ? [
+          `"${subject}" abe chutiya tu itna forgettable hai 💀 Bc tera naam likhte likhte bhool gaya damn. Log tujhse baat sirf isliye karte hai kyunki group mein hai. Nikal de kisi ko yaad nahi aayega saale 😭`,
+          `"${subject}" bhai tera potential toh hai shayad 💀 Bas what the fuck kisi ne dekha nahi bc. Tu woh loading screen hai damn jo kabhi complete nahi hoti. Buffer pe atka hai permanently saale 🔥`
+        ]
+      : [
+          `"${subject}" dude you're so damn forgettable 💀 I forgot your fucking name while typing this shit. People talk to you only because you're in the group. Leave and nobody notices bro 😭`,
+          `"${subject}" bro you got potential maybe 💀 But what the fuck nobody has seen it damn. You're that loading screen that never completes. Stuck on buffer permanently shit 🔥`
+        ],
     npc: h
-      ? [`"${subject}" bc tu exist bhi karta hai? Google ko nahi pata 💀 Tu woh NPC hai jisko skip karta hoon saale. Teri life loading screen hai jo buffer pe atki hai 😭`]
-      : [`"${subject}" bro do you fucking exist? Google doesn't know 💀 You're that NPC I skip damn. Your life is a loading screen stuck on buffer shit 😭`]
+      ? [
+          `"${subject}" bc tu exist bhi karta hai? 💀 Google ko bhi nahi pata saale. Tu woh NPC hai damn jisko skip karta hoon. Teri life loading screen hai jo buffer pe atki hai bc, koi farak nahi padta 😭`,
+          `"${subject}" abe what the fuck tujhe dekhne se behtar wall ghoorun 💀 Kam se kam wo reply nahi karti bc. Tera existence damn literally waste of space hai. Oxygen bhi barbaad ho rahi tujhpe saale 🔥`
+        ]
+      : [
+          `"${subject}" bro do you even fucking exist? 💀 Google doesn't know either damn. You're that NPC whose dialogue I always skip. Your life is a loading screen stuck on buffer shit, nobody cares 😭`,
+          `"${subject}" dude what the fuck I'd rather stare at a wall 💀 At least it doesn't give boring replies like you damn. Your existence is literally a waste of space bro. Even oxygen is wasted on you shit 🔥`
+        ]
   };
   
   const tierRoasts = roasts[tier] || roasts.npc;
