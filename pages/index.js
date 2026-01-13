@@ -41,7 +41,6 @@ export default function Home() {
   const [chatSubject, setChatSubject] = useState('');
   const [chatMood, setChatMood] = useState('');
   const [chatInitialRoast, setChatInitialRoast] = useState('');
-  const [copied, setCopied] = useState(false);
   const [roastCount, setRoastCount] = useState(47832);
   const [activeUsers, setActiveUsers] = useState(23);
 
@@ -134,244 +133,6 @@ export default function Home() {
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
 
-      <style jsx global>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-
-        body {
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-          background: #0a0a0f;
-          min-height: 100vh;
-          color: #ffffff;
-          overflow-x: hidden;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-          width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #0a0a0f;
-        }
-        ::-webkit-scrollbar-thumb {
-          background: linear-gradient(180deg, #FFD700, #FF4500);
-          border-radius: 3px;
-        }
-
-        /* Animations */
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-
-        @keyframes glow {
-          0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
-          50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.6); }
-        }
-
-        @keyframes shimmer {
-          0% { background-position: -200% center; }
-          100% { background-position: 200% center; }
-        }
-
-        @keyframes pulse-ring {
-          0% { transform: scale(0.95); opacity: 1; }
-          50% { transform: scale(1); opacity: 0.8; }
-          100% { transform: scale(0.95); opacity: 1; }
-        }
-
-        @keyframes gradient-shift {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .float { animation: float 3s ease-in-out infinite; }
-        .glow { animation: glow 2s ease-in-out infinite; }
-        .pulse-ring { animation: pulse-ring 2s ease-in-out infinite; }
-        .fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
-
-        .shimmer-text {
-          background: linear-gradient(90deg, #FFD700 0%, #FFF 50%, #FFD700 100%);
-          background-size: 200% auto;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          animation: shimmer 3s linear infinite;
-        }
-
-        .gradient-border {
-          position: relative;
-          background: #12121a;
-          border-radius: 20px;
-        }
-        .gradient-border::before {
-          content: '';
-          position: absolute;
-          inset: -2px;
-          border-radius: 22px;
-          background: linear-gradient(135deg, #FFD700, #FF4500, #9400D3, #00FFFF);
-          background-size: 300% 300%;
-          animation: gradient-shift 4s ease infinite;
-          z-index: -1;
-          opacity: 0.7;
-        }
-
-        .glass-card {
-          background: rgba(18, 18, 26, 0.8);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 24px;
-        }
-
-        .premium-input {
-          width: 100%;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 16px;
-          padding: 16px 20px;
-          color: #ffffff;
-          font-size: 1rem;
-          font-family: inherit;
-          transition: all 0.3s ease;
-          outline: none;
-        }
-        .premium-input:focus {
-          border-color: #FFD700;
-          box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
-          background: rgba(255, 255, 255, 0.05);
-        }
-        .premium-input::placeholder {
-          color: rgba(255, 255, 255, 0.3);
-        }
-
-        .premium-btn {
-          position: relative;
-          padding: 18px 32px;
-          border: none;
-          border-radius: 16px;
-          font-size: 1.1rem;
-          font-weight: 700;
-          cursor: pointer;
-          overflow: hidden;
-          transition: all 0.3s ease;
-        }
-        .premium-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .mood-chip {
-          padding: 12px 18px;
-          border-radius: 14px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: rgba(255, 255, 255, 0.7);
-          font-size: 0.9rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        .mood-chip:hover {
-          background: rgba(255, 255, 255, 0.08);
-          border-color: rgba(255, 255, 255, 0.15);
-          transform: translateY(-2px);
-        }
-        .mood-chip.active {
-          background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 69, 0, 0.2));
-          border-color: #FFD700;
-          color: #FFD700;
-        }
-
-        .stat-card {
-          text-align: center;
-          padding: 16px;
-        }
-        .stat-number {
-          font-size: 1.8rem;
-          font-weight: 800;
-          background: linear-gradient(135deg, #FFD700, #FF4500);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-        .stat-label {
-          font-size: 0.75rem;
-          color: rgba(255, 255, 255, 0.5);
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          margin-top: 4px;
-        }
-
-        .trending-chip {
-          padding: 8px 14px;
-          border-radius: 20px;
-          background: rgba(255, 215, 0, 0.1);
-          border: 1px solid rgba(255, 215, 0, 0.3);
-          color: #FFD700;
-          font-size: 0.8rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        .trending-chip:hover {
-          background: rgba(255, 215, 0, 0.2);
-          transform: scale(1.05);
-        }
-
-        .rarity-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 6px 12px;
-          border-radius: 8px;
-          font-size: 0.7rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .language-toggle {
-          display: flex;
-          background: rgba(255, 255, 255, 0.03);
-          border-radius: 12px;
-          padding: 4px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .language-btn {
-          flex: 1;
-          padding: 12px 20px;
-          border: none;
-          border-radius: 10px;
-          font-size: 0.9rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          background: transparent;
-          color: rgba(255, 255, 255, 0.5);
-        }
-        .language-btn.active {
-          background: linear-gradient(135deg, #FFD700, #FF8C00);
-          color: #000;
-        }
-      `}</style>
-
       {/* Background Elements */}
       <div style={{
         position: 'fixed',
@@ -425,13 +186,7 @@ export default function Home() {
             padding: '6px 14px',
             marginBottom: '20px'
           }}>
-            <span style={{
-              width: '8px',
-              height: '8px',
-              background: '#FF0000',
-              borderRadius: '50%',
-              animation: 'pulse-ring 1.5s infinite'
-            }} />
+            <span className="live-dot" />
             <span style={{ fontSize: '0.75rem', color: '#FF6B6B', fontWeight: '600' }}>
               {activeUsers} people roasting right now
             </span>
@@ -692,38 +447,24 @@ export default function Home() {
               <button
                 onClick={generateAura}
                 disabled={loading || !canSubmit}
-                className="premium-btn glow"
+                className={`premium-btn ${!loading && canSubmit ? 'glow' : ''}`}
                 style={{
                   width: '100%',
                   background: loading || !canSubmit
                     ? 'rgba(255,255,255,0.1)'
                     : 'linear-gradient(135deg, #FFD700 0%, #FF4500 50%, #FF0000 100%)',
-                  color: loading || !canSubmit ? 'rgba(255,255,255,0.3)' : '#000',
-                  fontFamily: "'Space Grotesk', sans-serif"
+                  color: loading || !canSubmit ? 'rgba(255,255,255,0.3)' : '#000'
                 }}
               >
                 {loading ? (
                   <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                    <span style={{
-                      width: '20px',
-                      height: '20px',
-                      border: '2px solid rgba(0,0,0,0.2)',
-                      borderTopColor: '#000',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite'
-                    }} />
+                    <span className="spinner" />
                     Analyzing Your Aura...
                   </span>
                 ) : (
                   '🔥 Get Roasted'
                 )}
               </button>
-
-              <style jsx>{`
-                @keyframes spin {
-                  to { transform: rotate(360deg); }
-                }
-              `}</style>
             </div>
 
             {/* Rarity Info Card */}
@@ -897,4 +638,4 @@ export default function Home() {
       </div>
     </>
   );
-         }
+        }
