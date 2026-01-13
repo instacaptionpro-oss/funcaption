@@ -5,53 +5,36 @@ import RoastChat from '../components/RoastChat';
 
 // Mood options
 const moodOptions = [
+  { id: 'savage', emoji: '🔥', label: 'Savage' },
   { id: 'funny', emoji: '😂', label: 'Funny' },
-  { id: 'fire', emoji: '🔥', label: 'Fire' },
-  { id: 'aesthetic', emoji: '✨', label: 'Aesthetic' },
   { id: 'deep', emoji: '🧠', label: 'Deep' },
-  { id: 'poetic', emoji: '✍️', label: 'Poetic' },
-  { id: 'motivation', emoji: '🚀', label: 'Motivation' },
-  { id: 'more', emoji: '➕', label: 'More' }
+  { id: 'attitude', emoji: '😎', label: 'Attitude' },
+  { id: 'sarcastic', emoji: '🙄', label: 'Sarcastic' },
 ];
 
 const extendedMoods = [
-  { id: 'attitude', emoji: '😎', label: 'Attitude' },
+  { id: 'fire', emoji: '💥', label: 'Fire' },
+  { id: 'aesthetic', emoji: '✨', label: 'Aesthetic' },
+  { id: 'poetic', emoji: '✍️', label: 'Poetic' },
+  { id: 'motivation', emoji: '🚀', label: 'Motivation' },
   { id: 'love', emoji: '💕', label: 'Love' },
   { id: 'breakup', emoji: '💔', label: 'Breakup' },
-  { id: 'savage', emoji: '🐍', label: 'Savage' },
   { id: 'sad', emoji: '😢', label: 'Sad' },
-  { id: 'happy', emoji: '😊', label: 'Happy' },
-  { id: 'alone', emoji: '🌙', label: 'Alone' },
   { id: 'confident', emoji: '💪', label: 'Confident' },
-  { id: 'romantic', emoji: '🌹', label: 'Romantic' },
-  { id: 'sarcastic', emoji: '🙄', label: 'Sarcastic' },
-  { id: 'nostalgic', emoji: '📷', label: 'Nostalgic' },
   { id: 'rebellious', emoji: '⚡', label: 'Rebellious' }
 ];
 
-// Example subjects
-const exampleSubjects = [
-  "Why I'm always late",
-  "My terrible cooking skills", 
-  "My obsession with K-dramas",
-  "My inconsistent workout routine",
-  "My terrible cooking skills"
-];
-
-// Example celebrity names for influencer sensing
-const exampleCelebrities = [
-  { name: "Samay Raina", hint: "Chess streamer at peak" },
-  { name: "Elon Musk", hint: "Tech billionaire" },
-  { name: "Taylor Swift", hint: "Pop icon" }
+// Trending names for social proof
+const trendingNames = [
+  "Samay Raina", "Carry Minati", "Dhoni", "Virat Kohli", "Elon Musk"
 ];
 
 export default function Home() {
   const [name, setName] = useState('');
   const [subject, setSubject] = useState('');
-  const [selectedMood, setSelectedMood] = useState('fire');
-  const [language, setLanguage] = useState('english'); // Added language state - defaults to English
+  const [selectedMood, setSelectedMood] = useState('savage');
+  const [language, setLanguage] = useState('english');
   const [showExtendedMoods, setShowExtendedMoods] = useState(false);
-  const [currentExample, setCurrentExample] = useState(0);
   const [loading, setLoading] = useState(false);
   const [aura, setAura] = useState(null);
   const [showRoastChat, setShowRoastChat] = useState(false);
@@ -59,16 +42,19 @@ export default function Home() {
   const [chatMood, setChatMood] = useState('');
   const [chatInitialRoast, setChatInitialRoast] = useState('');
   const [copied, setCopied] = useState(false);
+  const [roastCount, setRoastCount] = useState(47832);
+  const [activeUsers, setActiveUsers] = useState(23);
 
-  // Cycle through example subjects
+  // Simulate live counters for social proof
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentExample(prev => (prev + 1) % 3);
-    }, 3000);
+      setRoastCount(prev => prev + Math.floor(Math.random() * 3));
+      setActiveUsers(Math.floor(Math.random() * 30) + 15);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  const selectMoodDirectly = (moodId) => {
+  const selectMood = (moodId) => {
     if (moodId === 'more') {
       setShowExtendedMoods(!showExtendedMoods);
       return;
@@ -77,38 +63,13 @@ export default function Home() {
     setShowExtendedMoods(false);
   };
 
-  const selectExtendedMood = (moodId) => {
-    setSelectedMood(moodId);
-    setShowExtendedMoods(false);
-  };
-
-  // Example subject handler
-  const useExampleSubject = (exampleSubject) => {
-    setSubject(exampleSubject);
-    
-    let selectedMood;
-    if (exampleSubject === "My inconsistent workout routine") {
-      selectedMood = 'funny';
-    } else if (exampleSubject === "My terrible cooking skills") {
-      selectedMood = 'funny';
-    } else {
-      const noobMoods = ['funny', 'sad', 'alone'];
-      selectedMood = noobMoods[Math.floor(Math.random() * noobMoods.length)];
-    }
-    setSelectedMood(selectedMood);
-  };
-
-  // Example celebrity handler
-  const useCelebrity = (celebName) => {
-    setName(celebName);
-    setSubject('Their current relevance in 2025');
+  const useTrendingName = (trendName) => {
+    setName(trendName);
     setSelectedMood('savage');
   };
 
   const generateAura = async (e) => {
     e.preventDefault();
-    
-    // At least one field required
     if (!subject.trim() && !name.trim()) return;
 
     setLoading(true);
@@ -122,13 +83,14 @@ export default function Home() {
           name: name.trim(),
           subject: subject.trim(), 
           mood: selectedMood,
-          language: language // Added language to the request
+          language: language
         })
       });
 
       const data = await response.json();
       if (response.ok) {
         setAura(data.aura);
+        setRoastCount(prev => prev + 1);
       } else {
         setAura(data.fallback);
       }
@@ -136,31 +98,14 @@ export default function Home() {
       console.error('Generation error:', err);
       setAura({
         score: Math.floor(Math.random() * 60),
-        roast: "Your energy is so weak, even ghosts avoid you. 💀",
-        subjectInsight: "Interesting choice, very telling...",
+        roast: "Your energy crashed our servers. That's how weak it is. 💀",
+        subjectInsight: "Error 404: Aura not found",
         rarity: "npc",
         title: "NPC",
-        challenge: "ERROR 404: EXISTENCE NOT FOUND."
+        challenge: "SYSTEM COULDN'T HANDLE YOUR AVERAGE ENERGY."
       });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleShare = async () => {
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'My Aura Score!',
-          text: `I got ${aura.score}/${aura.title} on AuraScore! Can you beat it?`,
-          url: window.location.href
-        });
-      } catch (err) {
-        console.log('Sharing failed:', err);
-      }
     }
   };
 
@@ -171,22 +116,22 @@ export default function Home() {
     setShowRoastChat(true);
   };
 
-  const getCurrentMoodInfo = () => {
-    const mainMood = moodOptions.find(m => m.id === selectedMood);
-    if (mainMood) return mainMood;
-    return extendedMoods.find(m => m.id === selectedMood) || { emoji: '🔥', label: 'Fire' }
+  const resetForm = () => {
+    setAura(null);
+    setSubject('');
+    setName('');
   };
 
-  const currentMoodInfo = getCurrentMoodInfo();
   const canSubmit = subject.trim() || name.trim();
 
   return (
     <>
       <Head>
-        <title>AuraScore - Get Your Roasted Aura Card</title>
+        <title>AuraScore™ - The Ultimate Roast Experience</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <meta name="description" content="Discover your aura score and get brutally roasted!" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+        <meta name="description" content="Get your aura scored and brutally roasted by AI. Join 50K+ people who dared to know the truth." />
+        <meta name="theme-color" content="#0a0a0f" />
+        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
 
       <style jsx global>{`
@@ -198,425 +143,529 @@ export default function Home() {
 
         body {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-          background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+          background: #0a0a0f;
           min-height: 100vh;
           color: #ffffff;
           overflow-x: hidden;
         }
 
-        .pulse {
-          animation: pulse 2s infinite;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+          width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #0a0a0f;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: linear-gradient(180deg, #FFD700, #FF4500);
+          border-radius: 3px;
         }
 
-        @keyframes pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.05); }
-          100% { transform: scale(1); }
+        /* Animations */
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
         }
 
-        .gradient-text {
-          background: linear-gradient(45deg, #FFD700, #FF4500, #9400D3);
+        @keyframes glow {
+          0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+          50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.6); }
+        }
+
+        @keyframes shimmer {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
+
+        @keyframes pulse-ring {
+          0% { transform: scale(0.95); opacity: 1; }
+          50% { transform: scale(1); opacity: 0.8; }
+          100% { transform: scale(0.95); opacity: 1; }
+        }
+
+        @keyframes gradient-shift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .float { animation: float 3s ease-in-out infinite; }
+        .glow { animation: glow 2s ease-in-out infinite; }
+        .pulse-ring { animation: pulse-ring 2s ease-in-out infinite; }
+        .fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+
+        .shimmer-text {
+          background: linear-gradient(90deg, #FFD700 0%, #FFF 50%, #FFD700 100%);
+          background-size: 200% auto;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          background-clip: text;
+          animation: shimmer 3s linear infinite;
         }
 
-        input::placeholder, textarea::placeholder {
-          color: #666666;
+        .gradient-border {
+          position: relative;
+          background: #12121a;
+          border-radius: 20px;
+        }
+        .gradient-border::before {
+          content: '';
+          position: absolute;
+          inset: -2px;
+          border-radius: 22px;
+          background: linear-gradient(135deg, #FFD700, #FF4500, #9400D3, #00FFFF);
+          background-size: 300% 300%;
+          animation: gradient-shift 4s ease infinite;
+          z-index: -1;
+          opacity: 0.7;
+        }
+
+        .glass-card {
+          background: rgba(18, 18, 26, 0.8);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 24px;
+        }
+
+        .premium-input {
+          width: 100%;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 16px;
+          padding: 16px 20px;
+          color: #ffffff;
+          font-size: 1rem;
+          font-family: inherit;
+          transition: all 0.3s ease;
+          outline: none;
+        }
+        .premium-input:focus {
+          border-color: #FFD700;
+          box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+          background: rgba(255, 255, 255, 0.05);
+        }
+        .premium-input::placeholder {
+          color: rgba(255, 255, 255, 0.3);
+        }
+
+        .premium-btn {
+          position: relative;
+          padding: 18px 32px;
+          border: none;
+          border-radius: 16px;
+          font-size: 1.1rem;
+          font-weight: 700;
+          cursor: pointer;
+          overflow: hidden;
+          transition: all 0.3s ease;
+        }
+        .premium-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .mood-chip {
+          padding: 12px 18px;
+          border-radius: 14px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 0.9rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .mood-chip:hover {
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.15);
+          transform: translateY(-2px);
+        }
+        .mood-chip.active {
+          background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 69, 0, 0.2));
+          border-color: #FFD700;
+          color: #FFD700;
+        }
+
+        .stat-card {
+          text-align: center;
+          padding: 16px;
+        }
+        .stat-number {
+          font-size: 1.8rem;
+          font-weight: 800;
+          background: linear-gradient(135deg, #FFD700, #FF4500);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .stat-label {
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.5);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-top: 4px;
+        }
+
+        .trending-chip {
+          padding: 8px 14px;
+          border-radius: 20px;
+          background: rgba(255, 215, 0, 0.1);
+          border: 1px solid rgba(255, 215, 0, 0.3);
+          color: #FFD700;
+          font-size: 0.8rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .trending-chip:hover {
+          background: rgba(255, 215, 0, 0.2);
+          transform: scale(1.05);
+        }
+
+        .rarity-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-size: 0.7rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .language-toggle {
+          display: flex;
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 12px;
+          padding: 4px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .language-btn {
+          flex: 1;
+          padding: 12px 20px;
+          border: none;
+          border-radius: 10px;
+          font-size: 0.9rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.5);
+        }
+        .language-btn.active {
+          background: linear-gradient(135deg, #FFD700, #FF8C00);
+          color: #000;
         }
       `}</style>
+
+      {/* Background Elements */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a0f 50%)',
+        zIndex: -2
+      }} />
+      <div style={{
+        position: 'fixed',
+        top: '10%',
+        left: '5%',
+        width: '300px',
+        height: '300px',
+        background: 'radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%)',
+        borderRadius: '50%',
+        filter: 'blur(60px)',
+        zIndex: -1
+      }} />
+      <div style={{
+        position: 'fixed',
+        bottom: '20%',
+        right: '10%',
+        width: '250px',
+        height: '250px',
+        background: 'radial-gradient(circle, rgba(148,0,211,0.1) 0%, transparent 70%)',
+        borderRadius: '50%',
+        filter: 'blur(60px)',
+        zIndex: -1
+      }} />
 
       <div style={{ 
         minHeight: '100vh',
         padding: '20px',
-        maxWidth: '500px',
-        margin: '0 auto',
-        background: 'transparent'
+        maxWidth: '480px',
+        margin: '0 auto'
       }}>
         
         {/* Header */}
         <header style={{
           textAlign: 'center',
-          padding: '30px 0 20px'
+          padding: '40px 0 30px'
         }}>
-          <h1 className="gradient-text" style={{
-            fontSize: '2.8rem',
-            fontWeight: '900',
-            marginBottom: '10px',
-            letterSpacing: '-0.03em'
+          {/* Live Badge */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'rgba(255, 0, 0, 0.1)',
+            border: '1px solid rgba(255, 0, 0, 0.3)',
+            borderRadius: '20px',
+            padding: '6px 14px',
+            marginBottom: '20px'
           }}>
-            AuraScore
+            <span style={{
+              width: '8px',
+              height: '8px',
+              background: '#FF0000',
+              borderRadius: '50%',
+              animation: 'pulse-ring 1.5s infinite'
+            }} />
+            <span style={{ fontSize: '0.75rem', color: '#FF6B6B', fontWeight: '600' }}>
+              {activeUsers} people roasting right now
+            </span>
+          </div>
+
+          {/* Logo */}
+          <h1 className="shimmer-text" style={{
+            fontSize: '3rem',
+            fontWeight: '800',
+            letterSpacing: '-0.03em',
+            marginBottom: '12px',
+            fontFamily: "'Space Grotesk', sans-serif"
+          }}>
+            AuraScore™
           </h1>
+          
           <p style={{
-            fontSize: '1.1rem',
-            fontWeight: '600',
-            color: '#a0a0a0',
-            marginBottom: '30px'
+            fontSize: '1rem',
+            color: 'rgba(255, 255, 255, 0.6)',
+            fontWeight: '500',
+            marginBottom: '24px'
           }}>
-            Get brutally roasted. Level up your aura.
+            The AI that roasts without mercy
           </p>
+
+          {/* Stats */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '30px'
+          }}>
+            <div className="stat-card">
+              <div className="stat-number">{roastCount.toLocaleString()}</div>
+              <div className="stat-label">Roasts Generated</div>
+            </div>
+            <div style={{
+              width: '1px',
+              background: 'rgba(255,255,255,0.1)'
+            }} />
+            <div className="stat-card">
+              <div className="stat-number">1%</div>
+              <div className="stat-label">Get Legendary</div>
+            </div>
+          </div>
         </header>
 
         {/* Main Content */}
         {!aura ? (
-          <>
-            {/* Input Form */}
-            <div style={{
-              background: 'rgba(30, 30, 50, 0.7)',
-              borderRadius: '24px',
-              padding: '24px',
-              marginBottom: '20px',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255,255,255,0.1)'
-            }}>
+          <div className="fade-in-up">
+            {/* Main Form Card */}
+            <div className="glass-card" style={{ padding: '28px', marginBottom: '20px' }}>
               
-              {/* Language Selector */}
-              <div style={{ marginBottom: '20px' }}>
+              {/* Language Toggle */}
+              <div style={{ marginBottom: '28px' }}>
                 <label style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  fontSize: '1rem',
-                  fontWeight: '700',
-                  color: '#9400D3',
+                  display: 'block',
+                  fontSize: '0.8rem',
+                  fontWeight: '600',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
                   marginBottom: '12px'
                 }}>
-                  <span style={{ fontSize: '1.4rem' }}>🌐</span>
                   Language
                 </label>
-                
-                <div style={{
-                  display: 'flex',
-                  gap: '10px'
-                }}>
+                <div className="language-toggle">
                   <button
+                    className={`language-btn ${language === 'english' ? 'active' : ''}`}
                     onClick={() => setLanguage('english')}
-                    style={{
-                      flex: 1,
-                      padding: '12px',
-                      borderRadius: '12px',
-                      background: language === 'english' 
-                        ? 'linear-gradient(45deg, #9400D3, #4B0082)' 
-                        : 'rgba(40, 40, 60, 0.8)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      color: language === 'english' ? '#ffffff' : '#a0a0a0',
-                      fontSize: '0.9rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
                   >
-                    English
+                    🇬🇧 English
                   </button>
                   <button
+                    className={`language-btn ${language === 'hindi' ? 'active' : ''}`}
                     onClick={() => setLanguage('hindi')}
-                    style={{
-                      flex: 1,
-                      padding: '12px',
-                      borderRadius: '12px',
-                      background: language === 'hindi' 
-                        ? 'linear-gradient(45deg, #9400D3, #4B0082)' 
-                        : 'rgba(40, 40, 60, 0.8)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      color: language === 'hindi' ? '#ffffff' : '#a0a0a0',
-                      fontSize: '0.9rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
                   >
-                    हिंदी
+                    🇮🇳 हिंदी
                   </button>
                 </div>
               </div>
 
-              {/* ============================================ */}
-              {/* NAME FIELD (Optional) - NEW! */}
-              {/* ============================================ */}
-              <div style={{ marginBottom: '20px' }}>
+              {/* Name Input */}
+              <div style={{ marginBottom: '24px' }}>
                 <label style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '10px',
-                  fontSize: '1rem',
-                  fontWeight: '700',
-                  color: '#FFD700',
+                  justifyContent: 'space-between',
                   marginBottom: '12px'
                 }}>
-                  <span style={{ fontSize: '1.4rem' }}>👤</span>
-                  Name
                   <span style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    padding: '3px 10px',
-                    borderRadius: '8px',
-                    fontSize: '0.7rem',
+                    fontSize: '0.8rem',
+                    fontWeight: '600',
                     color: 'rgba(255, 255, 255, 0.5)',
-                    fontWeight: '500'
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                  }}>
+                    Who to roast?
+                  </span>
+                  <span style={{
+                    fontSize: '0.7rem',
+                    color: 'rgba(255, 215, 0, 0.7)',
+                    background: 'rgba(255, 215, 0, 0.1)',
+                    padding: '4px 10px',
+                    borderRadius: '6px'
                   }}>
                     Optional
                   </span>
                 </label>
-                
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter name (celebrity, friend, or yours)"
-                  style={{
-                    width: '100%',
-                    padding: '14px 16px',
-                    background: 'rgba(20, 20, 35, 0.8)',
-                    border: '2px solid rgba(255, 215, 0, 0.2)',
-                    borderRadius: '14px',
-                    outline: 'none',
-                    color: '#ffffff',
-                    fontSize: '1rem',
-                    fontWeight: '500',
-                    fontFamily: 'inherit',
-                    transition: 'border-color 0.2s ease'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#FFD700'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 215, 0, 0.2)'}
+                  placeholder="Celebrity, friend, or yourself..."
+                  className="premium-input"
                 />
-                
-                <p style={{
-                  marginTop: '8px',
-                  fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.4)'
-                }}>
-                  💡 Try a celebrity name for personalized roasts with Influencer Sensing™
-                </p>
               </div>
 
-              {/* Celebrity Examples */}
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: '0.85rem',
-                  fontWeight: '600',
-                  color: '#a0a0a0',
-                  marginBottom: '10px'
+              {/* Trending Names */}
+              <div style={{ marginBottom: '28px' }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginBottom: '12px'
                 }}>
-                  🌟 Try Celebrity Names:
-                </label>
+                  <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>🔥 TRENDING</span>
+                </div>
                 <div style={{
                   display: 'flex',
                   flexWrap: 'wrap',
                   gap: '8px'
                 }}>
-                  {exampleCelebrities.map((celeb, index) => (
+                  {trendingNames.map((trendName, i) => (
                     <button
-                      key={index}
-                      onClick={() => useCelebrity(celeb.name)}
-                      style={{
-                        padding: '8px 14px',
-                        borderRadius: '12px',
-                        background: 'rgba(255, 215, 0, 0.15)',
-                        border: '1px solid rgba(255, 215, 0, 0.4)',
-                        color: '#FFD700',
-                        fontSize: '0.8rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
+                      key={i}
+                      className="trending-chip"
+                      onClick={() => useTrendingName(trendName)}
                     >
-                      {celeb.name}
+                      {trendName}
                     </button>
                   ))}
                 </div>
-                <p style={{
-                  marginTop: '6px',
-                  fontSize: '0.7rem',
-                  color: 'rgba(255, 255, 255, 0.3)'
-                }}>
-                  ⚠️ Even celebs only have 10% chance of Legendary!
-                </p>
               </div>
 
               {/* Divider */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '15px',
-                margin: '20px 0'
+                gap: '16px',
+                margin: '28px 0'
               }}>
-                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
-                <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>AND / OR</span>
-                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
+                <span style={{ 
+                  color: 'rgba(255,255,255,0.3)', 
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  letterSpacing: '2px'
+                }}>
+                  AND / OR
+                </span>
+                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
               </div>
 
-              {/* ============================================ */}
-              {/* SUBJECT FIELD */}
-              {/* ============================================ */}
-              <label style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                fontSize: '1rem',
-                fontWeight: '700',
-                color: '#00FFFF',
-                marginBottom: '12px'
-              }}>
-                <span style={{ fontSize: '1.4rem' }}>🔮</span>
-                What to roast?
-              </label>
-              
-              <div style={{ position: 'relative', marginBottom: '20px' }}>
+              {/* Subject Input */}
+              <div style={{ marginBottom: '28px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.8rem',
+                  fontWeight: '600',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  marginBottom: '12px'
+                }}>
+                  What to roast about?
+                </label>
                 <textarea
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Personality trait, habit, situation, or context..."
+                  placeholder="Their habit, personality, career, looks, anything..."
+                  className="premium-input"
                   style={{
-                    width: '100%',
                     minHeight: '100px',
-                    background: 'rgba(20, 20, 35, 0.8)',
-                    border: '2px solid rgba(0, 255, 255, 0.2)',
-                    borderRadius: '14px',
-                    padding: '14px 16px',
-                    outline: 'none',
-                    color: '#ffffff',
-                    fontSize: '1rem',
-                    fontWeight: '500',
-                    lineHeight: '1.6',
                     resize: 'none',
-                    fontFamily: 'inherit',
-                    transition: 'border-color 0.2s ease'
+                    lineHeight: '1.6'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#00FFFF'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(0, 255, 255, 0.2)'}
                 />
-                
-                {!subject && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '14px',
-                    left: '16px',
-                    right: '16px',
-                    color: '#555555',
-                    fontSize: '1rem',
-                    fontWeight: '500',
-                    pointerEvents: 'none'
-                  }}>
-                    {exampleSubjects[currentExample]}
-                  </div>
-                )}
-              </div>
-
-              {/* Example Subjects */}
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: '0.85rem',
-                  fontWeight: '600',
-                  color: '#a0a0a0',
-                  marginBottom: '10px'
-                }}>
-                  🎯 Quick Examples:
-                </label>
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '8px'
-                }}>
-                  {exampleSubjects.slice(0, 4).map((example, index) => (
-                    <button
-                      key={index}
-                      onClick={() => useExampleSubject(example)}
-                      style={{
-                        padding: '8px 12px',
-                        borderRadius: '10px',
-                        background: 'rgba(0, 255, 255, 0.1)',
-                        border: '1px solid rgba(0, 255, 255, 0.3)',
-                        color: '#00FFFF',
-                        fontSize: '0.75rem',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      {example}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               {/* Mood Selection */}
-              <div style={{ marginBottom: '20px' }}>
+              <div style={{ marginBottom: '28px' }}>
                 <label style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  fontSize: '0.9rem',
+                  display: 'block',
+                  fontSize: '0.8rem',
                   fontWeight: '600',
-                  color: '#FF69B4',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
                   marginBottom: '12px'
                 }}>
-                  <span style={{ fontSize: '1.2rem' }}>🎭</span>
-                  Pick Your Energy
+                  Roast Energy
                 </label>
-                
                 <div style={{
                   display: 'flex',
                   flexWrap: 'wrap',
-                  gap: '8px',
-                  justifyContent: 'flex-start'
+                  gap: '10px'
                 }}>
-                  {moodOptions.filter(m => m.id !== 'more').map(mood => (
+                  {moodOptions.map(mood => (
                     <button
                       key={mood.id}
-                      onClick={() => selectMoodDirectly(mood.id)}
-                      style={{
-                        padding: '10px 14px',
-                        borderRadius: '12px',
-                        background: selectedMood === mood.id 
-                          ? 'linear-gradient(45deg, #FF4500, #FF0000)' 
-                          : 'rgba(40, 40, 60, 0.8)',
-                        border: selectedMood === mood.id 
-                          ? 'none' 
-                          : '1px solid rgba(255,255,255,0.1)',
-                        color: selectedMood === mood.id ? '#ffffff' : '#a0a0a0',
-                        fontSize: '0.85rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        transition: 'all 0.2s ease'
-                      }}
+                      className={`mood-chip ${selectedMood === mood.id ? 'active' : ''}`}
+                      onClick={() => selectMood(mood.id)}
                     >
                       <span>{mood.emoji}</span>
                       <span>{mood.label}</span>
                     </button>
                   ))}
                   <button
-                    onClick={() => selectMoodDirectly('more')}
-                    style={{
-                      padding: '10px 14px',
-                      borderRadius: '12px',
-                      background: showExtendedMoods 
-                        ? 'linear-gradient(45deg, #9400D3, #4B0082)' 
-                        : 'rgba(40, 40, 60, 0.8)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      color: showExtendedMoods ? '#fff' : '#a0a0a0',
-                      fontSize: '0.85rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}
+                    className={`mood-chip ${showExtendedMoods ? 'active' : ''}`}
+                    onClick={() => setShowExtendedMoods(!showExtendedMoods)}
                   >
                     <span>➕</span>
                     <span>More</span>
                   </button>
                 </div>
 
+                {/* Extended Moods */}
                 {showExtendedMoods && (
                   <div style={{
                     marginTop: '12px',
-                    padding: '12px',
-                    background: 'rgba(30, 30, 50, 0.5)',
-                    borderRadius: '14px',
-                    border: '1px solid rgba(255,255,255,0.1)'
+                    padding: '16px',
+                    background: 'rgba(0,0,0,0.3)',
+                    borderRadius: '16px',
+                    border: '1px solid rgba(255,255,255,0.05)'
                   }}>
                     <div style={{
                       display: 'flex',
@@ -626,22 +675,9 @@ export default function Home() {
                       {extendedMoods.map(mood => (
                         <button
                           key={mood.id}
-                          onClick={() => selectExtendedMood(mood.id)}
-                          style={{
-                            padding: '8px 12px',
-                            borderRadius: '10px',
-                            background: selectedMood === mood.id 
-                              ? 'linear-gradient(45deg, #9400D3, #4B0082)' 
-                              : 'rgba(40, 40, 60, 0.8)',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            color: selectedMood === mood.id ? '#ffffff' : '#a0a0a0',
-                            fontSize: '0.8rem',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '5px'
-                          }}
+                          className={`mood-chip ${selectedMood === mood.id ? 'active' : ''}`}
+                          onClick={() => selectMood(mood.id)}
+                          style={{ padding: '10px 14px', fontSize: '0.85rem' }}
                         >
                           <span>{mood.emoji}</span>
                           <span>{mood.label}</span>
@@ -656,156 +692,132 @@ export default function Home() {
               <button
                 onClick={generateAura}
                 disabled={loading || !canSubmit}
-                className={loading ? '' : 'pulse'}
+                className="premium-btn glow"
                 style={{
                   width: '100%',
-                  padding: '16px',
-                  borderRadius: '16px',
                   background: loading || !canSubmit
-                    ? 'linear-gradient(45deg, #444444, #333333)' 
-                    : 'linear-gradient(45deg, #FF4500, #FF0000)',
-                  border: 'none',
-                  color: '#ffffff',
-                  fontSize: '1.1rem',
-                  fontWeight: '700',
-                  cursor: loading || !canSubmit ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s ease',
-                  boxShadow: loading || !canSubmit ? 'none' : '0 10px 30px rgba(255, 69, 0, 0.3)',
-                  opacity: loading || !canSubmit ? 0.6 : 1
+                    ? 'rgba(255,255,255,0.1)'
+                    : 'linear-gradient(135deg, #FFD700 0%, #FF4500 50%, #FF0000 100%)',
+                  color: loading || !canSubmit ? 'rgba(255,255,255,0.3)' : '#000',
+                  fontFamily: "'Space Grotesk', sans-serif"
                 }}
               >
-                {loading ? '🔥 Analyzing Aura...' : '🔥 Get Roasted'}
+                {loading ? (
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                    <span style={{
+                      width: '20px',
+                      height: '20px',
+                      border: '2px solid rgba(0,0,0,0.2)',
+                      borderTopColor: '#000',
+                      borderRadius: '50%',
+                      animation: 'spin 1s linear infinite'
+                    }} />
+                    Analyzing Your Aura...
+                  </span>
+                ) : (
+                  '🔥 Get Roasted'
+                )}
               </button>
 
-              {/* Rarity Info */}
-              <div style={{
-                marginTop: '15px',
-                padding: '12px',
-                background: 'rgba(255, 215, 0, 0.05)',
-                borderRadius: '12px',
-                border: '1px solid rgba(255, 215, 0, 0.2)',
-                textAlign: 'center'
-              }}>
-                <p style={{
-                  margin: 0,
-                  fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.5)'
-                }}>
-                  🎰 <strong style={{ color: '#FFD700' }}>LEGENDARY</strong> is ULTRA RARE (1%) • 
-                  <strong style={{ color: '#00FFFF' }}> EPIC</strong> (5%) • 
-                  <strong style={{ color: '#fff' }}> MID</strong> (39%) • 
-                  <strong style={{ color: '#FF8C00' }}> NOOB</strong> (35%) • 
-                  <strong style={{ color: '#FF0000' }}> NPC</strong> (20%)
-                </p>
-              </div>
+              <style jsx>{`
+                @keyframes spin {
+                  to { transform: rotate(360deg); }
+                }
+              `}</style>
             </div>
 
-            {/* Info Section */}
-            <div style={{
-              background: 'rgba(30, 30, 50, 0.7)',
-              borderRadius: '24px',
-              padding: '20px',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255,255,255,0.1)'
-            }}>
-              <h3 style={{
-                fontSize: '1rem',
-                fontWeight: '700',
-                color: '#ffffff',
-                marginBottom: '15px',
-                textAlign: 'center'
-              }}>
-                🚀 How It Works
-              </h3>
+            {/* Rarity Info Card */}
+            <div className="glass-card" style={{ padding: '20px' }}>
               <div style={{
                 display: 'flex',
-                flexDirection: 'column',
-                gap: '10px'
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                marginBottom: '16px'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}>
-                  <span>1️⃣</span>
-                  <span>Enter a name (optional) + subject to roast</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}>
-                  <span>2️⃣</span>
-                  <span>AI detects if it's a celebrity (Influencer Sensing™)</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}>
-                  <span>3️⃣</span>
-                  <span>Get your aura score + brutal roast</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem' }}>
-                  <span>4️⃣</span>
-                  <span>Share your card or chat for more roasting!</span>
-                </div>
-              </div>
-
-              {/* Influencer Sensing Info */}
-              <div style={{
-                marginTop: '15px',
-                padding: '12px',
-                background: 'rgba(148, 0, 211, 0.1)',
-                borderRadius: '12px',
-                border: '1px solid rgba(148, 0, 211, 0.3)'
-              }}>
-                <p style={{
-                  margin: 0,
+                <span style={{ fontSize: '1rem' }}>🎰</span>
+                <span style={{
                   fontSize: '0.8rem',
-                  color: '#9400D3',
-                  fontWeight: '600',
-                  marginBottom: '5px'
+                  fontWeight: '700',
+                  color: 'rgba(255,255,255,0.7)',
+                  letterSpacing: '1px'
                 }}>
-                  ⚡ Influencer Sensing™
-                </p>
-                <p style={{
-                  margin: 0,
-                  fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.5)'
-                }}>
-                  AI evaluates celebrity status: <strong>PEAK</strong> (can get Legendary), 
-                  <strong> STABLE</strong> (Mid-Epic), <strong> FALLING</strong> (NPC-Noob with brutal roast!)
-                </p>
+                  RARITY ODDS
+                </span>
+              </div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-around',
+                flexWrap: 'wrap',
+                gap: '8px'
+              }}>
+                <span className="rarity-badge" style={{ background: 'rgba(255,215,0,0.2)', color: '#FFD700' }}>
+                  👑 LEGENDARY 1%
+                </span>
+                <span className="rarity-badge" style={{ background: 'rgba(148,0,211,0.2)', color: '#9400D3' }}>
+                  ⚡ EPIC 5%
+                </span>
+                <span className="rarity-badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}>
+                  💫 MID 39%
+                </span>
+                <span className="rarity-badge" style={{ background: 'rgba(255,140,0,0.2)', color: '#FF8C00' }}>
+                  😬 NOOB 35%
+                </span>
+                <span className="rarity-badge" style={{ background: 'rgba(255,0,0,0.2)', color: '#FF4444' }}>
+                  💀 NPC 20%
+                </span>
               </div>
             </div>
-          </>
+
+            {/* Trust Badges */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '20px',
+              marginTop: '24px',
+              opacity: 0.5
+            }}>
+              <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>🔒 Anonymous</span>
+              <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>⚡ Instant</span>
+              <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>🎯 Brutal</span>
+            </div>
+          </div>
         ) : (
-          /* Aura Card Display */
-          <div style={{
+          /* Results View */
+          <div className="fade-in-up" style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '20px'
+            gap: '24px'
           }}>
             <AuraCard aura={aura} />
             
             {/* Public Figure Badge */}
             {aura.isPublicFigure && (
-              <div style={{
-                padding: '10px 20px',
+              <div className="glass-card" style={{
+                padding: '14px 24px',
                 background: aura.publicFigureStatus === 'peak' 
-                  ? 'rgba(255, 215, 0, 0.2)' 
+                  ? 'rgba(255, 215, 0, 0.1)' 
                   : aura.publicFigureStatus === 'falling' 
-                    ? 'rgba(255, 0, 0, 0.2)' 
-                    : 'rgba(0, 255, 255, 0.2)',
-                border: `1px solid ${
-                  aura.publicFigureStatus === 'peak' 
-                    ? '#FFD700' 
-                    : aura.publicFigureStatus === 'falling' 
-                      ? '#FF0000' 
-                      : '#00FFFF'
-                }`,
-                borderRadius: '12px'
+                    ? 'rgba(255, 0, 0, 0.1)' 
+                    : 'rgba(148, 0, 211, 0.1)',
+                borderColor: aura.publicFigureStatus === 'peak' 
+                  ? 'rgba(255, 215, 0, 0.3)' 
+                  : aura.publicFigureStatus === 'falling' 
+                    ? 'rgba(255, 0, 0, 0.3)' 
+                    : 'rgba(148, 0, 211, 0.3)'
               }}>
                 <p style={{
                   margin: 0,
                   fontSize: '0.85rem',
+                  fontWeight: '700',
                   color: '#fff',
                   textAlign: 'center'
                 }}>
                   {aura.publicFigureStatus === 'peak' && '👑 PUBLIC FIGURE AT PEAK'}
-                  {aura.publicFigureStatus === 'stable' && '⚡ ESTABLISHED PUBLIC FIGURE'}
-                  {aura.publicFigureStatus === 'falling' && '💀 FALLEN FROM GRACE'}
-                  {aura.publicFigureStatus === 'unknown' && '🔍 UNKNOWN FIGURE'}
+                  {aura.publicFigureStatus === 'stable' && '⚡ ESTABLISHED FIGURE'}
+                  {aura.publicFigureStatus === 'falling' && '📉 FALLING FROM GRACE'}
+                  {!['peak', 'stable', 'falling'].includes(aura.publicFigureStatus) && '🔍 DETECTED FIGURE'}
                 </p>
               </div>
             )}
@@ -813,60 +825,43 @@ export default function Home() {
             {/* Action Buttons */}
             <div style={{
               display: 'flex',
-              gap: '15px',
-              width: '320px'
+              gap: '12px',
+              width: '100%',
+              maxWidth: '340px'
             }}>
               <button
                 onClick={handleRoastChat}
+                className="premium-btn"
                 style={{
                   flex: 1,
-                  padding: '14px',
-                  background: 'rgba(255,255,255,0.15)',
-                  color: '#ffffff',
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  borderRadius: '14px',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  fontSize: '0.95rem'
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#fff'
                 }}
               >
-                💬 More Roasting
+                💬 Chat
               </button>
               <button
-                onClick={() => {
-                  setAura(null);
-                  setSubject('');
-                  setName('');
-                }}
+                onClick={resetForm}
+                className="premium-btn"
                 style={{
                   flex: 1,
-                  padding: '14px',
-                  background: 'linear-gradient(45deg, #FF4500, #FF0000)',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '14px',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  fontSize: '0.95rem',
-                  boxShadow: '0 5px 20px rgba(255, 69, 0, 0.3)'
+                  background: 'linear-gradient(135deg, #FFD700, #FF4500)',
+                  color: '#000'
                 }}
               >
-                🔄 Try Again
+                🔄 Again
               </button>
             </div>
-            
-            {copied && (
-              <div style={{
-                padding: '12px 20px',
-                background: 'rgba(30, 200, 30, 0.2)',
-                borderRadius: '12px',
-                border: '1px solid #00ff00',
-                color: '#00ff00',
-                fontWeight: '600'
-              }}>
-                ✓ Copied! Paste in Instagram Stories
-              </div>
-            )}
+
+            {/* Share Prompt */}
+            <p style={{
+              fontSize: '0.8rem',
+              color: 'rgba(255,255,255,0.4)',
+              textAlign: 'center'
+            }}>
+              Screenshot & share on Instagram 📸
+            </p>
           </div>
         )}
 
@@ -883,13 +878,23 @@ export default function Home() {
         {/* Footer */}
         <footer style={{
           textAlign: 'center',
-          padding: '30px 0 20px',
-          color: '#666666',
-          fontSize: '0.8rem'
+          padding: '40px 0 20px'
         }}>
-          <p>AuraScore © 2025 - Get roasted. Get better.</p>
+          <p style={{
+            fontSize: '0.75rem',
+            color: 'rgba(255,255,255,0.3)'
+          }}>
+            AuraScore™ © 2025
+          </p>
+          <p style={{
+            fontSize: '0.7rem',
+            color: 'rgba(255,255,255,0.2)',
+            marginTop: '4px'
+          }}>
+            Get roasted. Get humbled. Get better.
+          </p>
         </footer>
       </div>
     </>
   );
-}
+         }
