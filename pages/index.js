@@ -3,7 +3,6 @@ import Head from 'next/head';
 import AuraCard from '../components/AuraCard';
 import RoastChat from '../components/RoastChat';
 
-// Mood options
 const moodOptions = [
   { id: 'savage', emoji: '🔥', label: 'Savage' },
   { id: 'funny', emoji: '😂', label: 'Funny' },
@@ -24,10 +23,7 @@ const extendedMoods = [
   { id: 'rebellious', emoji: '⚡', label: 'Rebellious' }
 ];
 
-// Trending names for social proof
-const trendingNames = [
-  "Samay Raina", "Carry Minati", "Dhoni", "Virat Kohli", "Elon Musk"
-];
+const trendingNames = ["Samay Raina", "Carry Minati", "Dhoni", "Virat Kohli", "Elon Musk"];
 
 export default function Home() {
   const [name, setName] = useState('');
@@ -44,7 +40,6 @@ export default function Home() {
   const [roastCount, setRoastCount] = useState(47832);
   const [activeUsers, setActiveUsers] = useState(23);
 
-  // Simulate live counters for social proof
   useEffect(() => {
     const interval = setInterval(() => {
       setRoastCount(prev => prev + Math.floor(Math.random() * 3));
@@ -60,11 +55,6 @@ export default function Home() {
     }
     setSelectedMood(moodId);
     setShowExtendedMoods(false);
-  };
-
-  const useTrendingName = (trendName) => {
-    setName(trendName);
-    setSelectedMood('savage');
   };
 
   const generateAura = async (e) => {
@@ -94,14 +84,13 @@ export default function Home() {
         setAura(data.fallback);
       }
     } catch (err) {
-      console.error('Generation error:', err);
       setAura({
         score: Math.floor(Math.random() * 60),
-        roast: "Your energy crashed our servers. That's how weak it is. 💀",
+        roast: "Your energy crashed our servers. That is how weak it is. 💀",
         subjectInsight: "Error 404: Aura not found",
         rarity: "npc",
         title: "NPC",
-        challenge: "SYSTEM COULDN'T HANDLE YOUR AVERAGE ENERGY."
+        challenge: "SYSTEM COULD NOT HANDLE YOUR AVERAGE ENERGY."
       });
     } finally {
       setLoading(false);
@@ -124,90 +113,128 @@ export default function Home() {
   const canSubmit = subject.trim() || name.trim();
 
   return (
-    <>
+    <div>
       <Head>
-        <title>AuraScore™ - The Ultimate Roast Experience</title>
+        <title>AuraScore - The Ultimate Roast Experience</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <meta name="description" content="Get your aura scored and brutally roasted by AI. Join 50K+ people who dared to know the truth." />
-        <meta name="theme-color" content="#0a0a0f" />
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <meta name="description" content="Get your aura scored and brutally roasted by AI." />
+        <meta name="theme-color" content="#0f0f1a" />
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </Head>
 
-      {/* Background Elements */}
+      {/* Animated Background */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a0f 50%)',
-        zIndex: -2
+        background: 'linear-gradient(145deg, #0f0f1a 0%, #1a1025 30%, #0f0f1a 60%, #151520 100%)',
+        zIndex: -3
       }} />
+      
+      {/* Gradient Orbs */}
       <div style={{
         position: 'fixed',
-        top: '10%',
-        left: '5%',
-        width: '300px',
-        height: '300px',
-        background: 'radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%)',
+        top: '-20%',
+        left: '-10%',
+        width: '500px',
+        height: '500px',
+        background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 60%)',
         borderRadius: '50%',
-        filter: 'blur(60px)',
+        filter: 'blur(80px)',
         zIndex: -1
       }} />
       <div style={{
         position: 'fixed',
-        bottom: '20%',
-        right: '10%',
-        width: '250px',
-        height: '250px',
-        background: 'radial-gradient(circle, rgba(148,0,211,0.1) 0%, transparent 70%)',
+        top: '40%',
+        right: '-15%',
+        width: '400px',
+        height: '400px',
+        background: 'radial-gradient(circle, rgba(251, 146, 60, 0.12) 0%, transparent 60%)',
         borderRadius: '50%',
-        filter: 'blur(60px)',
+        filter: 'blur(80px)',
+        zIndex: -1
+      }} />
+      <div style={{
+        position: 'fixed',
+        bottom: '-10%',
+        left: '30%',
+        width: '350px',
+        height: '350px',
+        background: 'radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 60%)',
+        borderRadius: '50%',
+        filter: 'blur(80px)',
+        zIndex: -1
+      }} />
+
+      {/* Noise Texture Overlay */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        opacity: 0.03,
+        background: 'url("data:image/svg+xml,%3Csvg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%" height="100%" filter="url(%23noise)"/%3E%3C/svg%3E")',
         zIndex: -1
       }} />
 
       <div style={{ 
         minHeight: '100vh',
-        padding: '20px',
-        maxWidth: '480px',
-        margin: '0 auto'
+        padding: '24px 20px',
+        maxWidth: '460px',
+        margin: '0 auto',
+        fontFamily: "'Outfit', sans-serif"
       }}>
         
         {/* Header */}
-        <header style={{
-          textAlign: 'center',
-          padding: '40px 0 30px'
-        }}>
+        <header style={{ textAlign: 'center', paddingTop: '20px', paddingBottom: '32px' }}>
+          
           {/* Live Badge */}
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
-            background: 'rgba(255, 0, 0, 0.1)',
-            border: '1px solid rgba(255, 0, 0, 0.3)',
-            borderRadius: '20px',
-            padding: '6px 14px',
-            marginBottom: '20px'
+            gap: '10px',
+            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            borderRadius: '100px',
+            padding: '8px 16px',
+            marginBottom: '28px',
+            backdropFilter: 'blur(10px)'
           }}>
-            <span className="live-dot" />
-            <span style={{ fontSize: '0.75rem', color: '#FF6B6B', fontWeight: '600' }}>
-              {activeUsers} people roasting right now
+            <div style={{
+              width: '8px',
+              height: '8px',
+              background: '#ef4444',
+              borderRadius: '50%',
+              boxShadow: '0 0 12px rgba(239, 68, 68, 0.6)'
+            }} />
+            <span style={{ 
+              fontSize: '0.8rem', 
+              color: 'rgba(255, 255, 255, 0.8)', 
+              fontWeight: '500',
+              letterSpacing: '0.3px'
+            }}>
+              {activeUsers} people roasting now
             </span>
           </div>
 
           {/* Logo */}
-          <h1 className="shimmer-text" style={{
-            fontSize: '3rem',
+          <h1 style={{
+            fontSize: '2.8rem',
             fontWeight: '800',
-            letterSpacing: '-0.03em',
+            letterSpacing: '-0.02em',
             marginBottom: '12px',
-            fontFamily: "'Space Grotesk', sans-serif"
+            background: 'linear-gradient(135deg, #f59e0b 0%, #f97316 25%, #ec4899 50%, #8b5cf6 75%, #6366f1 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            backgroundSize: '200% 200%'
           }}>
-            AuraScore™
+            AuraScore
           </h1>
           
           <p style={{
             fontSize: '1rem',
-            color: 'rgba(255, 255, 255, 0.6)',
-            fontWeight: '500',
-            marginBottom: '24px'
+            color: 'rgba(255, 255, 255, 0.5)',
+            fontWeight: '400',
+            marginBottom: '32px',
+            letterSpacing: '0.5px'
           }}>
             The AI that roasts without mercy
           </p>
@@ -216,114 +243,210 @@ export default function Home() {
           <div style={{
             display: 'flex',
             justifyContent: 'center',
-            gap: '30px'
+            alignItems: 'center',
+            gap: '40px'
           }}>
-            <div className="stat-card">
-              <div className="stat-number">{roastCount.toLocaleString()}</div>
-              <div className="stat-label">Roasts Generated</div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                fontSize: '1.6rem',
+                fontWeight: '700',
+                background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>
+                {roastCount.toLocaleString()}
+              </div>
+              <div style={{
+                fontSize: '0.7rem',
+                color: 'rgba(255, 255, 255, 0.4)',
+                textTransform: 'uppercase',
+                letterSpacing: '1.5px',
+                marginTop: '4px',
+                fontWeight: '500'
+              }}>
+                Roasts
+              </div>
             </div>
+            
             <div style={{
               width: '1px',
-              background: 'rgba(255,255,255,0.1)'
+              height: '40px',
+              background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.15), transparent)'
             }} />
-            <div className="stat-card">
-              <div className="stat-number">1%</div>
-              <div className="stat-label">Get Legendary</div>
+            
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                fontSize: '1.6rem',
+                fontWeight: '700',
+                background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>
+                1%
+              </div>
+              <div style={{
+                fontSize: '0.7rem',
+                color: 'rgba(255, 255, 255, 0.4)',
+                textTransform: 'uppercase',
+                letterSpacing: '1.5px',
+                marginTop: '4px',
+                fontWeight: '500'
+              }}>
+                Legendary
+              </div>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
         {!aura ? (
-          <div className="fade-in-up">
-            {/* Main Form Card */}
-            <div className="glass-card" style={{ padding: '28px', marginBottom: '20px' }}>
+          <div>
+            {/* Main Card */}
+            <div style={{
+              background: 'linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              borderRadius: '28px',
+              padding: '28px 24px',
+              marginBottom: '20px',
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.3)'
+            }}>
               
               {/* Language Toggle */}
               <div style={{ marginBottom: '28px' }}>
                 <label style={{
                   display: 'block',
-                  fontSize: '0.8rem',
+                  fontSize: '0.75rem',
                   fontWeight: '600',
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: 'rgba(255, 255, 255, 0.4)',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  marginBottom: '12px'
+                  letterSpacing: '1.5px',
+                  marginBottom: '14px'
                 }}>
                   Language
                 </label>
-                <div className="language-toggle">
-                  <button
-                    className={`language-btn ${language === 'english' ? 'active' : ''}`}
-                    onClick={() => setLanguage('english')}
-                  >
-                    🇬🇧 English
-                  </button>
-                  <button
-                    className={`language-btn ${language === 'hindi' ? 'active' : ''}`}
-                    onClick={() => setLanguage('hindi')}
-                  >
-                    🇮🇳 हिंदी
-                  </button>
+                <div style={{
+                  display: 'flex',
+                  background: 'rgba(0, 0, 0, 0.2)',
+                  borderRadius: '14px',
+                  padding: '5px',
+                  gap: '5px'
+                }}>
+                  {['english', 'hindi'].map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => setLanguage(lang)}
+                      style={{
+                        flex: 1,
+                        padding: '14px 20px',
+                        border: 'none',
+                        borderRadius: '11px',
+                        fontSize: '0.9rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        fontFamily: 'inherit',
+                        background: language === lang 
+                          ? 'linear-gradient(135deg, rgba(251, 146, 60, 0.9), rgba(245, 158, 11, 0.9))' 
+                          : 'transparent',
+                        color: language === lang ? '#000' : 'rgba(255, 255, 255, 0.5)',
+                        boxShadow: language === lang ? '0 4px 15px rgba(251, 146, 60, 0.3)' : 'none'
+                      }}
+                    >
+                      {lang === 'english' ? '🇬🇧 English' : '🇮🇳 हिंदी'}
+                    </button>
+                  ))}
                 </div>
               </div>
 
               {/* Name Input */}
               <div style={{ marginBottom: '24px' }}>
-                <label style={{
-                  display: 'flex',
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
                   alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: '12px'
+                  marginBottom: '14px' 
                 }}>
-                  <span style={{
-                    fontSize: '0.8rem',
+                  <label style={{
+                    fontSize: '0.75rem',
                     fontWeight: '600',
-                    color: 'rgba(255, 255, 255, 0.5)',
+                    color: 'rgba(255, 255, 255, 0.4)',
                     textTransform: 'uppercase',
-                    letterSpacing: '1px'
+                    letterSpacing: '1.5px'
                   }}>
                     Who to roast?
-                  </span>
+                  </label>
                   <span style={{
-                    fontSize: '0.7rem',
-                    color: 'rgba(255, 215, 0, 0.7)',
-                    background: 'rgba(255, 215, 0, 0.1)',
+                    fontSize: '0.65rem',
+                    color: '#fbbf24',
+                    background: 'rgba(251, 191, 36, 0.1)',
                     padding: '4px 10px',
-                    borderRadius: '6px'
+                    borderRadius: '6px',
+                    fontWeight: '600',
+                    letterSpacing: '0.5px'
                   }}>
-                    Optional
+                    OPTIONAL
                   </span>
-                </label>
+                </div>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Celebrity, friend, or yourself..."
-                  className="premium-input"
+                  style={{
+                    width: '100%',
+                    background: 'rgba(0, 0, 0, 0.25)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '14px',
+                    padding: '16px 20px',
+                    color: '#ffffff',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    fontFamily: 'inherit',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = 'rgba(251, 146, 60, 0.5)';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(251, 146, 60, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
 
               {/* Trending Names */}
               <div style={{ marginBottom: '28px' }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  marginBottom: '12px'
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  marginBottom: '12px' 
                 }}>
-                  <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>🔥 TRENDING</span>
+                  <span style={{ fontSize: '0.7rem', color: 'rgba(251, 146, 60, 0.8)', fontWeight: '600', letterSpacing: '1px' }}>
+                    🔥 TRENDING
+                  </span>
                 </div>
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '8px'
-                }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {trendingNames.map((trendName, i) => (
                     <button
                       key={i}
-                      className="trending-chip"
-                      onClick={() => useTrendingName(trendName)}
+                      onClick={() => { setName(trendName); setSelectedMood('savage'); }}
+                      style={{
+                        padding: '10px 16px',
+                        borderRadius: '12px',
+                        background: 'rgba(251, 146, 60, 0.08)',
+                        border: '1px solid rgba(251, 146, 60, 0.2)',
+                        color: '#fb923c',
+                        fontSize: '0.8rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        fontFamily: 'inherit',
+                        transition: 'all 0.2s ease'
+                      }}
                     >
                       {trendName}
                     </button>
@@ -336,30 +459,38 @@ export default function Home() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '16px',
-                margin: '28px 0'
+                margin: '32px 0'
               }}>
-                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
+                <div style={{ 
+                  flex: 1, 
+                  height: '1px', 
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)' 
+                }} />
                 <span style={{ 
-                  color: 'rgba(255,255,255,0.3)', 
-                  fontSize: '0.75rem',
+                  color: 'rgba(255,255,255,0.25)', 
+                  fontSize: '0.7rem',
                   fontWeight: '600',
                   letterSpacing: '2px'
                 }}>
                   AND / OR
                 </span>
-                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
+                <div style={{ 
+                  flex: 1, 
+                  height: '1px', 
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)' 
+                }} />
               </div>
 
               {/* Subject Input */}
               <div style={{ marginBottom: '28px' }}>
                 <label style={{
                   display: 'block',
-                  fontSize: '0.8rem',
+                  fontSize: '0.75rem',
                   fontWeight: '600',
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: 'rgba(255, 255, 255, 0.4)',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  marginBottom: '12px'
+                  letterSpacing: '1.5px',
+                  marginBottom: '14px'
                 }}>
                   What to roast about?
                 </label>
@@ -367,72 +498,132 @@ export default function Home() {
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder="Their habit, personality, career, looks, anything..."
-                  className="premium-input"
                   style={{
-                    minHeight: '100px',
+                    width: '100%',
+                    background: 'rgba(0, 0, 0, 0.25)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '14px',
+                    padding: '16px 20px',
+                    color: '#ffffff',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    minHeight: '110px',
                     resize: 'none',
-                    lineHeight: '1.6'
+                    lineHeight: '1.6',
+                    fontFamily: 'inherit',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = 'rgba(139, 92, 246, 0.5)';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(139, 92, 246, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                    e.target.style.boxShadow = 'none';
                   }}
                 />
               </div>
 
               {/* Mood Selection */}
-              <div style={{ marginBottom: '28px' }}>
+              <div style={{ marginBottom: '32px' }}>
                 <label style={{
                   display: 'block',
-                  fontSize: '0.8rem',
+                  fontSize: '0.75rem',
                   fontWeight: '600',
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: 'rgba(255, 255, 255, 0.4)',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  marginBottom: '12px'
+                  letterSpacing: '1.5px',
+                  marginBottom: '14px'
                 }}>
                   Roast Energy
                 </label>
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '10px'
-                }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                   {moodOptions.map(mood => (
                     <button
                       key={mood.id}
-                      className={`mood-chip ${selectedMood === mood.id ? 'active' : ''}`}
                       onClick={() => selectMood(mood.id)}
+                      style={{
+                        padding: '12px 18px',
+                        borderRadius: '12px',
+                        background: selectedMood === mood.id 
+                          ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(236, 72, 153, 0.2))' 
+                          : 'rgba(255, 255, 255, 0.03)',
+                        border: selectedMood === mood.id 
+                          ? '1px solid rgba(139, 92, 246, 0.5)' 
+                          : '1px solid rgba(255, 255, 255, 0.06)',
+                        color: selectedMood === mood.id ? '#a78bfa' : 'rgba(255, 255, 255, 0.6)',
+                        fontSize: '0.85rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontFamily: 'inherit',
+                        transition: 'all 0.2s ease'
+                      }}
                     >
                       <span>{mood.emoji}</span>
                       <span>{mood.label}</span>
                     </button>
                   ))}
                   <button
-                    className={`mood-chip ${showExtendedMoods ? 'active' : ''}`}
                     onClick={() => setShowExtendedMoods(!showExtendedMoods)}
+                    style={{
+                      padding: '12px 18px',
+                      borderRadius: '12px',
+                      background: showExtendedMoods 
+                        ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(236, 72, 153, 0.2))' 
+                        : 'rgba(255, 255, 255, 0.03)',
+                      border: showExtendedMoods 
+                        ? '1px solid rgba(139, 92, 246, 0.5)' 
+                        : '1px solid rgba(255, 255, 255, 0.06)',
+                      color: showExtendedMoods ? '#a78bfa' : 'rgba(255, 255, 255, 0.6)',
+                      fontSize: '0.85rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.2s ease'
+                    }}
                   >
-                    <span>➕</span>
+                    <span>✨</span>
                     <span>More</span>
                   </button>
                 </div>
 
-                {/* Extended Moods */}
                 {showExtendedMoods && (
                   <div style={{
-                    marginTop: '12px',
+                    marginTop: '14px',
                     padding: '16px',
-                    background: 'rgba(0,0,0,0.3)',
+                    background: 'rgba(0, 0, 0, 0.2)',
                     borderRadius: '16px',
-                    border: '1px solid rgba(255,255,255,0.05)'
+                    border: '1px solid rgba(255, 255, 255, 0.04)'
                   }}>
-                    <div style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: '8px'
-                    }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                       {extendedMoods.map(mood => (
                         <button
                           key={mood.id}
-                          className={`mood-chip ${selectedMood === mood.id ? 'active' : ''}`}
                           onClick={() => selectMood(mood.id)}
-                          style={{ padding: '10px 14px', fontSize: '0.85rem' }}
+                          style={{
+                            padding: '10px 16px',
+                            borderRadius: '10px',
+                            background: selectedMood === mood.id 
+                              ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(236, 72, 153, 0.2))' 
+                              : 'rgba(255, 255, 255, 0.03)',
+                            border: selectedMood === mood.id 
+                              ? '1px solid rgba(139, 92, 246, 0.5)' 
+                              : '1px solid rgba(255, 255, 255, 0.06)',
+                            color: selectedMood === mood.id ? '#a78bfa' : 'rgba(255, 255, 255, 0.5)',
+                            fontSize: '0.8rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            fontFamily: 'inherit'
+                          }}
                         >
                           <span>{mood.emoji}</span>
                           <span>{mood.label}</span>
@@ -443,70 +634,82 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Generate Button */}
+              {/* Submit Button */}
               <button
                 onClick={generateAura}
                 disabled={loading || !canSubmit}
-                className={`premium-btn ${!loading && canSubmit ? 'glow' : ''}`}
                 style={{
                   width: '100%',
-                  background: loading || !canSubmit
-                    ? 'rgba(255,255,255,0.1)'
-                    : 'linear-gradient(135deg, #FFD700 0%, #FF4500 50%, #FF0000 100%)',
-                  color: loading || !canSubmit ? 'rgba(255,255,255,0.3)' : '#000'
+                  padding: '18px 32px',
+                  border: 'none',
+                  borderRadius: '16px',
+                  fontSize: '1.05rem',
+                  fontWeight: '700',
+                  cursor: canSubmit && !loading ? 'pointer' : 'not-allowed',
+                  fontFamily: 'inherit',
+                  background: canSubmit && !loading
+                    ? 'linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ea580c 100%)'
+                    : 'rgba(255, 255, 255, 0.05)',
+                  color: canSubmit && !loading ? '#000' : 'rgba(255, 255, 255, 0.3)',
+                  boxShadow: canSubmit && !loading ? '0 8px 30px rgba(245, 158, 11, 0.35)' : 'none',
+                  transition: 'all 0.3s ease',
+                  letterSpacing: '0.5px'
                 }}
               >
-                {loading ? (
-                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                    <span className="spinner" />
-                    Analyzing Your Aura...
-                  </span>
-                ) : (
-                  '🔥 Get Roasted'
-                )}
+                {loading ? '⏳ Analyzing Your Aura...' : '🔥 Get Roasted'}
               </button>
             </div>
 
-            {/* Rarity Info Card */}
-            <div className="glass-card" style={{ padding: '20px' }}>
-              <div style={{
+            {/* Rarity Card */}
+            <div style={{
+              background: 'linear-gradient(145deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.01) 100%)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.04)',
+              borderRadius: '20px',
+              padding: '20px 16px',
+              marginBottom: '20px'
+            }}>
+              <div style={{ 
+                textAlign: 'center', 
+                marginBottom: '16px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '6px',
-                marginBottom: '16px'
+                gap: '8px'
               }}>
                 <span style={{ fontSize: '1rem' }}>🎰</span>
-                <span style={{
-                  fontSize: '0.8rem',
-                  fontWeight: '700',
-                  color: 'rgba(255,255,255,0.7)',
-                  letterSpacing: '1px'
+                <span style={{ 
+                  fontSize: '0.7rem', 
+                  fontWeight: '700', 
+                  color: 'rgba(255,255,255,0.5)',
+                  letterSpacing: '1.5px'
                 }}>
                   RARITY ODDS
                 </span>
               </div>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-around',
-                flexWrap: 'wrap',
-                gap: '8px'
-              }}>
-                <span className="rarity-badge" style={{ background: 'rgba(255,215,0,0.2)', color: '#FFD700' }}>
-                  👑 LEGENDARY 1%
-                </span>
-                <span className="rarity-badge" style={{ background: 'rgba(148,0,211,0.2)', color: '#9400D3' }}>
-                  ⚡ EPIC 5%
-                </span>
-                <span className="rarity-badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}>
-                  💫 MID 39%
-                </span>
-                <span className="rarity-badge" style={{ background: 'rgba(255,140,0,0.2)', color: '#FF8C00' }}>
-                  😬 NOOB 35%
-                </span>
-                <span className="rarity-badge" style={{ background: 'rgba(255,0,0,0.2)', color: '#FF4444' }}>
-                  💀 NPC 20%
-                </span>
+              <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                {[
+                  { icon: '👑', label: 'LEGENDARY', pct: '1%', bg: 'rgba(251, 191, 36, 0.15)', color: '#fbbf24' },
+                  { icon: '⚡', label: 'EPIC', pct: '5%', bg: 'rgba(139, 92, 246, 0.15)', color: '#a78bfa' },
+                  { icon: '💫', label: 'MID', pct: '39%', bg: 'rgba(255, 255, 255, 0.08)', color: '#fff' },
+                  { icon: '😬', label: 'NOOB', pct: '35%', bg: 'rgba(251, 146, 60, 0.15)', color: '#fb923c' },
+                  { icon: '💀', label: 'NPC', pct: '20%', bg: 'rgba(239, 68, 68, 0.15)', color: '#f87171' }
+                ].map((r, i) => (
+                  <span key={i} style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    fontSize: '0.65rem',
+                    fontWeight: '700',
+                    letterSpacing: '0.5px',
+                    background: r.bg,
+                    color: r.color
+                  }}>
+                    {r.icon} {r.label} {r.pct}
+                  </span>
+                ))}
               </div>
             </div>
 
@@ -514,99 +717,103 @@ export default function Home() {
             <div style={{
               display: 'flex',
               justifyContent: 'center',
-              gap: '20px',
-              marginTop: '24px',
-              opacity: 0.5
+              gap: '24px',
+              marginTop: '24px'
             }}>
-              <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>🔒 Anonymous</span>
-              <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>⚡ Instant</span>
-              <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>🎯 Brutal</span>
+              {['🔒 Anonymous', '⚡ Instant', '🎯 Brutal'].map((badge, i) => (
+                <span key={i} style={{ 
+                  fontSize: '0.75rem', 
+                  color: 'rgba(255,255,255,0.35)',
+                  fontWeight: '500'
+                }}>
+                  {badge}
+                </span>
+              ))}
             </div>
           </div>
         ) : (
-          /* Results View */
-          <div className="fade-in-up" style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '24px'
+          /* Results */
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            gap: '24px' 
           }}>
             <AuraCard aura={aura} />
             
-            {/* Public Figure Badge */}
             {aura.isPublicFigure && (
-              <div className="glass-card" style={{
-                padding: '14px 24px',
-                background: aura.publicFigureStatus === 'peak' 
-                  ? 'rgba(255, 215, 0, 0.1)' 
-                  : aura.publicFigureStatus === 'falling' 
-                    ? 'rgba(255, 0, 0, 0.1)' 
-                    : 'rgba(148, 0, 211, 0.1)',
-                borderColor: aura.publicFigureStatus === 'peak' 
-                  ? 'rgba(255, 215, 0, 0.3)' 
-                  : aura.publicFigureStatus === 'falling' 
-                    ? 'rgba(255, 0, 0, 0.3)' 
-                    : 'rgba(148, 0, 211, 0.3)'
+              <div style={{ 
+                padding: '14px 28px', 
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1))', 
+                border: '1px solid rgba(139, 92, 246, 0.3)', 
+                borderRadius: '16px',
+                backdropFilter: 'blur(10px)'
               }}>
-                <p style={{
-                  margin: 0,
-                  fontSize: '0.85rem',
-                  fontWeight: '700',
-                  color: '#fff',
-                  textAlign: 'center'
+                <p style={{ 
+                  margin: 0, 
+                  fontSize: '0.85rem', 
+                  fontWeight: '700', 
+                  color: '#a78bfa', 
+                  textAlign: 'center',
+                  letterSpacing: '0.5px'
                 }}>
                   {aura.publicFigureStatus === 'peak' && '👑 PUBLIC FIGURE AT PEAK'}
                   {aura.publicFigureStatus === 'stable' && '⚡ ESTABLISHED FIGURE'}
                   {aura.publicFigureStatus === 'falling' && '📉 FALLING FROM GRACE'}
-                  {!['peak', 'stable', 'falling'].includes(aura.publicFigureStatus) && '🔍 DETECTED FIGURE'}
                 </p>
               </div>
             )}
             
             {/* Action Buttons */}
-            <div style={{
-              display: 'flex',
-              gap: '12px',
-              width: '100%',
-              maxWidth: '340px'
-            }}>
+            <div style={{ display: 'flex', gap: '12px', width: '100%', maxWidth: '340px' }}>
               <button
                 onClick={handleRoastChat}
-                className="premium-btn"
                 style={{
                   flex: 1,
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#fff'
+                  padding: '16px 24px',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: '14px',
+                  fontSize: '0.95rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  color: '#fff',
+                  backdropFilter: 'blur(10px)'
                 }}
               >
                 💬 Chat
               </button>
               <button
                 onClick={resetForm}
-                className="premium-btn"
                 style={{
                   flex: 1,
-                  background: 'linear-gradient(135deg, #FFD700, #FF4500)',
-                  color: '#000'
+                  padding: '16px 24px',
+                  border: 'none',
+                  borderRadius: '14px',
+                  fontSize: '0.95rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+                  color: '#000',
+                  boxShadow: '0 6px 25px rgba(245, 158, 11, 0.3)'
                 }}
               >
                 🔄 Again
               </button>
             </div>
 
-            {/* Share Prompt */}
-            <p style={{
-              fontSize: '0.8rem',
-              color: 'rgba(255,255,255,0.4)',
-              textAlign: 'center'
+            <p style={{ 
+              fontSize: '0.8rem', 
+              color: 'rgba(255,255,255,0.35)', 
+              textAlign: 'center' 
             }}>
               Screenshot & share on Instagram 📸
             </p>
           </div>
         )}
 
-        {/* Roast Chat Modal */}
         {showRoastChat && (
           <RoastChat 
             subject={chatSubject}
@@ -617,25 +824,15 @@ export default function Home() {
         )}
 
         {/* Footer */}
-        <footer style={{
-          textAlign: 'center',
-          padding: '40px 0 20px'
-        }}>
-          <p style={{
-            fontSize: '0.75rem',
-            color: 'rgba(255,255,255,0.3)'
-          }}>
-            AuraScore™ © 2025
+        <footer style={{ textAlign: 'center', padding: '48px 0 24px' }}>
+          <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', fontWeight: '500' }}>
+            AuraScore © 2025
           </p>
-          <p style={{
-            fontSize: '0.7rem',
-            color: 'rgba(255,255,255,0.2)',
-            marginTop: '4px'
-          }}>
+          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.15)', marginTop: '6px' }}>
             Get roasted. Get humbled. Get better.
           </p>
         </footer>
       </div>
-    </>
+    </div>
   );
-        }
+                    }
