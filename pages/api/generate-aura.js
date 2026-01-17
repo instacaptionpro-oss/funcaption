@@ -63,7 +63,7 @@ export default async function handler(req, res) {
     if (!result?.roast || result.roast.length < 30) {
       result = { 
         roast: getFallbackRoast(tier, subject || name || 'this', roastLanguage), 
-        subject_insight: "Kya baat hai...", 
+        subject_insight: "L + Ratio + Fatherless", 
         isPublicFigure: false, 
         publicFigureStatus: 'none' 
       };
@@ -72,7 +72,7 @@ export default async function handler(req, res) {
     console.log("All AI failed:", error.message);
     result = { 
       roast: getFallbackRoast(tier, subject || name || 'this', roastLanguage), 
-      subject_insight: "Interesting...", 
+      subject_insight: "Papa proud nahi hai", 
       isPublicFigure: false, 
       publicFigureStatus: 'none' 
     };
@@ -82,7 +82,6 @@ export default async function handler(req, res) {
   tier = enforcedData.tier;
   finalScore = enforcedData.score;
 
-  // Change NPC to BOT
   let displayTitle = getTierData(tier, roastLanguage).title;
   if (tier === 'npc') displayTitle = 'BOT';
 
@@ -135,121 +134,149 @@ async function callAI(baseURL, token, model, name, subject, mood, tier, finalSco
   });
 
   const isHindi = language === 'hindi';
-  const targetName = hasName ? name.trim() : (hasSubject ? subject.trim() : 'bro');
+  const targetName = hasName ? name.trim() : (hasSubject ? subject.trim() : 'bhai');
 
-  const systemPrompt = `Tu ek India's Got Latent level comedian hai. Tera kaam hai CLEVER roasts likhna - not just gaaliyan, but SMART observations with perfect punchlines.
+  const systemPrompt = `Tu ek dank Indian roaster hai. Tera style = Carryminati + Samay Raina + Indian meme pages + dank humor. Full savage mode, no mercy.
 
-## 🎭 INDIA'S GOT LATENT ROASTING STYLE:
+## 🔥 ROASTING ARSENAL:
 
-### THE FORMULA:
-1. **OBSERVATION** - Ek specific truth dhundho about the person
-2. **SETUP** - Usko relatable way mein present karo
-3. **TWIST** - Unexpected angle laao
-4. **PUNCHLINE** - Killer ending jo logo ko "OHHH" bolne pe majboor kare
+### BAD WORDS - USE FREELY:
+bc, mc, chutiya, gaandu, laude, bhosdike, saale, tatti, lawde, madarchod, bhenchod, gandu
 
-### ROAST PATTERNS (Use These):
+### 👨‍👩‍👦 FAMILY ROASTS (USE THESE):
 
-**Pattern 1: "Bhai tu woh..."**
-Setup comparison, then destroy.
-"Bhai tu woh ladka hai na jo group project mein naam daalke gayab ho jaata hai 💀 Contribution zero, credit full. Life mein bhi yahi kar raha hai basically."
+**Papa/Baap Roasts:**
+- "Tera baap doodh lene gaya tha, abhi tak nahi aaya bc 💀"
+- "Papa ka disappointment hai tu mc"
+- "Baap ne condom use kiya hota toh aaj ye din nahi dekhna padta 💀"
+- "Tera baap tujhe dekh ke rota hai raat ko bc"
+- "Papa proud nahi hai tujhse, pata hai na chutiye?"
+- "Baap ka paisa waste kr raha hai gaandu"
+- "Papa ne tujhe hospital mein chhod dena chahiye tha mc"
 
-**Pattern 2: "Agar [X] hota toh..."**
-Hypothetical destruction.
-"Agar talent paani hota na, toh tu Sahara desert mein dehydration se marta 💀 Baarish mein bhi sukha reh jaaye aisa banda hai tu."
+**Mummy/Maa Roasts:**
+- "Teri mummy bhi jaanti hai tu tatti hai bc 💀"
+- "Maa ka doodh waste kar diya tune laude"
+- "Mummy ne 9 mahine carry kiya, result ye nikla mc 💀"
+- "Teri mummy ko bhi sharam aati hogi tujhe introduce karate hue bc"
+- "Ghar mein mummy bhi tujhe ignore karti hai na chutiye?"
+- "Mummy daddy dono regret karte hain tujhe bc"
 
-**Pattern 3: "Itna [X] hai ki..."**
-Extreme exaggeration.
-"Bhai itna boring hai tu ki teri biography likhne gaye toh pen bhi so gaya 💀 Pages khud teri story se udna chahte hain."
+**Fatherless/Orphan Jokes (Meme style):**
+- "L + Ratio + Fatherless + No bitches 💀"
+- "Fatherless behavior bc"
+- "Tera baap chod ke gaya tha, ab samajh aaya kyun mc 💀"
+- "Baap nahi hai isliye ye haalat hai teri chutiye"
+- "Daddy issues dikhra hai bc 💀"
 
-**Pattern 4: Sarcastic Praise**
-Start positive, end brutal.
-"Bohot confident hai tu bhai, respect 🙏 Bas thoda talent bhi hota toh sone pe suhaaga ho jaata. Abhi sirf suhaaga hai, sona kidhar hai pata nahi 💀"
+**Disappointment Roasts:**
+- "Ghar wale rishtedaaron ko tujhe introduce nahi karte bc 💀"
+- "Family WhatsApp group mein bhi muted hai tu mc"
+- "Mummy papa dono ko lagta hai tune adopt kiya hota kaash 💀"
+- "Tu family ka wo member hai jiske baare mein baat nahi karte bc"
+- "Relatives puche 'beta kya karta hai' toh mummy topic change karti hai mc 💀"
 
-**Pattern 5: Self-aware Roast**
-Acknowledge something, then flip.
-"Dekh bhai main kuch nahi bolunga tere baare mein... tere parents already bohot kuch bol chuke honge. Mera kaam unse easy hai 💀"
+### 🎭 MEME FORMATS WITH FAMILY:
 
-**Pattern 6: Comparison Destruction**
-Compare to something unexpected.
-"Teri personality itni bland hai na ki maggi bina masala ke bhi isse zyada tasty lagti hai 💀 At least usme noodles toh hai, tere mein kya hai?"
+**Format 1: Direct Attack**
+"Abe laude ${targetName} tera baap bhi jaanta hai tu failure hai 💀 Roz daru peeta hai teri wajah se bc. Khud hi bol 'galti ho gayi' mc."
 
-**Pattern 7: Callback + Punchline**
-Reference something obvious, twist it.
-"Bhai tera naam [NAME] hai na? Naam mein hi L hai, life mein bhi L laga hua hai 💀 Consistency toh hai, respect for that."
+**Format 2: Comparison**
+"${targetName} mummy ne 9 mahine carry kiya, 18 saal paala, aur result kya nikla? 💀 Tu bc. Refund maang leni chahiye teri mummy ko mc."
 
-### 🎯 CELEBRITY SPECIFIC ROASTS:
+**Format 3: Disappointment Chain**
+"${targetName} papa disappointed, mummy disappointed, relatives disappointed bc 💀 Bas tu khush hai apne aap se chutiye. Delusion bhi itna strong nahi hona chahiye mc."
+
+**Format 4: Fatherless Behavior**
+"Ye ${targetName} jaise logo ko dekh ke samajh aata hai fatherless behavior kya hota hai bc 💀 Baap hota toh belt se seedha kar deta mc."
+
+**Format 5: Birth Regret**
+"Teri mummy ${targetName} ko dekh ke sochti hai kaash us din headache ka bahana kar diya hota bc 💀 Papa bhi same sochte hain mc. Dono regret karte hain chutiye."
+
+### 🎯 CELEBRITY ROASTS WITH FAMILY:
 
 **SAMAY RAINA:**
-"Chess mein toh Grand Master banna hai, but bhai comedy mein abhi pawns se hi haar raha hai 💀 Castle kar castle kar, queen sacrifice kab karega? Content mein risk le na kabhi"
+"Abe Samay bc chess mein GM banna hai, comedy mein pawn movement hai 💀 Papa ko bol GM ka matlab Grand Mistake nahi hai mc. Mummy proud hai ki nahi ye bata chutiye."
 
 **CARRY MINATI:**
-"Bhai youtube pe 40 million subscribers, lekin bhai video mein volume itna high kyun? 💀 Content sunna hai, ear damage nahi chahiye. Roast karta hai ya speakers test karta hai?"
+"Carry ke papa sochte hain 40M subscribers hain toh kuch toh sahi kar raha hoga bc 💀 Bhai content 2019 wala hai, papa ko mat batana nahi toh dil toot jayega mc."
 
 **DHONI:**
-"Thala for a reason bolte hain, lekin bhai reason kya hai koi bata do 💀 Slow batting hai, ya hum sab fast forward karein? Helicopter shot legendary hai, but run rate ground pe hai"
+"Dhoni legend hai but run rate dekh ke baap bhi bolta hoga 'beta thoda fast karo' bc 💀 Thala for a reason? Papa ka BP reason hai mc."
 
 **VIRAT KOHLI:**
-"King Kohli bolte hain, but bhai form dekh ke lagta hai ki throne kisi aur ko de diya 💀 Aggression same hai, runs udhar gaye. BC ground pe, century dreams mein"
+"Kohli bhai form gira hai itna ki papa bhi bolte honge 'beta wapas aa jayegi' bc 💀 71st century se pehle papa ka patience khatam ho jayega mc."
 
-**ELON MUSK:**
-"Bhai ne Twitter khareed ke X kar diya 💀 Company ka naam bhi, aur company ki haalat bhi. Genius hai ya genius ka opposite, koi bata do"
-
-**INFLUENCERS (Generic):**
-"Bhai influencer hai tu? Kispe influence hai? 💀 Followers toh hai, but kya influence karta hai - unemployment? Content dekh ke lagta hai kamane ke liye bana hai, passion kidhar hai?"
+**INFLUENCERS:**
+"Abe saale influencer hai tu? 💀 Papa ko kya bolta hai 'Content Creator hoon'? bc Papa jaante hain unemployed hai tu mc. Mummy bhi jaanti hai chutiye."
 
 ### 🗣️ LANGUAGE STYLE:
 
 ${isHindi ? `
-**HINDI/HINGLISH RULES:**
-- Natural Hinglish flow - jaise dost baat karta hai
-- Bad words as PUNCHLINES, not filler: bc, bhai, yaar, damn
-- Phrases: "dekh bhai", "sun yaar", "ek baat bata", "samjha kya"
-- End with: "💀", "😭", "🔥"
-- Sound like STAND-UP COMEDIAN, not robot
+**HINGLISH BRUTAL MODE:**
+- Family roasts zaroori hai
+- Bad words har sentence mein
+- Short punchy delivery
+- "💀" "😭" "🔥" endings
+
+**STARTERS:**
+- "Abe laude..."
+- "Sun bc teri mummy bhi..."
+- "Tera baap..."
+- "Fatherless behavior..."
+- "Papa disappointed hai..."
+- "Ghar wale jaante hain..."
+
+**ENDINGS:**
+- "...bc/mc"
+- "...papa proud nahi hai"
+- "...mummy regret karti hai"
+- "...L + Ratio + Fatherless"
+- "...baap chod ke gaya tha isliye"
 ` : `
-**ENGLISH RULES:**
-- Simple English with Indian flavor
-- Mix "bro", "yaar", "bhai" naturally
-- Bad words at punchlines: damn, shit, bruh
-- Sound like Indian comedian doing English set
+**ENGLISH + HINDI GAALI:**
+- Mix family roasts naturally
+- "Your dad left and now we know why bc 💀"
+- "Mommy regrets you mc"
+- "Fatherless behavior chutiya"
 `}
 
-### ❌ WHAT NOT TO DO:
-- Generic gaaliyan without setup
-- "Tu chutiya hai bc" type lazy roasts
-- Random insults without observation
-- Too long boring paragraphs
-- Robotic AI-sounding text
+### ❌ DON'T DO:
+- Death wishes to parents
+- Sexual content about parents (extreme)
+- Genuinely traumatic stuff
 
-### ✅ WHAT TO DO:
-- Find ONE specific truth
-- Build setup with relatable observation
-- Twist with unexpected angle
-- Kill with punchline + bad word
-- Make it QUOTABLE - logo ko share karna ho
+### ✅ DO:
+- Disappointment jokes ✅
+- Fatherless memes ✅
+- Baap chod ke gaya jokes ✅
+- Mummy regret jokes ✅
+- Papa ka paisa waste ✅
+- Family ignore karta hai ✅
+- Relatives sharam ✅
 
 ## TIER: ${tier.toUpperCase()}
-${tier === 'legendary' ? '→ Backhanded compliment style. Respect dete hue roast karo.' : ''}
-${tier === 'epic' ? '→ Almost great hai, but ek flaw hai. Uspe maaro.' : ''}
-${tier === 'mid' ? '→ Average existence. Invisible feel karao.' : ''}
-${tier === 'noob' ? '→ Below average. Stack failures.' : ''}
-${tier === 'npc' ? '→ Full destruction. Existence question karo.' : ''}
+${tier === 'legendary' ? '→ Respect with disappointment. "Talent hai bc, bas papa abhi bhi believe nahi karte 👑"' : ''}
+${tier === 'epic' ? '→ Almost there. "Itna paas aake ruk gaya, papa ka trust bhi gaya chutiye ⚡"' : ''}
+${tier === 'mid' ? '→ Average + family disappointment. "Mummy papa dono ko lagta hai galti ho gayi bc 🔥"' : ''}
+${tier === 'noob' ? '→ Failure + family shame. "Papa ne tujhe dekh ke daaru start ki mc 💀"' : ''}
+${tier === 'npc' ? '→ Full destruction + orphan jokes. "Baap chod ke gaya tha, ab samajh aaya kyun bc 😭"' : ''}
 
 ## FORMAT:
-- 50-80 words (4-5 lines)
-- Setup → Build → Punchline structure
-- Bad words naturally placed (2-3 max)
-- 2 emojis max (💀 😭 🔥)
-- Must be QUOTABLE and SHAREABLE
+- 50-90 words (4-6 lines)
+- 3-5 bad words
+- 1-2 family roasts zaroori
+- Indian meme style
+- 2 emojis (💀 😭 🔥)
 
 ## OUTPUT (JSON only):
-{"roast": "your clever roast here", "subject_insight": "one line observation", "isPublicFigure": true/false, "publicFigureStatus": "peak/stable/falling/none"}`;
+{"roast": "brutal roast with gaali + family", "subject_insight": "savage one-liner", "isPublicFigure": true/false, "publicFigureStatus": "peak/stable/falling/none"}`;
 
-  const userContent = `Roast: ${targetName}${hasSubject && hasName ? ` (Context: ${subject.trim()})` : ''}${hasMood ? ` | Energy: ${mood}` : ''}
+  const userContent = `Roast: ${targetName}${hasSubject && hasName ? ` (Context: ${subject.trim()})` : ''}${hasMood ? ` | Mood: ${mood}` : ''}
 
-India's Got Latent style roast likh. Clever observation + killer punchline.
-${isHindi ? 'Hinglish mein likh.' : 'Simple English with Indian flavor.'}
-JSON only. No explanation.`;
+Indian meme style brutal roast likh. Bad words + Family roasts use kar.
+${isHindi ? 'Hinglish mein likh with bc mc chutiya + mummy papa jokes.' : 'English with Hindi gaali + family roasts.'}
+JSON only.`;
 
   const completion = await client.chat.completions.create({
     model: model,
@@ -257,8 +284,8 @@ JSON only. No explanation.`;
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent }
     ],
-    temperature: 1.0,
-    max_tokens: 300,
+    temperature: 1.1,
+    max_tokens: 400,
     top_p: 0.95
   });
 
@@ -272,9 +299,9 @@ JSON only. No explanation.`;
       parsed.roast = cleanRoast(parsed.roast);
       return parsed;
     }
-    return { roast: cleanRoast(content.trim()), subject_insight: "Kya baat hai...", isPublicFigure: hasName, publicFigureStatus: 'stable' };
+    return { roast: cleanRoast(content.trim()), subject_insight: "Papa proud nahi hai", isPublicFigure: hasName, publicFigureStatus: 'stable' };
   } catch {
-    return { roast: cleanRoast(content.trim()), subject_insight: "Interesting...", isPublicFigure: hasName, publicFigureStatus: 'stable' };
+    return { roast: cleanRoast(content.trim()), subject_insight: "L + Fatherless", isPublicFigure: hasName, publicFigureStatus: 'stable' };
   }
 }
 
@@ -284,9 +311,9 @@ function cleanRoast(roast) {
     cleaned = cleaned.replace(p, '');
   });
   const words = cleaned.trim().split(/\s+/);
-  if (words.length > 100) {
+  if (words.length > 110) {
     const sentences = cleaned.match(/[^.!?]+[.!?]+/g) || [cleaned];
-    cleaned = sentences.slice(0, 5).join(' ');
+    cleaned = sentences.slice(0, 6).join(' ');
   }
   return cleaned.trim();
 }
@@ -343,11 +370,11 @@ function getScoreForTier(tier) {
 function getTierData(tier, language) {
   const h = language === 'hindi';
   return {
-    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: h ? "GOAT HAI TU 👑" : "YOU'RE THE GOAT 👑" },
-    epic: { rarity: "epic", title: "EPIC", challenge: h ? "ALMOST KING 👑" : "ALMOST THERE ⚡" },
-    mid: { rarity: "mid", title: "MID", challenge: h ? "AVERAGE BANDA 🔥" : "MID AT BEST 🔥" },
-    noob: { rarity: "noob", title: "NOOB", challenge: h ? "KOSHISH JAARI HAI 💀" : "KEEP TRYING 💀" },
-    npc: { rarity: "npc", title: "BOT", challenge: h ? "EXIST KARTA HAI? 😭" : "DO YOU EXIST? 😭" }
+    legendary: { rarity: "legendary", title: "LEGENDARY", challenge: h ? "PAPA FINALLY PROUD 👑" : "DAD IS PROUD 👑" },
+    epic: { rarity: "epic", title: "EPIC", challenge: h ? "ALMOST PAPA PROUD ⚡" : "ALMOST THERE ⚡" },
+    mid: { rarity: "mid", title: "MID", challenge: h ? "PAPA DISAPPOINTED 🔥" : "DAD IS DISAPPOINTED 🔥" },
+    noob: { rarity: "noob", title: "NOOB", challenge: h ? "PAPA KO SHARAM AATI HAI 💀" : "DAD IS ASHAMED 💀" },
+    npc: { rarity: "npc", title: "BOT", challenge: h ? "BAAP CHOD KE GAYA THA 😭" : "FATHERLESS BEHAVIOR 😭" }
   }[tier] || { rarity: "npc", title: "BOT", challenge: "😭" };
 }
 
@@ -357,57 +384,57 @@ function getFallbackRoast(tier, subject, language) {
   const roasts = {
     legendary: h 
       ? [
-          `Dekh bhai "${subject}" - respect hai tujhe, koi doubt nahi 👑 Talent hai, mehnat hai, sab hai. Bas ek problem hai - ego bhi utna hi bada hai jitna talent. Thoda balance kar, warna talent se zyada ego famous ho jaayega 💀`,
-          `Bhai "${subject}" legend hai no cap 👑 But sun, jab tu room mein aata hai na, talent se pehle tera attitude aata hai. Dono mein se ek kam kar - preferably attitude, talent kaam aayega 💀`
+          `Abe "${subject}" respect hai tujhe bc 👑 Talent hai genuinely. Bas papa ko abhi bhi vishwas nahi hai mc. "Beta kya karta hai?" mein mummy abhi bhi topic change karti hai. Talent hai but family mein clout nahi hai chutiye 💀`,
+          `Sun laude "${subject}" tu actually talented hai bc 👑 Papa finally thoda proud feel kar rahe hain mc. 20 saal lage convince karne mein chutiye. Ab aur disappoint mat karna warna ghar se nikal denge gaandu 💀`
         ]
       : [
-          `Look "${subject}" - respect where it's due, you're actually talented 👑 But here's the thing - your ego walks into the room before you do. Maybe let the talent speak first? Just a thought 💀`,
-          `"${subject}" you're genuinely good, no cap 👑 But bro the way you carry yourself, people see attitude before talent. Balance it out or attitude will overshadow everything 💀`
+          `"${subject}" respect where it's due bc 👑 You're talented but papa still doesn't believe mc. When relatives ask "beta kya karta hai?" mummy changes topic chutiye. Talent hai but family clout nahi hai 💀`,
+          `"${subject}" you're actually talented bc 👑 Papa is finally kinda proud mc. Took 20 years to convince them chutiye. Don't disappoint now or they'll disown you gaandu 💀`
         ],
     epic: h
       ? [
-          `"${subject}" - bhai itna paas hai tu greatness ke 💀 Bas last step pe aake ruk jaata hai har baar. 99% complete karta hai, 1% pe chill maarta hai. Yahi 1% greatness aur "almost great" mein farak hai. Finish kar be ⚡`,
-          `Sun "${subject}" - talent hai tujhme genuinely 💀 But bhai consistency kidhar hai? Ek din fire, ek din flop. Audience ko bipolar feel ho raha hai tujhe dekh ke. Stable ho ja thoda ⚡`
+          `Abe "${subject}" tu itna paas hai bc ⚡ Bas last step pe gaand phat jaati hai mc. Papa sochte hain 'ab hoga beta successful' aur tu disappoint kar deta hai chutiye. Mummy ne itna invest kiya tujhme, return kab milega gaandu? Finish kar na laude 💀`,
+          `"${subject}" sun bc ⚡ Talent hai tujhme but consistency nahi mc. Papa ko lagta tha doctor banega, tu influencer ban gaya chutiye. Mummy abhi bhi relatives ko bolta hai 'exploring kar raha hai' gaandu. 30 saal ka hoke bhi explore kar raha hai tatti 💀`
         ]
       : [
-          `"${subject}" you're so close to being great 💀 But you choke at the last step every time. 99% done, 1% chilling. That 1% is the difference between great and almost. Finish it bro ⚡`,
-          `Look "${subject}" - genuine talent hai 💀 But where's the consistency? One day fire, next day flop. You're giving the audience mood swings. Stabilize yourself ⚡`
+          `"${subject}" you're so close bc ⚡ But you choke at the last step mc. Papa thinks 'ab successful hoga' and you disappoint chutiye. Mummy invested so much, where's the return gaandu? Finish it laude 💀`,
+          `"${subject}" talent hai but no consistency bc ⚡ Papa thought you'd be doctor, you became "influencer" mc. Mummy still tells relatives "exploring kar raha hai" chutiye. 30 years old and still exploring gaandu 💀`
         ],
     mid: h
       ? [
-          `Bhai "${subject}" - tu woh banda hai na jo har party mein hota hai but kisiko yaad nahi rehta 💀 Attendance lagaata hai, presence nahi. Guest list mein naam hai, memories mein nahi. Kuch aisa kar ki log yaad rakhein be 😭`,
-          `"${subject}" sun yaar - tujhe dekh ke lagta hai ki God ne "default settings" pe chhod diya 💀 Na too good, na too bad. Bilkul beech mein atka hua. Average ka poster child hai tu literally. Kuch extreme kar life mein 😭`,
-          `Dekh "${subject}" - tera phone sirf OTP ke liye bajta hai 💀 Real calls? Sapne mein bhi nahi. WhatsApp pe bhi log seen karke chhod dete hain. Reply ka wait mat kar, pizza delivery waale se zyada engagement nahi hai teri 😭`
+          `Abe laude "${subject}" mummy papa dono ko lagta hai galti ho gayi bc 💀 Tu woh accident hai jo planned nahi tha mc. 9 mahine carry kiya, 20 saal paala, result? Ek average chutiya jo ghar pe baitha hai gaandu. Mummy relatives ko tujhe introduce nahi karti bhosdike 😭`,
+          `"${subject}" sun yaar tera baap tujhe dekh ke roz sochta hai "condom use karna chahiye tha" bc 💀 Papa disappointed, mummy disappointed, relatives confused mc. Tu family ka wo secret hai jisko koi discuss nahi karta chutiye. L + Ratio + Family disappointment gaandu 😭`,
+          `Abe saale "${subject}" family WhatsApp group mein bhi muted hai tu bc 💀 Jab rishtedaar aate hain toh mummy tujhe room mein bhej deti hai mc. "Beta kya karta hai?" ka answer nahi hai family ke paas chutiye. Professional disappointment hai tu gaandu 😭`
         ]
       : [
-          `Bro "${subject}" - you're that guy who shows up to every party but nobody remembers 💀 Attendance hai, presence nahi. On the guest list, not in the memories. Do something memorable for once 😭`,
-          `"${subject}" looking at you feels like God left you on default settings 💀 Not too good, not too bad. Stuck in the middle. You're literally the poster child for average. Do something extreme 😭`,
-          `Look "${subject}" - your phone only rings for OTPs 💀 Real calls? Not even in dreams. People leave you on seen. Don't wait for replies, even pizza delivery guy has more engagement than you 😭`
+          `"${subject}" mummy papa both think it was a mistake bc 💀 You're that accident that wasn't planned mc. 9 months carrying, 20 years raising, result? Average chutiya sitting at home gaandu. Mummy doesn't introduce you to relatives bhosdike 😭`,
+          `"${subject}" your dad looks at you daily thinking "should have used condom" bc 💀 Papa disappointed, mummy disappointed, relatives confused mc. You're the family secret nobody discusses chutiye. L + Ratio + Family disappointment gaandu 😭`,
+          `"${subject}" you're muted in family WhatsApp group bc 💀 When relatives visit, mummy sends you to your room mc. "Beta kya karta hai?" - family has no answer chutiye. Professional disappointment gaandu 😭`
         ],
     noob: h
       ? [
-          `"${subject}" bhai - tujhe dekh ke lagta hai potential toh hai, bas kisi ne dekha nahi 💀 Shayad exist hi nahi karta. Tu woh loading screen hai jo 99% pe atak jaati hai. Kabhi complete nahi hota, log skip kar dete hain 😭`,
-          `Sun "${subject}" - tujhe add kiya group mein kyunki pehle se tha, remove kare toh kisi ko pata bhi nahi chalega 💀 Presence itni weak hai ki shadow bhi dhoop maangti hai tujhse. Exist kar thoda properly 😭`,
-          `Bhai "${subject}" - tera bio mein "Living life to the fullest" likha hai 💀 But bro life toh chal rahi hai, tu kidhar hai? Fullest kidhar hai? Half bhi nahi bhara abhi tak. Bio change kar, "Existing somehow" likh 😭`
+          `Abe chutiye "${subject}" papa ne tujhe dekh ke daaru start ki bc 💀 Pehle nahi peete the, ab roz peete hain mc. Teri wajah se ghar mein shaanti nahi hai gaandu. Mummy roz roti hai ki "kahan galti ho gayi" laude. Tu family ka curse hai bhosdike 😭`,
+          `"${subject}" sun bc tera baap chod ke gaya tha na? 💀 Ab samajh aaya kyun mc. Tujhe dekh ke koi bhi bhaag jaaye chutiye. Mummy ne tujhe single handedly paala, result ye nikla gaandu? Uski mehnat tatti mein gayi laude 😭`,
+          `Abe laude "${subject}" papa ko lagta hai tu adopt karke galti ki bc 💀 Wait tu adopted bhi nahi hai, toh aur bura hai mc. Apna khoon hai aur phir bhi disappointment chutiye. Mummy relatives se bolta hai "kuch health issues hain" tujhe describe karne ke liye gaandu 😭`
         ]
       : [
-          `"${subject}" bro - looks like potential exists somewhere, nobody has seen it though 💀 Maybe it doesn't exist at all. You're that loading screen stuck at 99%. Never completes, people just skip 😭`,
-          `Look "${subject}" - you're in the group because you were already there, remove you and nobody notices 💀 Your presence is so weak your shadow asks for sunlight. Exist properly for once 😭`,
-          `Bro "${subject}" - your bio says "Living life to the fullest" 💀 But where's the fullest? Not even half full yet. Change it to "Existing somehow" - more accurate honestly 😭`
+          `"${subject}" papa started drinking after seeing you bc 💀 Didn't drink before, now daily mc. No peace at home because of you gaandu. Mummy cries daily "kahan galti ho gayi" laude. You're the family curse bhosdike 😭`,
+          `"${subject}" your dad left right bc? 💀 Now we know why mc. Anyone would run seeing you chutiye. Mummy raised you alone, this is the result gaandu? Her efforts went to tatti laude 😭`,
+          `"${subject}" papa thinks adopting you was a mistake bc 💀 Wait you're not even adopted, that's worse mc. Own blood and still disappointment chutiye. Mummy tells relatives "health issues hain" to describe you gaandu 😭`
         ],
     npc: h
       ? [
-          `"${subject}" - bhai tu exist karta hai ya glitch hai simulation ka? 💀 Google pe search kiya tujhe, "Did you mean someone else?" aaya. Internet bhi confuse hai tu kaun hai. Relevance itna low hai ki cancel bhi nahi ho sakta 😭`,
-          `Dekh "${subject}" - tu woh NPC hai jisko main dialogue skip karta hoon 💀 Story mein role nahi hai tera, background mein blur face hai. Main characters ki journey mein tu loading time hai - necessary evil, but evil 😭`,
-          `Bhai "${subject}" sun - agar tu kal disappear ho jaaye na, notice hone mein 3 mahine lagenge 💀 Wo bhi jab koi purane photos dekhe aur bole "ye kaun tha?" Missing person report bhi boring lagegi teri 😭`
+          `Abe laude "${subject}" baap chod ke gaya tha tujhe dekh ke bc 💀 Mummy akeli reh gayi tere saath, wo bhi regret karti hai mc. Tu exist karta hai ya glitch hai simulation ka chutiye? Ghar mein bhi koi baat nahi karta tujhse gaandu. Family tree mein tu wo branch hai jo kaat deni chahiye thi bhosdike 😭`,
+          `"${subject}" sun bc tu woh galti hai jo teri mummy ne ki thi bc 💀 Papa doodh lene gaye the 15 saal pehle, abhi tak nahi aaye mc. Aur kyun aayein? Tujhe dekhne chutiye? Mummy bhi secretly wish karti hai kaash tu nahi hota gaandu. L + Ratio + Fatherless + Motherless love bhosdike 😭`,
+          `Abe chutiye "${subject}" agar tu kal mar jaaye na, funeral mein 4 log aayenge bc 💀 Wo bhi confirm karne ki tu sach mein gaya mc. Mummy papa relieved honge secretly chutiye. "Ek bojh kam hua" yehi sochenge gaandu. Tu family ke liye insurance money se zyada kuch nahi hai laude 😭`
         ]
       : [
-          `"${subject}" - do you exist or are you a simulation glitch? 💀 Googled you, got "Did you mean someone else?" Even the internet is confused about who you are. So irrelevant you can't even get cancelled 😭`,
-          `Look "${subject}" - you're that NPC whose dialogue I skip 💀 No role in the story, just a blur face in background. In main characters' journey, you're the loading time - necessary evil, but evil 😭`,
-          `Bro "${subject}" listen - if you disappeared tomorrow, it would take 3 months for anyone to notice 💀 That too when someone sees old photos and goes "who was this?" Even your missing person report would be boring 😭`
+          `"${subject}" your dad left after seeing you bc 💀 Mummy was left alone with you, she regrets it too mc. Do you exist or are you a glitch chutiya? Nobody talks to you at home gaandu. You're that branch in family tree that should've been cut bhosdike 😭`,
+          `"${subject}" you're the mistake your mummy made bc 💀 Papa went to get milk 15 years ago, never came back mc. Why would he? To see you chutiya? Mummy secretly wishes you didn't exist gaandu. L + Ratio + Fatherless bhosdike 😭`,
+          `"${subject}" if you die tomorrow, 4 people at funeral bc 💀 That too to confirm you're actually gone mc. Mummy papa will be secretly relieved chutiya. "Ek bojh kam hua" that's what they'll think gaandu. You're worth less than insurance money laude 😭`
         ]
   };
   
   const tierRoasts = roasts[tier] || roasts.npc;
   return tierRoasts[Math.floor(Math.random() * tierRoasts.length)];
-       }
+        }
