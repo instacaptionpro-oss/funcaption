@@ -13,7 +13,6 @@
     "react-dom": "^18",
     "openai": "^4.0.0",
     "html2canvas": "^1.4.1",
-    "@google/generative-ai": "^0.21.0",
-    "instatouch": "^2.3.14"
+    "@google/generative-ai": "^0.21.0"
   }
 }
