@@ -3,6 +3,17 @@ import Head from 'next/head';
 import AuraCard from '../components/AuraCard';
 import RoastChat from '../components/RoastChat';
 
+const moods = [
+  { id: 'savage', emoji: '🔥', label: 'Savage', color: '#EF4444' },
+  { id: 'funny', emoji: '😂', label: 'Funny', color: '#F59E0B' },
+  { id: 'sarcastic', emoji: '🙄', label: 'Sarcastic', color: '#8B5CF6' },
+  { id: 'deep', emoji: '🧠', label: 'Deep', color: '#3B82F6' },
+  { id: 'attitude', emoji: '😎', label: 'Attitude', color: '#EC4899' },
+  { id: 'poetic', emoji: '✍️', label: 'Poetic', color: '#10B981' },
+  { id: 'motivation', emoji: '🚀', label: 'Motivational', color: '#F97316' },
+  { id: 'love', emoji: '💕', label: 'Love', color: '#DB2777' }
+];
+
 const tierEnergy = {
   legendary: {
     primary: '#FFD700',
@@ -42,14 +53,14 @@ const tierEnergy = {
 };
 
 export default function Home() {
-  const [inputType, setInputType] = useState('name'); // 'name' or 'instagram'
   const [nameInput, setNameInput] = useState('');
-  const [igInput, setIgInput] = useState('');
+  const [selectedMood, setSelectedMood] = useState(0); // Index in moods array
   const [loading, setLoading] = useState(false);
   const [aura, setAura] = useState(null);
   const [showRoastChat, setShowRoastChat] = useState(false);
   const [roastCount, setRoastCount] = useState(47832);
   const [cardVisible, setCardVisible] = useState(false);
+  const [isSpinning, setIsSpinning] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -65,7 +76,28 @@ export default function Home() {
     }
   }, [aura]);
 
-  const handleNameRoast = async () => {
+  const spinMoodWheel = () => {
+    if (isSpinning) return;
+    
+    setIsSpinning(true);
+    const spinDuration = 2000; // 2 seconds
+    const spinTimes = 20; // Number of mood changes
+    let currentSpin = 0;
+
+    const spinInterval = setInterval(() => {
+      setSelectedMood(Math.floor(Math.random() * moods.length));
+      currentSpin++;
+
+      if (currentSpin >= spinTimes) {
+        clearInterval(spinInterval);
+        setIsSpinning(false);
+        // Final selection
+        setSelectedMood(Math.floor(Math.random() * moods.length));
+      }
+    }, spinDuration / spinTimes);
+  };
+
+  const handleRoast = async () => {
     if (!nameInput.trim()) return;
 
     setLoading(true);
@@ -79,7 +111,7 @@ export default function Home() {
         body: JSON.stringify({ 
           name: nameInput.trim(),
           subject: '', 
-          mood: 'savage',
+          mood: moods[selectedMood].id,
           language: 'hindi'
         })
       });
@@ -104,52 +136,17 @@ export default function Home() {
     }
   };
 
-  const handleInstagramRoast = async () => {
-    if (!igInput.trim()) return;
-
-    setLoading(true);
-    setAura(null);
-    setCardVisible(false);
-    
-    try {
-      const response = await fetch('/api/roast-instagram', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: igInput.trim() })
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        setAura(data.aura);
-        setRoastCount(prev => prev + 1);
-      } else {
-        setAura(data.fallback);
-      }
-    } catch (err) {
-      setAura({
-        score: 15,
-        roast: "Instagram fetch failed bc 💀 Private account hai ya exist nahi karta mc 😭",
-        subjectInsight: "Error",
-        rarity: "npc",
-        title: "BOT",
-        challenge: "NOT FOUND"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const resetForm = () => {
     setCardVisible(false);
     setTimeout(() => {
       setAura(null);
       setNameInput('');
-      setIgInput('');
+      setSelectedMood(0);
     }, 300);
   };
 
   const currentEnergy = aura ? (tierEnergy[aura.rarity] || tierEnergy.npc) : null;
+  const currentMood = moods[selectedMood];
 
   const getDisplayTitle = (title, rarity) => {
     if (rarity === 'npc' || title === 'NPC') return 'BOT';
@@ -161,7 +158,7 @@ export default function Home() {
       <Head>
         <title>AuraPro - AI Roast Generator 🔥</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <meta name="description" content="Get brutally roasted by AI. Instagram analysis or any name - savage roasts guaranteed." />
+        <meta name="description" content="Get brutally roasted by AI. Choose mood and get savage roasts!" />
         <meta name="theme-color" content="#0a0a12" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </Head>
@@ -275,320 +272,270 @@ export default function Home() {
               padding: '32px 28px',
               boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
               marginBottom: '24px'
-            }}>
-              
-              {/* Tab Selector */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '12px',
-                marginBottom: '32px',
-                background: 'rgba(0, 0, 0, 0.3)',
-                padding: '6px',
-                borderRadius: '16px'
               }}>
-                <button
-                  onClick={() => setInputType('instagram')}
-                  style={{
-                    padding: '14px',
-                    border: 'none',
-                    borderRadius: '12px',
-                    fontSize: '0.9rem',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    background: inputType === 'instagram' 
-                      ? 'linear-gradient(135deg, #E1306C, #C13584)' 
-                      : 'transparent',
-                    color: inputType === 'instagram' ? '#fff' : 'rgba(255, 255, 255, 0.5)',
-                    boxShadow: inputType === 'instagram' ? '0 4px 20px rgba(225, 48, 108, 0.4)' : 'none',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px'
-                  }}
-                >
-                  <span style={{ fontSize: '1.2rem' }}>📸</span>
-                  Instagram
-                </button>
+              
+              {/* Name Input */}
+              <div style={{ marginBottom: '28px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.85rem',
+                  fontWeight: '600',
+                  color: 'rgba(255, 255, 255, 0.6)',
+                  marginBottom: '10px',
+                  letterSpacing: '0.5px',
+                  textTransform: 'uppercase'
+                }}>
+                  Who Gets Roasted?
+                </label>
                 
-                <button
-                  onClick={() => setInputType('name')}
+                <input
+                  type="text"
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  placeholder="Celebrity, friend, yourself..."
+                  onKeyPress={(e) => e.key === 'Enter' && handleRoast()}
                   style={{
-                    padding: '14px',
-                    border: 'none',
-                    borderRadius: '12px',
-                    fontSize: '0.9rem',
-                    fontWeight: '700',
-                    cursor: 'pointer',
+                    width: '100%',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '2px solid rgba(168, 85, 247, 0.3)',
+                    borderRadius: '16px',
+                    padding: '18px 20px',
+                    color: '#fff',
+                    fontSize: '1.05rem',
+                    fontWeight: '600',
+                    outline: 'none',
                     fontFamily: 'inherit',
-                    background: inputType === 'name' 
-                      ? 'linear-gradient(135deg, #A855F7, #EC4899)' 
-                      : 'transparent',
-                    color: inputType === 'name' ? '#fff' : 'rgba(255, 255, 255, 0.5)',
-                    boxShadow: inputType === 'name' ? '0 4px 20px rgba(168, 85, 247, 0.4)' : 'none',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px'
+                    transition: 'all 0.3s ease'
                   }}
-                >
-                  <span style={{ fontSize: '1.2rem' }}>✍️</span>
-                  Any Name
-                </button>
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#A855F7';
+                    e.target.style.boxShadow = '0 0 0 4px rgba(168, 85, 247, 0.15)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(168, 85, 247, 0.3)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
               </div>
 
-              {/* Instagram Input */}
-              {inputType === 'instagram' && (
+              {/* Quick Picks */}
+              <div style={{ marginBottom: '32px' }}>
                 <div style={{
-                  animation: 'slideIn 0.3s ease'
+                  fontSize: '0.75rem',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  marginBottom: '10px',
+                  fontWeight: '600',
+                  letterSpacing: '0.5px'
                 }}>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '0.85rem',
-                    fontWeight: '600',
-                    color: 'rgba(255, 255, 255, 0.6)',
-                    marginBottom: '10px',
-                    letterSpacing: '0.5px',
-                    textTransform: 'uppercase'
-                  }}>
-                    Instagram Username
-                  </label>
-                  
-                  <div style={{ position: 'relative', marginBottom: '24px' }}>
-                    <div style={{
-                      position: 'absolute',
-                      left: '18px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      fontSize: '1.1rem',
-                      color: 'rgba(255, 255, 255, 0.4)'
-                    }}>
-                      @
-                    </div>
-                    <input
-                      type="text"
-                      value={igInput}
-                      onChange={(e) => setIgInput(e.target.value)}
-                      placeholder="username"
-                      onKeyPress={(e) => e.key === 'Enter' && handleInstagramRoast()}
-                      style={{
-                        width: '100%',
-                        background: 'rgba(0, 0, 0, 0.4)',
-                        border: '2px solid rgba(225, 48, 108, 0.3)',
-                        borderRadius: '16px',
-                        padding: '18px 20px 18px 40px',
-                        color: '#fff',
-                        fontSize: '1.05rem',
-                        fontWeight: '600',
-                        outline: 'none',
-                        fontFamily: 'inherit',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onFocus={(e) => {
-                        e.target.style.borderColor = '#E1306C';
-                        e.target.style.boxShadow = '0 0 0 4px rgba(225, 48, 108, 0.15)';
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = 'rgba(225, 48, 108, 0.3)';
-                        e.target.style.boxShadow = 'none';
-                      }}
-                    />
-                  </div>
-
-                  <button
-                    onClick={handleInstagramRoast}
-                    disabled={loading || !igInput.trim()}
-                    style={{
-                      width: '100%',
-                      padding: '18px',
-                      border: 'none',
-                      borderRadius: '16px',
-                      fontSize: '1.05rem',
-                      fontWeight: '800',
-                      cursor: igInput.trim() && !loading ? 'pointer' : 'not-allowed',
-                      fontFamily: 'inherit',
-                      background: igInput.trim() && !loading
-                        ? 'linear-gradient(135deg, #E1306C, #C13584)'
-                        : 'rgba(255, 255, 255, 0.1)',
-                      color: igInput.trim() && !loading ? '#fff' : 'rgba(255, 255, 255, 0.3)',
-                      boxShadow: igInput.trim() && !loading 
-                        ? '0 8px 30px rgba(225, 48, 108, 0.4)' 
-                        : 'none',
-                      transition: 'all 0.3s ease',
-                      transform: loading ? 'scale(0.98)' : 'scale(1)'
-                    }}
-                  >
-                    {loading ? (
-                      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                        <span style={{ 
-                          width: '16px', 
-                          height: '16px', 
-                          border: '2px solid rgba(255,255,255,0.3)',
-                          borderTop: '2px solid #fff',
-                          borderRadius: '50%',
-                          animation: 'spin 0.8s linear infinite'
-                        }} />
-                        Analyzing Profile...
-                      </span>
-                    ) : '🔥 Roast Instagram Profile'}
-                  </button>
-
-                  <p style={{
-                    fontSize: '0.75rem',
-                    color: 'rgba(255, 255, 255, 0.4)',
-                    textAlign: 'center',
-                    marginTop: '12px',
-                    lineHeight: '1.4'
-                  }}>
-                    AI analyzes followers, posts & bio
-                  </p>
+                  🔥 TRENDING
                 </div>
-              )}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {["Samay Raina", "Carry", "Dhoni", "Virat", "Elon"].map((name) => (
+                    <button
+                      key={name}
+                      onClick={() => setNameInput(name)}
+                      style={{
+                        padding: '8px 14px',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        borderRadius: '10px',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        fontSize: '0.8rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        fontFamily: 'inherit',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.background = 'rgba(168, 85, 247, 0.2)';
+                        e.target.style.borderColor = 'rgba(168, 85, 247, 0.5)';
+                        e.target.style.color = '#A855F7';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.background = 'rgba(255, 255, 255, 0.05)';
+                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                        e.target.style.color = 'rgba(255, 255, 255, 0.7)';
+                      }}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-              {/* Name Input */}
-              {inputType === 'name' && (
-                <div style={{
-                  animation: 'slideIn 0.3s ease'
+              {/* Mood Wheel */}
+              <div style={{ marginBottom: '28px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.85rem',
+                  fontWeight: '600',
+                  color: 'rgba(255, 255, 255, 0.6)',
+                  marginBottom: '16px',
+                  letterSpacing: '0.5px',
+                  textTransform: 'uppercase',
+                  textAlign: 'center'
                 }}>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '0.85rem',
-                    fontWeight: '600',
-                    color: 'rgba(255, 255, 255, 0.6)',
-                    marginBottom: '10px',
-                    letterSpacing: '0.5px',
-                    textTransform: 'uppercase'
-                  }}>
-                    Who Gets Roasted?
-                  </label>
-                  
-                  <input
-                    type="text"
-                    value={nameInput}
-                    onChange={(e) => setNameInput(e.target.value)}
-                    placeholder="Celebrity, friend, yourself..."
-                    onKeyPress={(e) => e.key === 'Enter' && handleNameRoast()}
-                    style={{
-                      width: '100%',
-                      background: 'rgba(0, 0, 0, 0.4)',
-                      border: '2px solid rgba(168, 85, 247, 0.3)',
-                      borderRadius: '16px',
-                      padding: '18px 20px',
-                      color: '#fff',
-                      fontSize: '1.05rem',
-                      fontWeight: '600',
-                      outline: 'none',
-                      fontFamily: 'inherit',
-                      marginBottom: '20px',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onFocus={(e) => {
-                      e.target.style.borderColor = '#A855F7';
-                      e.target.style.boxShadow = '0 0 0 4px rgba(168, 85, 247, 0.15)';
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = 'rgba(168, 85, 247, 0.3)';
-                      e.target.style.boxShadow = 'none';
-                    }}
-                  />
+                  Choose Roast Mood
+                </label>
 
-                  {/* Quick Picks */}
-                  <div style={{ marginBottom: '24px' }}>
+                {/* Mood Display Circle */}
+                <div style={{
+                  position: 'relative',
+                  width: '180px',
+                  height: '180px',
+                  margin: '0 auto 24px',
+                }}>
+                  {/* Outer Ring */}
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    borderRadius: '50%',
+                    background: `conic-gradient(${moods.map((m, i) => 
+                      `${m.color} ${(i * 360 / moods.length)}deg ${((i + 1) * 360 / moods.length)}deg`
+                    ).join(', ')})`,
+                    animation: isSpinning ? 'spin 0.1s linear infinite' : 'none',
+                    filter: 'blur(8px)',
+                    opacity: 0.6
+                  }} />
+
+                  {/* Inner Circle */}
+                  <div style={{
+                    position: 'absolute',
+                    inset: '15px',
+                    borderRadius: '50%',
+                    background: `linear-gradient(135deg, ${currentMood.color}30, ${currentMood.color}10)`,
+                    border: `3px solid ${currentMood.color}`,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    boxShadow: `0 0 30px ${currentMood.color}60`,
+                    transition: 'all 0.3s ease'
+                  }}>
+                    <div style={{ fontSize: '3rem' }}>{currentMood.emoji}</div>
                     <div style={{
-                      fontSize: '0.75rem',
-                      color: 'rgba(255, 255, 255, 0.5)',
-                      marginBottom: '8px',
-                      fontWeight: '600',
+                      fontSize: '0.95rem',
+                      fontWeight: '700',
+                      color: currentMood.color,
                       letterSpacing: '0.5px'
                     }}>
-                      🔥 TRENDING
-                    </div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                      {["Samay Raina", "Carry", "Dhoni", "Elon Musk"].map((name) => (
-                        <button
-                          key={name}
-                          onClick={() => setNameInput(name)}
-                          style={{
-                            padding: '8px 14px',
-                            border: '1px solid rgba(255, 255, 255, 0.15)',
-                            borderRadius: '10px',
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            color: 'rgba(255, 255, 255, 0.7)',
-                            fontSize: '0.8rem',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            fontFamily: 'inherit',
-                            transition: 'all 0.2s ease'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.background = 'rgba(168, 85, 247, 0.2)';
-                            e.target.style.borderColor = 'rgba(168, 85, 247, 0.5)';
-                            e.target.style.color = '#A855F7';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.background = 'rgba(255, 255, 255, 0.05)';
-                            e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                            e.target.style.color = 'rgba(255, 255, 255, 0.7)';
-                          }}
-                        >
-                          {name}
-                        </button>
-                      ))}
+                      {currentMood.label}
                     </div>
                   </div>
-
-                  <button
-                    onClick={handleNameRoast}
-                    disabled={loading || !nameInput.trim()}
-                    style={{
-                      width: '100%',
-                      padding: '18px',
-                      border: 'none',
-                      borderRadius: '16px',
-                      fontSize: '1.05rem',
-                      fontWeight: '800',
-                      cursor: nameInput.trim() && !loading ? 'pointer' : 'not-allowed',
-                      fontFamily: 'inherit',
-                      background: nameInput.trim() && !loading
-                        ? 'linear-gradient(135deg, #F59E0B, #EF4444)'
-                        : 'rgba(255, 255, 255, 0.1)',
-                      color: nameInput.trim() && !loading ? '#000' : 'rgba(255, 255, 255, 0.3)',
-                      boxShadow: nameInput.trim() && !loading 
-                        ? '0 8px 30px rgba(245, 158, 11, 0.4)' 
-                        : 'none',
-                      transition: 'all 0.3s ease',
-                      transform: loading ? 'scale(0.98)' : 'scale(1)'
-                    }}
-                  >
-                    {loading ? (
-                      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                        <span style={{ 
-                          width: '16px', 
-                          height: '16px', 
-                          border: '2px solid rgba(0,0,0,0.3)',
-                          borderTop: '2px solid #000',
-                          borderRadius: '50%',
-                          animation: 'spin 0.8s linear infinite'
-                        }} />
-                        Generating Roast...
-                      </span>
-                    ) : '🔥 Generate Roast Card'}
-                  </button>
-
-                  <p style={{
-                    fontSize: '0.75rem',
-                    color: 'rgba(255, 255, 255, 0.4)',
-                    textAlign: 'center',
-                    marginTop: '12px',
-                    lineHeight: '1.4'
-                  }}>
-                    AI roasts based on personality & reputation
-                  </p>
                 </div>
-              )}
+
+                {/* Spin Button */}
+                <button
+                  onClick={spinMoodWheel}
+                  disabled={isSpinning}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    border: `2px solid ${currentMood.color}40`,
+                    borderRadius: '14px',
+                    background: `${currentMood.color}15`,
+                    color: currentMood.color,
+                    fontSize: '0.9rem',
+                    fontWeight: '700',
+                    cursor: isSpinning ? 'not-allowed' : 'pointer',
+                    fontFamily: 'inherit',
+                    transition: 'all 0.2s ease',
+                    marginBottom: '12px'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSpinning) {
+                      e.target.style.background = `${currentMood.color}25`;
+                      e.target.style.transform = 'scale(1.02)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = `${currentMood.color}15`;
+                    e.target.style.transform = 'scale(1)';
+                  }}
+                >
+                  {isSpinning ? '🎰 Spinning...' : '🎲 Spin the Wheel'}
+                </button>
+
+                {/* Mood Grid */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, 1fr)',
+                  gap: '8px'
+                }}>
+                  {moods.map((mood, index) => (
+                    <button
+                      key={mood.id}
+                      onClick={() => setSelectedMood(index)}
+                      style={{
+                        padding: '10px',
+                        border: selectedMood === index 
+                          ? `2px solid ${mood.color}` 
+                          : '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '12px',
+                        background: selectedMood === index 
+                          ? `${mood.color}20` 
+                          : 'rgba(255, 255, 255, 0.03)',
+                        cursor: 'pointer',
+                        fontFamily: 'inherit',
+                        transition: 'all 0.2s ease',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <div style={{ fontSize: '1.5rem' }}>{mood.emoji}</div>
+                      <div style={{
+                        fontSize: '0.65rem',
+                        fontWeight: '600',
+                        color: selectedMood === index ? mood.color : 'rgba(255, 255, 255, 0.5)'
+                      }}>
+                        {mood.label}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Generate Button */}
+              <button
+                onClick={handleRoast}
+                disabled={loading || !nameInput.trim()}
+                style={{
+                  width: '100%',
+                  padding: '18px',
+                  border: 'none',
+                  borderRadius: '16px',
+                  fontSize: '1.05rem',
+                  fontWeight: '800',
+                  cursor: nameInput.trim() && !loading ? 'pointer' : 'not-allowed',
+                  fontFamily: 'inherit',
+                  background: nameInput.trim() && !loading
+                    ? 'linear-gradient(135deg, #F59E0B, #EF4444)'
+                    : 'rgba(255, 255, 255, 0.1)',
+                  color: nameInput.trim() && !loading ? '#000' : 'rgba(255, 255, 255, 0.3)',
+                  boxShadow: nameInput.trim() && !loading 
+                    ? '0 8px 30px rgba(245, 158, 11, 0.4)' 
+                    : 'none',
+                  transition: 'all 0.3s ease',
+                  transform: loading ? 'scale(0.98)' : 'scale(1)'
+                }}
+              >
+                {loading ? (
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                    <span style={{ 
+                      width: '16px', 
+                      height: '16px', 
+                      border: '2px solid rgba(0,0,0,0.3)',
+                      borderTop: '2px solid #000',
+                      borderRadius: '50%',
+                      animation: 'spin 0.8s linear infinite'
+                    }} />
+                    Generating Roast...
+                  </span>
+                ) : '🔥 Generate Roast Card'}
+              </button>
             </div>
 
             {/* Rarity Info */}
@@ -695,37 +642,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Instagram Stats */}
-            {aura.igStats && (
-              <div style={{
-                background: 'rgba(225, 48, 108, 0.1)',
-                border: '1px solid rgba(225, 48, 108, 0.3)',
-                borderRadius: '18px',
-                padding: '16px 24px',
-                display: 'flex',
-                gap: '24px',
-                justifyContent: 'center'
-              }}>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#E1306C' }}>
-                    {aura.igStats.followers}
-                  </div>
-                  <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
-                    Followers
-                  </div>
-                </div>
-                <div style={{ width: '1px', background: 'rgba(255,255,255,0.15)' }} />
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#E1306C' }}>
-                    {aura.igStats.ratio}:1
-                  </div>
-                  <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
-                    Ratio
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Action Buttons */}
             <div style={{
               display: 'grid',
@@ -797,7 +713,7 @@ export default function Home() {
         {showRoastChat && (
           <RoastChat 
             subject={aura.name || nameInput}
-            mood="savage"
+            mood={moods[selectedMood].id}
             initialRoast={aura.roast}
             onClose={() => setShowRoastChat(false)}
           />
@@ -832,17 +748,6 @@ export default function Home() {
           100% { transform: rotate(360deg); }
         }
         
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
         input::placeholder {
           color: rgba(255, 255, 255, 0.3);
         }
@@ -853,4 +758,4 @@ export default function Home() {
       `}</style>
     </div>
   );
-  }
+          }
