@@ -352,19 +352,31 @@ function cleanRoast(roast) {
   return cleaned.trim();
 }
 
+// 🔥 FIXED RARITY SYSTEM - NOW BALANCED!
 function enforceRarityProbabilities(tier, score, isPublicFigure, publicFigureStatus) {
   const r = Math.random() * 100;
   
+  // Falling public figures get worse cards
   if (isPublicFigure && publicFigureStatus === 'falling') {
-    return r < 50 ? { tier: 'mid', score: getScoreForTier('mid') } : 
-           r < 80 ? { tier: 'noob', score: getScoreForTier('noob') } : 
+    return r < 40 ? { tier: 'mid', score: getScoreForTier('mid') } : 
+           r < 70 ? { tier: 'noob', score: getScoreForTier('noob') } : 
                     { tier: 'npc', score: getScoreForTier('npc') };
   }
   
-  if (tier === 'legendary' && r > 10) {
-    return r > 70 ? { tier: 'epic', score: getScoreForTier('epic') } : 
-           r > 40 ? { tier: 'mid', score: getScoreForTier('mid') } : 
-                    { tier: 'noob', score: getScoreForTier('noob') };
+  // Legendary is still rare (1% chance = 1 in 100)
+  // But if someone got legendary, enforce the rarity
+  if (tier === 'legendary' && r > 1) {
+    return r > 3 ? { tier: 'epic', score: getScoreForTier('epic') } :    // 2% chance Epic
+           r > 50 ? { tier: 'mid', score: getScoreForTier('mid') } :      // 47% chance Mid
+           r > 80 ? { tier: 'noob', score: getScoreForTier('noob') } :    // 30% chance Noob
+                    { tier: 'npc', score: getScoreForTier('npc') };       // 20% chance NPC
+  }
+  
+  // Epic is rare (2% chance = 1 in 50)
+  if (tier === 'epic' && r > 2) {
+    return r > 50 ? { tier: 'mid', score: getScoreForTier('mid') } :      // 48% chance Mid
+           r > 80 ? { tier: 'noob', score: getScoreForTier('noob') } :    // 30% chance Noob
+                    { tier: 'npc', score: getScoreForTier('npc') };       // 20% chance NPC
   }
   
   return { tier, score };
@@ -382,45 +394,55 @@ function calculateWorthiness(subject, mood, name) {
   let score = 0;
   const len = (subject || '').length + (name || '').length;
   
-  if (len >= 30) score += 25; 
-  else if (len >= 15) score += 15; 
-  else if (len >= 5) score += 8;
+  if (len >= 30) score += 30; 
+  else if (len >= 15) score += 20; 
+  else if (len >= 5) score += 10;
   
-  if ((name || '').length > 2) score += 10;
-  if (/\s/.test(name) && (name || '').length > 5) score += 15;
+  if ((name || '').length > 2) score += 15;
+  if (/\s/.test(name) && (name || '').length > 5) score += 20;
   
   if (['test', 'testing', 'asdf', 'lol', 'hi', 'hello', 'ok'].includes((subject || '').toLowerCase()) || len < 3) {
-    score -= 40;
+    score -= 50;
   }
   
   return Math.max(0, Math.min(100, score));
 }
 
 function getTierCap(w) {
-  return w >= 80 ? 'legendary' : 
-         w >= 60 ? 'epic' : 
-         w >= 40 ? 'mid' : 
-         w >= 20 ? 'noob' : 'npc';
+  return w >= 75 ? 'legendary' : 
+         w >= 55 ? 'epic' : 
+         w >= 30 ? 'mid' : 
+         w >= 15 ? 'noob' : 'npc';
 }
 
+// 🔥 NEW BALANCED RARITY ROLL SYSTEM
 function rollForTier(cap) {
   const r = Math.random() * 100;
   const i = { npc: 0, noob: 1, mid: 2, epic: 3, legendary: 4 }[cap];
   
+  // LEGENDARY: 1% chance (1 in 100) - Only if cap allows
   if (i >= 4 && r < 1) return 'legendary';
-  if (i >= 3 && r < 6) return 'epic';
-  if (i >= 2 && r < 45) return 'mid';
-  if (i >= 1 && r < 80) return 'noob';
+  
+  // EPIC: 2% chance (1 in 50) - Only if cap allows
+  if (i >= 3 && r < 3) return 'epic';
+  
+  // MID: 44% chance (most common, almost half)
+  if (i >= 2 && r < 47) return 'mid';
+  
+  // NOOB: 30% chance (3 in 10)
+  if (i >= 1 && r < 77) return 'noob';
+  
+  // NPC: 23% chance (roughly 1 in 5)
   return 'npc';
 }
 
 function getScoreForTier(tier) {
   const scores = { 
-    legendary: [95, 6], 
-    epic: [80, 15], 
-    mid: [50, 30], 
-    noob: [25, 25], 
-    npc: [0, 25] 
+    legendary: [95, 6],   // 95-100
+    epic: [80, 15],       // 80-94
+    mid: [50, 30],        // 50-79
+    noob: [20, 30],       // 20-49
+    npc: [0, 20]          // 0-19
   };
   const [base, range] = scores[tier] || scores.npc;
   return base + Math.floor(Math.random() * range);
@@ -520,4 +542,4 @@ function getFallbackRoast(tier, subject, language) {
   
   const tierRoasts = roasts[tier] || roasts.npc;
   return tierRoasts[Math.floor(Math.random() * tierRoasts.length)];
-}
+      }
