@@ -14,57 +14,62 @@ const moods = [
   { id: 'love', emoji: '💕', label: 'Love', color: '#DB2777' }
 ];
 
-const tierEnergy = {
-  legendary: {
-    primary: '#FFD700',
-    secondary: '#FFA500',
-    glow: 'rgba(255, 215, 0, 0.6)',
-    shadow: '0 0 60px rgba(255, 215, 0, 0.5)',
-    gradient: 'linear-gradient(135deg, #FFD700, #FFA500)',
-  },
-  epic: {
-    primary: '#A855F7',
-    secondary: '#7C3AED',
-    glow: 'rgba(168, 85, 247, 0.5)',
-    shadow: '0 0 50px rgba(168, 85, 247, 0.4)',
-    gradient: 'linear-gradient(135deg, #A855F7, #7C3AED)',
-  },
-  mid: {
-    primary: '#3B82F6',
-    secondary: '#60A5FA',
-    glow: 'rgba(59, 130, 246, 0.4)',
-    shadow: '0 0 40px rgba(59, 130, 246, 0.3)',
-    gradient: 'linear-gradient(135deg, #3B82F6, #60A5FA)',
-  },
-  noob: {
-    primary: '#F97316',
-    secondary: '#FB923C',
-    glow: 'rgba(249, 115, 22, 0.4)',
-    shadow: '0 0 40px rgba(249, 115, 22, 0.3)',
-    gradient: 'linear-gradient(135deg, #F97316, #FB923C)',
-  },
-  npc: {
-    primary: '#EF4444',
-    secondary: '#DC2626',
-    glow: 'rgba(239, 68, 68, 0.5)',
-    shadow: '0 0 50px rgba(239, 68, 68, 0.4)',
-    gradient: 'linear-gradient(135deg, #EF4444, #DC2626)',
-  }
+// Celebrity categories
+const trendingPeople = {
+  influencers: [
+    { name: "Samay Raina", emoji: "🎯", scans: 2847 },
+    { name: "CarryMinati", emoji: "🎮", scans: 2134 },
+    { name: "Triggered Insaan", emoji: "😤", scans: 1856 },
+    { name: "Ashish Chanchlani", emoji: "😂", scans: 1623 }
+  ],
+  cricketers: [
+    { name: "Virat Kohli", emoji: "🏏", scans: 1923 },
+    { name: "MS Dhoni", emoji: "👑", scans: 1745 },
+    { name: "Rohit Sharma", emoji: "🏏", scans: 1456 },
+    { name: "Hardik Pandya", emoji: "💪", scans: 1234 }
+  ],
+  global: [
+    { name: "Elon Musk", emoji: "🚀", scans: 1678 },
+    { name: "MrBeast", emoji: "💰", scans: 1456 },
+    { name: "Ronaldo", emoji: "⚽", scans: 1389 },
+    { name: "Andrew Tate", emoji: "🥋", scans: 1267 }
+  ],
+  relatable: [
+    { name: "Your Ex", emoji: "💔", scans: 891 },
+    { name: "Your Crush", emoji: "😍", scans: 756 },
+    { name: "That Toxic Friend", emoji: "🐍", scans: 634 },
+    { name: "Your Boss", emoji: "👔", scans: 523 }
+  ]
 };
+
+const recentScans = [
+  { name: "Virat Kohli", tier: "MID", emoji: "🔥", time: "2s ago" },
+  { name: "Someone", tier: "NPC", emoji: "💀", time: "5s ago" },
+  { name: "Samay Raina", tier: "EPIC", emoji: "⚡", time: "8s ago" },
+  { name: "Your ex", tier: "NOOB", emoji: "😭", time: "12s ago" },
+  { name: "Elon Musk", tier: "LEGENDARY", emoji: "👑", time: "15s ago" }
+];
 
 export default function Home() {
   const [nameInput, setNameInput] = useState('');
-  const [selectedMood, setSelectedMood] = useState(0); // Index in moods array
+  const [selectedMood, setSelectedMood] = useState(0);
   const [loading, setLoading] = useState(false);
   const [aura, setAura] = useState(null);
   const [showRoastChat, setShowRoastChat] = useState(false);
-  const [roastCount, setRoastCount] = useState(47832);
+  const [scanCount, setScanCount] = useState(47832);
   const [cardVisible, setCardVisible] = useState(false);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('influencers');
+  const [liveScanners, setLiveScanners] = useState(47);
 
+  // Animated counters
   useEffect(() => {
     const interval = setInterval(() => {
-      setRoastCount(prev => prev + Math.floor(Math.random() * 3));
+      setScanCount(prev => prev + Math.floor(Math.random() * 3));
+      setLiveScanners(prev => {
+        const change = Math.floor(Math.random() * 7) - 3;
+        return Math.max(40, Math.min(60, prev + change));
+      });
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -78,26 +83,28 @@ export default function Home() {
 
   const spinMoodWheel = () => {
     if (isSpinning) return;
-    
     setIsSpinning(true);
-    const spinDuration = 2000; // 2 seconds
-    const spinTimes = 20; // Number of mood changes
+    const spinDuration = 2000;
+    const spinTimes = 20;
     let currentSpin = 0;
 
     const spinInterval = setInterval(() => {
       setSelectedMood(Math.floor(Math.random() * moods.length));
       currentSpin++;
-
       if (currentSpin >= spinTimes) {
         clearInterval(spinInterval);
         setIsSpinning(false);
-        // Final selection
         setSelectedMood(Math.floor(Math.random() * moods.length));
       }
     }, spinDuration / spinTimes);
   };
 
-  const handleRoast = async () => {
+  const handleQuickScan = (name) => {
+    setNameInput(name);
+    setTimeout(() => handleScan(), 300);
+  };
+
+  const handleScan = async () => {
     if (!nameInput.trim()) return;
 
     setLoading(true);
@@ -120,12 +127,12 @@ export default function Home() {
       if (response.ok) {
         if (data.aura.rarity === 'npc') data.aura.title = 'BOT';
         setAura(data.aura);
-        setRoastCount(prev => prev + 1);
+        setScanCount(prev => prev + 1);
       }
     } catch (err) {
       setAura({
         score: 15,
-        roast: "Server crash ho gaya bc 💀 Tera energy bhi utna hi weak hai 😭",
+        roast: "Server crash ho gaya bc 💀 Tera energy bhi utna hi weak hai chutiye 😭",
         subjectInsight: "Error",
         rarity: "npc",
         title: "BOT",
@@ -145,20 +152,14 @@ export default function Home() {
     }, 300);
   };
 
-  const currentEnergy = aura ? (tierEnergy[aura.rarity] || tierEnergy.npc) : null;
   const currentMood = moods[selectedMood];
-
-  const getDisplayTitle = (title, rarity) => {
-    if (rarity === 'npc' || title === 'NPC') return 'BOT';
-    return title;
-  };
 
   return (
     <div>
       <Head>
-        <title>AuraPro - AI Roast Generator 🔥</title>
+        <title>AuraPro - AI Aura Scanner 🔮</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <meta name="description" content="Get brutally roasted by AI. Choose mood and get savage roasts!" />
+        <meta name="description" content="AI scans anyone's aura and reveals their true power level. Are they LEGENDARY or just an NPC?" />
         <meta name="theme-color" content="#0a0a12" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </Head>
@@ -207,8 +208,10 @@ export default function Home() {
         
         {!aura ? (
           <div>
-            {/* Header */}
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            {/* ============================================ */}
+            {/* HERO SECTION - Clear Value Prop */}
+            {/* ============================================ */}
+            <div style={{ textAlign: 'center', marginBottom: '35px' }}>
               <div style={{
                 display: 'inline-block',
                 background: 'linear-gradient(135deg, #A855F7, #EC4899)',
@@ -217,53 +220,221 @@ export default function Home() {
                 fontSize: '3.5rem',
                 fontWeight: '900',
                 letterSpacing: '-0.03em',
-                marginBottom: '12px',
-                filter: 'drop-shadow(0 0 30px rgba(168, 85, 247, 0.3))'
+                marginBottom: '15px',
+                filter: 'drop-shadow(0 0 30px rgba(168, 85, 247, 0.3))',
+                lineHeight: 1.1
               }}>
                 AuraPro
               </div>
               
-              <p style={{
-                fontSize: '1.1rem',
-                color: 'rgba(255, 255, 255, 0.8)',
-                fontWeight: '500',
-                margin: '0 0 8px 0',
-                lineHeight: '1.5'
+              <h1 style={{
+                fontSize: '1.6rem',
+                color: '#fff',
+                fontWeight: '800',
+                margin: '0 0 12px 0',
+                lineHeight: '1.3',
+                textShadow: '0 2px 20px rgba(0,0,0,0.5)'
               }}>
-                Get <span style={{ 
-                  background: 'linear-gradient(135deg, #F59E0B, #EF4444)',
+                🔮 AI Reveals Your <span style={{ 
+                  background: 'linear-gradient(135deg, #FFD700, #FFA500)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  fontWeight: '700'
-                }}>brutally roasted</span> by AI
-              </p>
+                }}>TRUE AURA</span>
+              </h1>
               
+              <p style={{
+                fontSize: '1.05rem',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontWeight: '500',
+                margin: '0 0 20px 0',
+                lineHeight: '1.6',
+                padding: '0 10px'
+              }}>
+                Discover if you're <span style={{ color: '#FFD700', fontWeight: '700' }}>LEGENDARY 👑</span> or just another <span style={{ color: '#EF4444', fontWeight: '700' }}>NPC 💀</span>
+              </p>
+
+              {/* Live Stats */}
               <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                background: 'rgba(239, 68, 68, 0.15)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                borderRadius: '100px',
-                padding: '6px 14px',
-                fontSize: '0.75rem',
-                color: '#EF4444',
-                fontWeight: '600',
-                marginTop: '12px'
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '15px',
+                flexWrap: 'wrap',
+                marginTop: '15px'
               }}>
                 <div style={{
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  background: '#EF4444',
-                  boxShadow: '0 0 10px #EF4444',
-                  animation: 'pulse 2s infinite'
-                }} />
-                {roastCount.toLocaleString()}+ Roasts Generated
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'rgba(239, 68, 68, 0.15)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '100px',
+                  padding: '6px 14px',
+                  fontSize: '0.75rem',
+                  color: '#EF4444',
+                  fontWeight: '600'
+                }}>
+                  <div style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    background: '#EF4444',
+                    boxShadow: '0 0 10px #EF4444',
+                    animation: 'pulse 2s infinite'
+                  }} />
+                  {scanCount.toLocaleString()}+ Auras Scanned
+                </div>
+
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'rgba(34, 197, 94, 0.15)',
+                  border: '1px solid rgba(34, 197, 94, 0.3)',
+                  borderRadius: '100px',
+                  padding: '6px 14px',
+                  fontSize: '0.75rem',
+                  color: '#22C55E',
+                  fontWeight: '600'
+                }}>
+                  <div style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    background: '#22C55E',
+                    boxShadow: '0 0 10px #22C55E',
+                    animation: 'pulse 2s infinite 1s'
+                  }} />
+                  {liveScanners} scanning now
+                </div>
               </div>
             </div>
 
-            {/* Main Card */}
+            {/* ============================================ */}
+            {/* TRENDING SCANS - Social Proof */}
+            {/* ============================================ */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '20px',
+              padding: '20px',
+              marginBottom: '24px'
+            }}>
+              <div style={{
+                fontSize: '0.8rem',
+                color: 'rgba(255, 255, 255, 0.5)',
+                marginBottom: '15px',
+                fontWeight: '600',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                textAlign: 'center'
+              }}>
+                🔥 Trending Scans Right Now
+              </div>
+
+              {/* Category Tabs */}
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                marginBottom: '16px',
+                overflowX: 'auto',
+                paddingBottom: '8px',
+                WebkitOverflowScrolling: 'touch'
+              }}>
+                {Object.keys(trendingPeople).map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    style={{
+                      padding: '8px 16px',
+                      border: activeCategory === cat 
+                        ? '2px solid #A855F7' 
+                        : '1px solid rgba(255, 255, 255, 0.15)',
+                      borderRadius: '12px',
+                      background: activeCategory === cat 
+                        ? 'rgba(168, 85, 247, 0.2)' 
+                        : 'rgba(255, 255, 255, 0.05)',
+                      color: activeCategory === cat ? '#A855F7' : 'rgba(255, 255, 255, 0.7)',
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.2s',
+                      whiteSpace: 'nowrap',
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {cat === 'influencers' && '📺'}
+                    {cat === 'cricketers' && '🏏'}
+                    {cat === 'global' && '🌍'}
+                    {cat === 'relatable' && '💭'}
+                    {' '}{cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* Celebrity Grid */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '10px'
+              }}>
+                {trendingPeople[activeCategory].map((person) => (
+                  <button
+                    key={person.name}
+                    onClick={() => handleQuickScan(person.name)}
+                    style={{
+                      padding: '14px',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      borderRadius: '14px',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.2s',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = 'rgba(168, 85, 247, 0.15)';
+                      e.target.style.borderColor = 'rgba(168, 85, 247, 0.4)';
+                      e.target.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = 'rgba(255, 255, 255, 0.05)';
+                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                      e.target.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      marginBottom: '6px'
+                    }}>
+                      <span style={{ fontSize: '1.5rem' }}>{person.emoji}</span>
+                      <span style={{
+                        fontSize: '0.85rem',
+                        fontWeight: '700',
+                        color: '#fff',
+                        flex: 1
+                      }}>
+                        {person.name}
+                      </span>
+                    </div>
+                    <div style={{
+                      fontSize: '0.65rem',
+                      color: 'rgba(255, 255, 255, 0.5)',
+                      fontWeight: '600'
+                    }}>
+                      {person.scans.toLocaleString()} scans
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ============================================ */}
+            {/* MAIN INPUT CARD */}
+            {/* ============================================ */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.03)',
               backdropFilter: 'blur(30px)',
@@ -272,20 +443,20 @@ export default function Home() {
               padding: '32px 28px',
               boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
               marginBottom: '24px'
-              }}>
+            }}>
               
               {/* Name Input */}
               <div style={{ marginBottom: '28px' }}>
                 <label style={{
                   display: 'block',
-                  fontSize: '0.85rem',
-                  fontWeight: '600',
-                  color: 'rgba(255, 255, 255, 0.6)',
-                  marginBottom: '10px',
+                  fontSize: '0.9rem',
+                  fontWeight: '700',
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  marginBottom: '12px',
                   letterSpacing: '0.5px',
-                  textTransform: 'uppercase'
+                  textAlign: 'center'
                 }}>
-                  Who Gets Roasted?
+                  👁️ Whose Aura Should We Scan?
                 </label>
                 
                 <input
@@ -293,7 +464,7 @@ export default function Home() {
                   value={nameInput}
                   onChange={(e) => setNameInput(e.target.value)}
                   placeholder="Celebrity, friend, yourself..."
-                  onKeyPress={(e) => e.key === 'Enter' && handleRoast()}
+                  onKeyPress={(e) => e.key === 'Enter' && handleScan()}
                   style={{
                     width: '100%',
                     background: 'rgba(0, 0, 0, 0.4)',
@@ -305,7 +476,8 @@ export default function Home() {
                     fontWeight: '600',
                     outline: 'none',
                     fontFamily: 'inherit',
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
+                    textAlign: 'center'
                   }}
                   onFocus={(e) => {
                     e.target.style.borderColor = '#A855F7';
@@ -316,51 +488,6 @@ export default function Home() {
                     e.target.style.boxShadow = 'none';
                   }}
                 />
-              </div>
-
-              {/* Quick Picks */}
-              <div style={{ marginBottom: '32px' }}>
-                <div style={{
-                  fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.5)',
-                  marginBottom: '10px',
-                  fontWeight: '600',
-                  letterSpacing: '0.5px'
-                }}>
-                  🔥 TRENDING
-                </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {["Samay Raina", "Carry", "Dhoni", "Virat", "Elon"].map((name) => (
-                    <button
-                      key={name}
-                      onClick={() => setNameInput(name)}
-                      style={{
-                        padding: '8px 14px',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        borderRadius: '10px',
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        fontSize: '0.8rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        fontFamily: 'inherit',
-                        transition: 'all 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.background = 'rgba(168, 85, 247, 0.2)';
-                        e.target.style.borderColor = 'rgba(168, 85, 247, 0.5)';
-                        e.target.style.color = '#A855F7';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.background = 'rgba(255, 255, 255, 0.05)';
-                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                        e.target.style.color = 'rgba(255, 255, 255, 0.7)';
-                      }}
-                    >
-                      {name}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               {/* Mood Wheel */}
@@ -375,15 +502,15 @@ export default function Home() {
                   textTransform: 'uppercase',
                   textAlign: 'center'
                 }}>
-                  Choose Roast Mood
+                  Choose Scan Mood
                 </label>
 
                 {/* Mood Display Circle */}
                 <div style={{
                   position: 'relative',
-                  width: '180px',
-                  height: '180px',
-                  margin: '0 auto 24px',
+                  width: '160px',
+                  height: '160px',
+                  margin: '0 auto 20px',
                 }}>
                   {/* Outer Ring */}
                   <div style={{
@@ -409,13 +536,13 @@ export default function Home() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px',
+                    gap: '6px',
                     boxShadow: `0 0 30px ${currentMood.color}60`,
                     transition: 'all 0.3s ease'
                   }}>
-                    <div style={{ fontSize: '3rem' }}>{currentMood.emoji}</div>
+                    <div style={{ fontSize: '2.5rem' }}>{currentMood.emoji}</div>
                     <div style={{
-                      fontSize: '0.95rem',
+                      fontSize: '0.85rem',
                       fontWeight: '700',
                       color: currentMood.color,
                       letterSpacing: '0.5px'
@@ -431,30 +558,20 @@ export default function Home() {
                   disabled={isSpinning}
                   style={{
                     width: '100%',
-                    padding: '14px',
+                    padding: '12px',
                     border: `2px solid ${currentMood.color}40`,
                     borderRadius: '14px',
                     background: `${currentMood.color}15`,
                     color: currentMood.color,
-                    fontSize: '0.9rem',
+                    fontSize: '0.85rem',
                     fontWeight: '700',
                     cursor: isSpinning ? 'not-allowed' : 'pointer',
                     fontFamily: 'inherit',
                     transition: 'all 0.2s ease',
                     marginBottom: '12px'
                   }}
-                  onMouseEnter={(e) => {
-                    if (!isSpinning) {
-                      e.target.style.background = `${currentMood.color}25`;
-                      e.target.style.transform = 'scale(1.02)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = `${currentMood.color}15`;
-                    e.target.style.transform = 'scale(1)';
-                  }}
                 >
-                  {isSpinning ? '🎰 Spinning...' : '🎲 Spin the Wheel'}
+                  {isSpinning ? '🎰 Spinning...' : '🎲 Random Mood'}
                 </button>
 
                 {/* Mood Grid */}
@@ -485,9 +602,9 @@ export default function Home() {
                         gap: '4px'
                       }}
                     >
-                      <div style={{ fontSize: '1.5rem' }}>{mood.emoji}</div>
+                      <div style={{ fontSize: '1.3rem' }}>{mood.emoji}</div>
                       <div style={{
-                        fontSize: '0.65rem',
+                        fontSize: '0.6rem',
                         fontWeight: '600',
                         color: selectedMood === index ? mood.color : 'rgba(255, 255, 255, 0.5)'
                       }}>
@@ -498,9 +615,9 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Generate Button */}
+              {/* Scan Button */}
               <button
-                onClick={handleRoast}
+                onClick={handleScan}
                 disabled={loading || !nameInput.trim()}
                 style={{
                   width: '100%',
@@ -512,11 +629,11 @@ export default function Home() {
                   cursor: nameInput.trim() && !loading ? 'pointer' : 'not-allowed',
                   fontFamily: 'inherit',
                   background: nameInput.trim() && !loading
-                    ? 'linear-gradient(135deg, #F59E0B, #EF4444)'
+                    ? 'linear-gradient(135deg, #A855F7, #EC4899)'
                     : 'rgba(255, 255, 255, 0.1)',
-                  color: nameInput.trim() && !loading ? '#000' : 'rgba(255, 255, 255, 0.3)',
+                  color: nameInput.trim() && !loading ? '#fff' : 'rgba(255, 255, 255, 0.3)',
                   boxShadow: nameInput.trim() && !loading 
-                    ? '0 8px 30px rgba(245, 158, 11, 0.4)' 
+                    ? '0 8px 30px rgba(168, 85, 247, 0.4)' 
                     : 'none',
                   transition: 'all 0.3s ease',
                   transform: loading ? 'scale(0.98)' : 'scale(1)'
@@ -527,18 +644,62 @@ export default function Home() {
                     <span style={{ 
                       width: '16px', 
                       height: '16px', 
-                      border: '2px solid rgba(0,0,0,0.3)',
-                      borderTop: '2px solid #000',
+                      border: '2px solid rgba(255,255,255,0.3)',
+                      borderTop: '2px solid #fff',
                       borderRadius: '50%',
                       animation: 'spin 0.8s linear infinite'
                     }} />
-                    Generating Roast...
+                    Scanning Aura...
                   </span>
-                ) : '🔥 Generate Roast Card'}
+                ) : '🔮 SCAN AURA NOW'}
               </button>
             </div>
 
-            {/* Rarity Info */}
+            {/* ============================================ */}
+            {/* RECENT SCANS - Live Feed */}
+            {/* ============================================ */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.3)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '20px',
+              padding: '18px',
+              marginBottom: '24px'
+            }}>
+              <div style={{
+                fontSize: '0.75rem',
+                color: 'rgba(255, 255, 255, 0.5)',
+                marginBottom: '12px',
+                fontWeight: '600',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                textAlign: 'center'
+              }}>
+                ⚡ Last 5 Scans
+              </div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {recentScans.map((scan, i) => (
+                  <div key={i} style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '8px 12px',
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    borderRadius: '10px',
+                    fontSize: '0.75rem'
+                  }}>
+                    <span style={{ color: 'rgba(255,255,255,0.7)' }}>
+                      {scan.emoji} {scan.name}
+                    </span>
+                    <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: '600' }}>
+                      {scan.tier} • {scan.time}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Aura Tiers Info */}
             <div style={{
               background: 'rgba(0, 0, 0, 0.3)',
               border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -555,7 +716,7 @@ export default function Home() {
                 textTransform: 'uppercase',
                 textAlign: 'center'
               }}>
-                Roast Tiers
+                Aura Tiers
               </div>
               
               <div style={{
@@ -565,10 +726,10 @@ export default function Home() {
               }}>
                 {[
                   { emoji: '👑', label: 'LEG', color: '#FFD700', pct: '1%' },
-                  { emoji: '⚡', label: 'EPIC', color: '#A855F7', pct: '5%' },
-                  { emoji: '💫', label: 'MID', color: '#3B82F6', pct: '39%' },
-                  { emoji: '😬', label: 'NOOB', color: '#F97316', pct: '35%' },
-                  { emoji: '🤖', label: 'BOT', color: '#EF4444', pct: '20%' }
+                  { emoji: '⚡', label: 'EPIC', color: '#00FFFF', pct: '5%' },
+                  { emoji: '🔥', label: 'MID', color: '#FFFFFF', pct: '39%' },
+                  { emoji: '😬', label: 'NOOB', color: '#FF8C00', pct: '35%' },
+                  { emoji: '💀', label: 'BOT', color: '#FF0000', pct: '20%' }
                 ].map((tier) => (
                   <div key={tier.label} style={{
                     textAlign: 'center',
@@ -596,7 +757,7 @@ export default function Home() {
               gap: '16px',
               flexWrap: 'wrap'
             }}>
-              {['⚡ Instant', '🔒 Anonymous', '🎯 Brutal'].map((badge) => (
+              {['⚡ Instant', '🔒 Anonymous', '🎯 100% Free'].map((badge) => (
                 <div key={badge} style={{
                   fontSize: '0.75rem',
                   color: 'rgba(255, 255, 255, 0.4)',
@@ -608,7 +769,9 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          /* Results */
+          /* ============================================ */}
+          /* RESULTS */}
+          /* ============================================ */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -618,28 +781,8 @@ export default function Home() {
             transform: cardVisible ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.95)',
             transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
           }}>
-            {/* Energy Glow */}
             <div style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
-              <div style={{
-                position: 'absolute',
-                inset: '-30px',
-                background: currentEnergy?.gradient,
-                opacity: 0.2,
-                filter: 'blur(40px)',
-                borderRadius: '40px',
-                animation: 'pulse 3s ease-in-out infinite'
-              }} />
-              
-              <div style={{
-                position: 'relative',
-                background: 'rgba(10, 10, 18, 0.8)',
-                borderRadius: '28px',
-                padding: '4px',
-                border: `2px solid ${currentEnergy?.primary}`,
-                boxShadow: currentEnergy?.shadow
-              }}>
-                <AuraCard aura={{...aura, title: getDisplayTitle(aura.title, aura.rarity)}} />
-              </div>
+              <AuraCard aura={aura} />
             </div>
 
             {/* Action Buttons */}
@@ -684,9 +827,9 @@ export default function Home() {
                   fontWeight: '700',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
-                  background: currentEnergy?.gradient,
+                  background: 'linear-gradient(135deg, #A855F7, #EC4899)',
                   color: '#fff',
-                  boxShadow: `0 8px 30px ${currentEnergy?.glow}`,
+                  boxShadow: '0 8px 30px rgba(168, 85, 247, 0.4)',
                   transition: 'all 0.2s ease'
                 }}
                 onMouseEnter={(e) => {
@@ -696,17 +839,9 @@ export default function Home() {
                   e.target.style.transform = 'scale(1)';
                 }}
               >
-                🔄 Roast Again
+                🔄 Scan Again
               </button>
             </div>
-
-            <p style={{
-              fontSize: '0.8rem',
-              color: 'rgba(255, 255, 255, 0.4)',
-              textAlign: 'center'
-            }}>
-              📸 Screenshot & share on Instagram
-            </p>
           </div>
         )}
 
@@ -722,7 +857,7 @@ export default function Home() {
         {/* Footer */}
         <footer style={{ textAlign: 'center', padding: '40px 0 20px', marginTop: '40px' }}>
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)' }}>
-            AuraPro © 2025 • Get roasted, get humbled
+            AuraPro © 2025 • AI Aura Scanner
           </p>
         </footer>
       </div>
@@ -755,7 +890,22 @@ export default function Home() {
         button:active {
           transform: scale(0.98) !important;
         }
+
+        /* Hide scrollbar but keep functionality */
+        div::-webkit-scrollbar {
+          height: 4px;
+        }
+        
+        div::-webkit-scrollbar-track {
+          background: rgba(255,255,255,0.05);
+          border-radius: 10px;
+        }
+        
+        div::-webkit-scrollbar-thumb {
+          background: rgba(168, 85, 247, 0.3);
+          border-radius: 10px;
+        }
       `}</style>
     </div>
   );
-          }
+      }
