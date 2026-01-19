@@ -26,7 +26,7 @@ const AuraCard = ({ aura }) => {
       });
       return canvas;
     } catch (error) {
-      console.error('Error capturing card:', error);
+      console.error('Error:', error);
       return null;
     }
   };
@@ -59,11 +59,7 @@ const AuraCard = ({ aura }) => {
       const file = new File([blob], 'aurapro.png', { type: 'image/png' });
 
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ 
-          files: [file], 
-          title: `My Aura: ${aura.rarity.toUpperCase()}`,
-          text: `Got ${aura.score} aura score!`
-        });
+        await navigator.share({ files: [file], title: `Aura: ${aura.rarity}` });
         setShareMessage('✅ Shared!');
       } else {
         await downloadCard();
@@ -80,8 +76,8 @@ const AuraCard = ({ aura }) => {
 
   const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText('https://aurapro.vercel.app');
-      setShareMessage('✅ Link copied!');
+      await navigator.clipboard.writeText('https://aurapro.app');
+      setShareMessage('✅ Copied!');
       setTimeout(() => setShareMessage(''), 2000);
     } catch {
       setShareMessage('❌ Failed');
@@ -89,49 +85,14 @@ const AuraCard = ({ aura }) => {
   };
 
   const getTierConfig = (rarity) => {
-    switch (rarity) {
-      case 'legendary':
-        return {
-          primaryColor: '#FFD700',
-          secondaryColor: '#FFA500',
-          glowColor: 'rgba(255, 215, 0, 0.6)',
-          tierLabel: "LEGENDARY",
-          tierIcon: "👑",
-        };
-      case 'epic':
-        return {
-          primaryColor: '#00FFFF',
-          secondaryColor: '#1E90FF',
-          glowColor: 'rgba(0, 255, 255, 0.6)',
-          tierLabel: "EPIC",
-          tierIcon: "⚡",
-        };
-      case 'mid':
-        return {
-          primaryColor: '#FFFFFF',
-          secondaryColor: '#BDBDBD',
-          glowColor: 'rgba(255, 255, 255, 0.5)',
-          tierLabel: "MID",
-          tierIcon: "🔥",
-        };
-      case 'noob':
-        return {
-          primaryColor: '#FF8C00',
-          secondaryColor: '#FF6347',
-          glowColor: 'rgba(255, 140, 0, 0.6)',
-          tierLabel: "NOOB",
-          tierIcon: "😬",
-        };
-      case 'npc':
-      default:
-        return {
-          primaryColor: '#FF0000',
-          secondaryColor: '#DC143C',
-          glowColor: 'rgba(255, 0, 0, 0.7)',
-          tierLabel: "BOT",
-          tierIcon: "💀",
-        };
-    }
+    const configs = {
+      legendary: { color: '#FFD700', label: 'LEGENDARY', icon: '👑', badge: 'TOP 1%' },
+      epic: { color: '#00FFFF', label: 'EPIC', icon: '⚡', badge: 'TOP 6%' },
+      mid: { color: '#FFFFFF', label: 'MID', icon: '🔥', badge: 'AVERAGE' },
+      noob: { color: '#FF8C00', label: 'NOOB', icon: '😬', badge: 'NEEDS WORK' },
+      npc: { color: '#FF0000', label: 'BOT', icon: '💀', badge: 'BOTTOM 20%' },
+    };
+    return configs[rarity] || configs.npc;
   };
 
   const config = getTierConfig(aura.rarity);
@@ -153,31 +114,25 @@ const AuraCard = ({ aura }) => {
         padding: '30px',
         maxWidth: '340px',
         width: '100%',
-        border: `2px solid ${config.primaryColor}`,
-        boxShadow: `0 0 40px ${config.glowColor}`,
+        border: `2px solid ${config.color}`,
+        boxShadow: `0 0 40px ${config.color}40`,
       }}>
         <div style={{ textAlign: 'center', marginBottom: '25px' }}>
           <div style={{ fontSize: '3.5rem', marginBottom: '15px' }}>📸</div>
-          <h3 style={{ 
-            margin: '0 0 10px 0', 
-            color: config.primaryColor, 
-            fontSize: '1.3rem',
-            fontWeight: '800',
-          }}>
-            Card Downloaded!
+          <h3 style={{ margin: '0 0 10px 0', color: config.color, fontSize: '1.3rem', fontWeight: '800' }}>
+            Downloaded!
           </h3>
-          <p style={{ margin: 0, color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>
-            Open Instagram & share to your story
+          <p style={{ margin: 0, color: '#999', fontSize: '0.85rem' }}>
+            Open Instagram to share
           </p>
         </div>
-
         <a
           href="instagram://story-camera"
           style={{
             display: 'block',
             padding: '16px',
             background: 'linear-gradient(135deg, #833AB4, #FD1D1D, #F77737)',
-            borderRadius: '14px',
+            borderRadius: '12px',
             color: '#fff',
             fontSize: '1rem',
             fontWeight: '800',
@@ -188,16 +143,15 @@ const AuraCard = ({ aura }) => {
         >
           📱 Open Instagram
         </a>
-
         <button
           onClick={() => setShowShareModal(false)}
           style={{
             width: '100%',
             padding: '14px',
-            background: 'rgba(255,255,255,0.1)',
-            border: '1px solid rgba(255,255,255,0.2)',
+            background: '#1a1a1a',
+            border: '1px solid #333',
             borderRadius: '12px',
-            color: '#fff',
+            color: '#999',
             fontSize: '0.9rem',
             fontWeight: '600',
             cursor: 'pointer',
@@ -220,14 +174,14 @@ const AuraCard = ({ aura }) => {
           left: '50%',
           transform: 'translateX(-50%)',
           background: '#111',
-          border: `2px solid ${config.primaryColor}`,
+          border: `2px solid ${config.color}`,
           borderRadius: '12px',
           padding: '12px 24px',
           color: '#fff',
           fontSize: '0.9rem',
           fontWeight: '700',
           zIndex: 10000,
-          boxShadow: `0 0 30px ${config.glowColor}`,
+          boxShadow: `0 0 30px ${config.color}60`,
         }}>
           {shareMessage}
         </div>
@@ -239,7 +193,6 @@ const AuraCard = ({ aura }) => {
         alignItems: 'center',
         gap: '20px',
       }}>
-        {/* THE CARD */}
         <div 
           ref={cardRef}
           style={{
@@ -253,165 +206,255 @@ const AuraCard = ({ aura }) => {
             opacity: isVisible ? 1 : 0,
             transform: isVisible ? 'scale(1)' : 'scale(0.95)',
             transition: 'all 0.5s ease',
-            boxShadow: `0 20px 60px rgba(0,0,0,0.8), 0 0 100px ${config.glowColor}`,
+            boxShadow: `0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px ${config.color}40`,
           }}
         >
           
-          {/* Circuit Board Pattern Background */}
-          <svg style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            opacity: 0.15,
-          }}>
-            <defs>
-              <pattern id="circuit" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
-                {/* Horizontal lines */}
-                <line x1="0" y1="20" x2="80" y2="20" stroke={config.primaryColor} strokeWidth="1"/>
-                <line x1="0" y1="60" x2="80" y2="60" stroke={config.primaryColor} strokeWidth="1"/>
-                {/* Vertical lines */}
-                <line x1="20" y1="0" x2="20" y2="80" stroke={config.primaryColor} strokeWidth="1"/>
-                <line x1="60" y1="0" x2="60" y2="80" stroke={config.primaryColor} strokeWidth="1"/>
-                {/* Connection points */}
-                <circle cx="20" cy="20" r="2" fill={config.primaryColor}/>
-                <circle cx="60" cy="20" r="2" fill={config.primaryColor}/>
-                <circle cx="20" cy="60" r="2" fill={config.primaryColor}/>
-                <circle cx="60" cy="60" r="2" fill={config.primaryColor}/>
-                {/* Small traces */}
-                <line x1="20" y1="20" x2="40" y2="40" stroke={config.primaryColor} strokeWidth="0.5" opacity="0.5"/>
-                <line x1="60" y1="20" x2="40" y2="40" stroke={config.primaryColor} strokeWidth="0.5" opacity="0.5"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#circuit)"/>
+          {/* CGI MICROCHIP CIRCUIT - RADIATING FROM CENTER */}
+          <svg 
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              opacity: 0.2,
+            }}
+            viewBox="0 0 360 640"
+          >
+            {/* CENTRAL PROCESSOR AREA (where aura score will be) */}
+            <rect x="100" y="250" width="160" height="140" fill="none" stroke={config.color} strokeWidth="2" opacity="0.3" />
+            
+            {/* CIRCUIT TRACES RADIATING FROM CENTER (like CGI chip) */}
+            
+            {/* TOP connections */}
+            <line x1="180" y1="250" x2="180" y2="0" stroke={config.color} strokeWidth="2" opacity="0.5" />
+            <line x1="150" y1="250" x2="60" y2="0" stroke={config.color} strokeWidth="1.5" opacity="0.4" />
+            <line x1="210" y1="250" x2="300" y2="0" stroke={config.color} strokeWidth="1.5" opacity="0.4" />
+            
+            {/* BOTTOM connections */}
+            <line x1="180" y1="390" x2="180" y2="640" stroke={config.color} strokeWidth="2" opacity="0.5" />
+            <line x1="150" y1="390" x2="60" y2="640" stroke={config.color} strokeWidth="1.5" opacity="0.4" />
+            <line x1="210" y1="390" x2="300" y2="640" stroke={config.color} strokeWidth="1.5" opacity="0.4" />
+            
+            {/* LEFT connections */}
+            <line x1="100" y1="320" x2="0" y2="320" stroke={config.color} strokeWidth="2" opacity="0.5" />
+            <line x1="100" y1="280" x2="0" y2="200" stroke={config.color} strokeWidth="1.5" opacity="0.4" />
+            <line x1="100" y1="360" x2="0" y2="440" stroke={config.color} strokeWidth="1.5" opacity="0.4" />
+            
+            {/* RIGHT connections */}
+            <line x1="260" y1="320" x2="360" y2="320" stroke={config.color} strokeWidth="2" opacity="0.5" />
+            <line x1="260" y1="280" x2="360" y2="200" stroke={config.color} strokeWidth="1.5" opacity="0.4" />
+            <line x1="260" y1="360" x2="360" y2="440" stroke={config.color} strokeWidth="1.5" opacity="0.4" />
+            
+            {/* DIAGONAL traces (CGI effect) */}
+            <line x1="100" y1="250" x2="20" y2="100" stroke={config.color} strokeWidth="1" opacity="0.3" />
+            <line x1="260" y1="250" x2="340" y2="100" stroke={config.color} strokeWidth="1" opacity="0.3" />
+            <line x1="100" y1="390" x2="20" y2="540" stroke={config.color} strokeWidth="1" opacity="0.3" />
+            <line x1="260" y1="390" x2="340" y2="540" stroke={config.color} strokeWidth="1" opacity="0.3" />
+            
+            {/* CONNECTION NODES (like solder points) */}
+            {/* Top row */}
+            {[60, 180, 300].map(x => (
+              <circle key={`t${x}`} cx={x} cy="20" r="3" fill={config.color} opacity="0.6">
+                <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite" />
+              </circle>
+            ))}
+            
+            {/* Bottom row */}
+            {[60, 180, 300].map(x => (
+              <circle key={`b${x}`} cx={x} cy="620" r="3" fill={config.color} opacity="0.6">
+                <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite" begin="0.5s" />
+              </circle>
+            ))}
+            
+            {/* Side nodes */}
+            {[200, 320, 440].map(y => (
+              <circle key={`l${y}`} cx="20" cy={y} r="3" fill={config.color} opacity="0.6">
+                <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite" begin="1s" />
+              </circle>
+            ))}
+            
+            {[200, 320, 440].map(y => (
+              <circle key={`r${y}`} cx="340" cy={y} r="3" fill={config.color} opacity="0.6">
+                <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite" begin="1.5s" />
+              </circle>
+            ))}
+            
+            {/* Central processor corners */}
+            <circle cx="100" cy="250" r="4" fill={config.color} opacity="0.8" />
+            <circle cx="260" cy="250" r="4" fill={config.color} opacity="0.8" />
+            <circle cx="100" cy="390" r="4" fill={config.color} opacity="0.8" />
+            <circle cx="260" cy="390" r="4" fill={config.color} opacity="0.8" />
+            
+            {/* Fine grid pattern inside processor area */}
+            {[110, 130, 150, 170, 190, 210, 230, 250].map(x => (
+              <line key={`vg${x}`} x1={x} y1="260" x2={x} y2="380" stroke={config.color} strokeWidth="0.5" opacity="0.15" />
+            ))}
+            {[260, 280, 300, 320, 340, 360, 380].map(y => (
+              <line key={`hg${y}`} x1="110" y1={y} x2="250" y2={y} stroke={config.color} strokeWidth="0.5" opacity="0.15" />
+            ))}
           </svg>
 
-          {/* Glow Lines (Microchip Wires) */}
+          {/* Dark overlay */}
           <div style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '1px',
-            background: `linear-gradient(90deg, transparent, ${config.primaryColor}, transparent)`,
-            boxShadow: `0 0 10px ${config.glowColor}`,
-          }} />
-          <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '1px',
-            background: `linear-gradient(90deg, transparent, ${config.primaryColor}, transparent)`,
-            boxShadow: `0 0 10px ${config.glowColor}`,
+            inset: 0,
+            background: 'radial-gradient(circle at center, transparent 30%, #000000 100%)',
           }} />
 
-          {/* Content */}
+          {/* CONTENT */}
           <div style={{
             position: 'relative',
             zIndex: 10,
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
-            padding: '28px 24px',
+            padding: '28px 20px',
           }}>
             
-            {/* Tier Icon */}
+            {/* Header Badge */}
             <div style={{
               textAlign: 'center',
-              marginBottom: '12px',
+              marginBottom: '18px',
             }}>
               <div style={{
-                fontSize: '3.5rem',
-                filter: `drop-shadow(0 0 20px ${config.primaryColor})`,
+                display: 'inline-block',
+                padding: '8px 20px',
+                background: `${config.color}15`,
+                border: `1px solid ${config.color}`,
+                borderRadius: '100px',
+                fontSize: '0.7rem',
+                fontWeight: '800',
+                letterSpacing: '2px',
+                color: config.color,
+                textShadow: `0 0 10px ${config.color}`,
               }}>
-                {config.tierIcon}
+                {config.badge}
               </div>
             </div>
 
-            {/* Tier Label */}
+            {/* Tier Icon + Label */}
             <div style={{
               textAlign: 'center',
-              marginBottom: '20px',
+              marginBottom: '18px',
             }}>
-              <h1 style={{
-                margin: '0',
-                fontSize: '2.5rem',
-                fontWeight: '900',
-                letterSpacing: '6px',
-                color: config.primaryColor,
-                textShadow: `0 0 30px ${config.glowColor}, 0 0 60px ${config.glowColor}`,
+              <div style={{
+                fontSize: '2.8rem',
+                marginBottom: '8px',
+                filter: `drop-shadow(0 0 15px ${config.color})`,
               }}>
-                {config.tierLabel}
+                {config.icon}
+              </div>
+              <h1 style={{
+                margin: 0,
+                fontSize: '2rem',
+                fontWeight: '900',
+                letterSpacing: '5px',
+                color: config.color,
+                textShadow: `0 0 20px ${config.color}`,
+              }}>
+                {config.label}
               </h1>
             </div>
 
-            {/* Score */}
+            {/* AURA SCORE - CENTRAL PROCESSOR */}
             <div style={{
               textAlign: 'center',
-              marginBottom: '24px',
-              padding: '20px',
-              background: 'rgba(0,0,0,0.6)',
+              marginBottom: '20px',
+              padding: '28px 20px',
+              background: 'rgba(0,0,0,0.8)',
               borderRadius: '16px',
-              border: `2px solid ${config.primaryColor}40`,
+              border: `2px solid ${config.color}`,
+              boxShadow: `
+                0 0 30px ${config.color}60,
+                inset 0 0 30px ${config.color}20
+              `,
+              position: 'relative',
             }}>
+              {/* Corner pins like actual chip */}
+              {[
+                {top: '-4px', left: '-4px'},
+                {top: '-4px', right: '-4px'},
+                {bottom: '-4px', left: '-4px'},
+                {bottom: '-4px', right: '-4px'},
+              ].map((pos, i) => (
+                <div key={i} style={{
+                  position: 'absolute',
+                  ...pos,
+                  width: '8px',
+                  height: '8px',
+                  background: config.color,
+                  borderRadius: '50%',
+                  boxShadow: `0 0 8px ${config.color}`,
+                }} />
+              ))}
+              
               <div style={{
-                fontSize: '0.7rem',
-                color: config.primaryColor,
+                fontSize: '0.65rem',
+                color: config.color,
                 letterSpacing: '3px',
                 fontWeight: '700',
-                marginBottom: '8px',
+                marginBottom: '10px',
                 opacity: 0.8,
               }}>
-                AURA SCORE
+                AURA CORE
               </div>
               <div style={{
                 fontSize: '5rem',
                 fontWeight: '900',
                 lineHeight: 1,
-                color: config.primaryColor,
-                textShadow: `0 0 40px ${config.glowColor}`,
+                color: config.color,
+                textShadow: `
+                  0 0 40px ${config.color},
+                  0 0 80px ${config.color}
+                `,
               }}>
                 {aura.score}
               </div>
+              <div style={{
+                width: '50px',
+                height: '2px',
+                background: config.color,
+                margin: '12px auto 0',
+                boxShadow: `0 0 10px ${config.color}`,
+              }} />
             </div>
 
-            {/* Roast Box - MAXIMUM VISIBILITY */}
+            {/* ROAST BOX - BELOW PROCESSOR, FULLY VISIBLE */}
             <div style={{
               flex: 1,
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'center',
-              marginBottom: '20px',
-              minHeight: '180px',
+              justifyContent: 'flex-start',
+              marginBottom: '18px',
             }}>
               <div style={{
-                background: 'rgba(0,0,0,0.7)',
-                border: `2px solid ${config.primaryColor}60`,
-                borderRadius: '16px',
-                padding: '28px 20px',
-                boxShadow: `0 0 30px ${config.glowColor}`,
+                background: 'rgba(0,0,0,0.6)',
+                border: `1px solid ${config.color}40`,
+                borderRadius: '12px',
+                padding: '20px 18px 24px 18px',
+                position: 'relative',
               }}>
                 <div style={{
-                  fontSize: '0.8rem',
-                  color: config.primaryColor,
-                  marginBottom: '12px',
-                  textAlign: 'center',
+                  position: 'absolute',
+                  top: '-8px',
+                  left: '14px',
+                  background: '#000',
+                  padding: '0 6px',
+                  color: config.color,
+                  fontSize: '1rem',
                   opacity: 0.7,
-                  letterSpacing: '2px',
-                  fontWeight: '600',
                 }}>
-                  💬 ROAST
+                  💬
                 </div>
                 
                 <p style={{
                   margin: 0,
-                  fontSize: '1.25rem',
+                  fontSize: '1.1rem',
                   lineHeight: 1.75,
-                  fontWeight: '700',
-                  color: '#FFFFFF',
+                  fontWeight: '600',
+                  color: '#fff',
                   textAlign: 'center',
-                  textShadow: '0 2px 10px rgba(0,0,0,0.8)',
                   wordWrap: 'break-word',
                   overflowWrap: 'break-word',
                   whiteSpace: 'pre-wrap',
@@ -426,54 +469,59 @@ const AuraCard = ({ aura }) => {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              padding: '16px 0 0 0',
-              borderTop: `1px solid ${config.primaryColor}30`,
+              padding: '14px 0 0 0',
+              borderTop: `1px solid ${config.color}30`,
             }}>
               <div style={{
-                fontSize: '0.65rem',
-                color: config.primaryColor,
+                fontSize: '0.6rem',
+                color: config.color,
                 fontWeight: '700',
                 letterSpacing: '1px',
-                opacity: 0.8,
+                opacity: 0.7,
               }}>
                 {aura.challenge}
               </div>
               
               <div style={{
-                fontSize: '0.6rem',
-                color: 'rgba(255,255,255,0.4)',
+                fontSize: '0.55rem',
+                color: '#555',
                 fontWeight: '600',
+                letterSpacing: '0.5px',
               }}>
                 AURAPRO
               </div>
             </div>
           </div>
 
-          {/* Corner Accents */}
+          {/* Technical corner brackets */}
           {[
-            { top: '10px', left: '10px' },
-            { top: '10px', right: '10px' },
-            { bottom: '10px', left: '10px' },
-            { bottom: '10px', right: '10px' },
+            { top: '8px', left: '8px' },
+            { top: '8px', right: '8px' },
+            { bottom: '8px', left: '8px' },
+            { bottom: '8px', right: '8px' },
           ].map((pos, i) => (
             <div key={i} style={{
               position: 'absolute',
               ...pos,
-              width: '20px',
-              height: '20px',
-              border: `2px solid ${config.primaryColor}`,
-              borderRight: pos.left ? 'none' : undefined,
-              borderLeft: pos.right ? 'none' : undefined,
-              borderBottom: pos.top ? 'none' : undefined,
-              borderTop: pos.bottom ? 'none' : undefined,
-              boxShadow: `0 0 10px ${config.glowColor}`,
-              zIndex: 20,
+              width: '16px',
+              height: '16px',
+              border: `1.5px solid ${config.color}`,
+              ...(pos.top && pos.left && { borderRight: 'none', borderBottom: 'none' }),
+              ...(pos.top && pos.right && { borderLeft: 'none', borderBottom: 'none' }),
+              ...(pos.bottom && pos.left && { borderRight: 'none', borderTop: 'none' }),
+              ...(pos.bottom && pos.right && { borderLeft: 'none', borderTop: 'none' }),
+              opacity: 0.5,
             }} />
           ))}
         </div>
 
-        {/* Share Buttons */}
-        <div style={{ width: '360px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {/* SHARE BUTTONS */}
+        <div style={{ 
+          width: '360px', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '12px' 
+        }}>
           <button
             onClick={shareToInstagram}
             disabled={isSharing}
@@ -482,7 +530,7 @@ const AuraCard = ({ aura }) => {
               padding: '16px',
               background: 'linear-gradient(135deg, #833AB4, #FD1D1D, #F77737)',
               border: 'none',
-              borderRadius: '14px',
+              borderRadius: '12px',
               color: '#fff',
               fontSize: '1rem',
               fontWeight: '800',
@@ -497,12 +545,11 @@ const AuraCard = ({ aura }) => {
           <div style={{ display: 'flex', gap: '12px' }}>
             <button
               onClick={downloadCard}
-              disabled={isSharing}
               style={{
                 flex: 1,
                 padding: '14px',
-                background: 'rgba(255,255,255,0.1)',
-                border: `2px solid ${config.primaryColor}50`,
+                background: '#1a1a1a',
+                border: `1px solid ${config.color}60`,
                 borderRadius: '12px',
                 color: '#fff',
                 fontSize: '0.85rem',
@@ -519,8 +566,8 @@ const AuraCard = ({ aura }) => {
               style={{
                 flex: 1,
                 padding: '14px',
-                background: 'rgba(255,255,255,0.1)',
-                border: `2px solid ${config.primaryColor}50`,
+                background: '#1a1a1a',
+                border: `1px solid ${config.color}60`,
                 borderRadius: '12px',
                 color: '#fff',
                 fontSize: '0.85rem',
@@ -532,6 +579,16 @@ const AuraCard = ({ aura }) => {
               🔗 Copy
             </button>
           </div>
+
+          <p style={{
+            textAlign: 'center',
+            fontSize: '0.7rem',
+            color: '#666',
+            margin: '5px 0 0 0',
+            fontWeight: '600',
+          }}>
+            Tag @aurapro
+          </p>
         </div>
       </div>
     </>
