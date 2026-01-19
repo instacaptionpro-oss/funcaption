@@ -14,7 +14,6 @@ const moods = [
   { id: 'love', emoji: '💕', label: 'Love', color: '#DB2777' }
 ];
 
-// Celebrity categories
 const trendingPeople = {
   influencers: [
     { name: "Samay Raina", emoji: "🎯", scans: 2847 },
@@ -62,7 +61,6 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState('influencers');
   const [liveScanners, setLiveScanners] = useState(47);
 
-  // Animated counters
   useEffect(() => {
     const interval = setInterval(() => {
       setScanCount(prev => prev + Math.floor(Math.random() * 3));
@@ -164,7 +162,6 @@ export default function Home() {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </Head>
 
-      {/* Animated Background */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -172,7 +169,6 @@ export default function Home() {
         zIndex: -2
       }} />
 
-      {/* Floating Orbs */}
       <div style={{
         position: 'fixed',
         top: '10%',
@@ -208,9 +204,6 @@ export default function Home() {
         
         {!aura ? (
           <div>
-            {/* ============================================ */}
-            {/* HERO SECTION - Clear Value Prop */}
-            {/* ============================================ */}
             <div style={{ textAlign: 'center', marginBottom: '35px' }}>
               <div style={{
                 display: 'inline-block',
@@ -253,7 +246,6 @@ export default function Home() {
                 Discover if you're <span style={{ color: '#FFD700', fontWeight: '700' }}>LEGENDARY 👑</span> or just another <span style={{ color: '#EF4444', fontWeight: '700' }}>NPC 💀</span>
               </p>
 
-              {/* Live Stats */}
               <div style={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -309,9 +301,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* ============================================ */}
-            {/* TRENDING SCANS - Social Proof */}
-            {/* ============================================ */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.03)',
               backdropFilter: 'blur(20px)',
@@ -332,7 +321,6 @@ export default function Home() {
                 🔥 Trending Scans Right Now
               </div>
 
-              {/* Category Tabs */}
               <div style={{
                 display: 'flex',
                 gap: '8px',
@@ -373,7 +361,6 @@ export default function Home() {
                 ))}
               </div>
 
-              {/* Celebrity Grid */}
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
@@ -432,9 +419,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* ============================================ */}
-            {/* MAIN INPUT CARD */}
-            {/* ============================================ */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.03)',
               backdropFilter: 'blur(30px)',
@@ -445,7 +429,6 @@ export default function Home() {
               marginBottom: '24px'
             }}>
               
-              {/* Name Input */}
               <div style={{ marginBottom: '28px' }}>
                 <label style={{
                   display: 'block',
@@ -490,7 +473,6 @@ export default function Home() {
                 />
               </div>
 
-              {/* Mood Wheel */}
               <div style={{ marginBottom: '28px' }}>
                 <label style={{
                   display: 'block',
@@ -505,14 +487,12 @@ export default function Home() {
                   Choose Scan Mood
                 </label>
 
-                {/* Mood Display Circle */}
                 <div style={{
                   position: 'relative',
                   width: '160px',
                   height: '160px',
                   margin: '0 auto 20px',
                 }}>
-                  {/* Outer Ring */}
                   <div style={{
                     position: 'absolute',
                     inset: 0,
@@ -525,7 +505,6 @@ export default function Home() {
                     opacity: 0.6
                   }} />
 
-                  {/* Inner Circle */}
                   <div style={{
                     position: 'absolute',
                     inset: '15px',
@@ -552,7 +531,6 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Spin Button */}
                 <button
                   onClick={spinMoodWheel}
                   disabled={isSpinning}
@@ -574,7 +552,6 @@ export default function Home() {
                   {isSpinning ? '🎰 Spinning...' : '🎲 Random Mood'}
                 </button>
 
-                {/* Mood Grid */}
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(4, 1fr)',
@@ -615,7 +592,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Scan Button */}
               <button
                 onClick={handleScan}
                 disabled={loading || !nameInput.trim()}
@@ -655,9 +631,6 @@ export default function Home() {
               </button>
             </div>
 
-            {/* ============================================ */}
-            {/* RECENT SCANS - Live Feed */}
-            {/* ============================================ */}
             <div style={{
               background: 'rgba(0, 0, 0, 0.3)',
               border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -699,7 +672,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Aura Tiers Info */}
             <div style={{
               background: 'rgba(0, 0, 0, 0.3)',
               border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -750,7 +722,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Footer Badges */}
             <div style={{
               display: 'flex',
               justifyContent: 'center',
@@ -768,12 +739,8 @@ export default function Home() {
               ))}
             </div>
           </div>
-      ) : (
-  <>
-    {/* ============================================ */}
-    {/* RESULTS */}
-    {/* ============================================ */}
-    <div style={{
+        ) : (
+          <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -786,7 +753,6 @@ export default function Home() {
               <AuraCard aura={aura} />
             </div>
 
-            {/* Action Buttons */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
@@ -855,7 +821,6 @@ export default function Home() {
           />
         )}
 
-        {/* Footer */}
         <footer style={{ textAlign: 'center', padding: '40px 0 20px', marginTop: '40px' }}>
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)' }}>
             AuraPro © 2025 • AI Aura Scanner
@@ -863,7 +828,6 @@ export default function Home() {
         </footer>
       </div>
 
-      {/* Animations */}
       <style jsx global>{`
         * {
           box-sizing: border-box;
@@ -892,7 +856,6 @@ export default function Home() {
           transform: scale(0.98) !important;
         }
 
-        /* Hide scrollbar but keep functionality */
         div::-webkit-scrollbar {
           height: 4px;
         }
@@ -909,4 +872,4 @@ export default function Home() {
       `}</style>
     </div>
   );
-      }
+          }
