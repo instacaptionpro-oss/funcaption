@@ -165,6 +165,54 @@ const AuraCard = ({ aura }) => {
 
   return (
     <>
+      <style>{`
+        @keyframes chipPulse {
+          0%, 100% { opacity: 0.6; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+        }
+        
+        @keyframes scanLine {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100%); }
+        }
+        
+        @keyframes holographicShift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes circuitGlow {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.8; }
+        }
+
+        .microchip-score {
+          background: linear-gradient(
+            135deg,
+            ${config.color}15 0%,
+            transparent 50%,
+            ${config.color}10 100%
+          );
+          background-size: 200% 200%;
+          animation: holographicShift 3s ease infinite;
+        }
+
+        .chip-number {
+          background: linear-gradient(
+            135deg,
+            ${config.color} 0%,
+            #fff 50%,
+            ${config.color} 100%
+          );
+          background-size: 200% 200%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: holographicShift 2s ease infinite;
+        }
+      `}</style>
+
       {showShareModal && <ShareModal />}
       
       {shareMessage && (
@@ -357,67 +405,249 @@ const AuraCard = ({ aura }) => {
               </h1>
             </div>
 
-            {/* AURA SCORE - CENTRAL PROCESSOR */}
-            <div style={{
+            {/* 🔥 CGI MICROCHIP AURA SCORE - EPIC VERSION 🔥 */}
+            <div className="microchip-score" style={{
               textAlign: 'center',
               marginBottom: '20px',
-              padding: '28px 20px',
-              background: 'rgba(0,0,0,0.8)',
-              borderRadius: '16px',
-              border: `2px solid ${config.color}`,
+              padding: '32px 24px',
+              background: 'rgba(0,0,0,0.9)',
+              borderRadius: '20px',
+              border: `3px solid ${config.color}`,
               boxShadow: `
-                0 0 30px ${config.color}60,
-                inset 0 0 30px ${config.color}20
+                0 0 50px ${config.color}80,
+                0 0 100px ${config.color}40,
+                inset 0 0 50px ${config.color}20,
+                inset 0 0 20px rgba(0,0,0,0.8)
               `,
               position: 'relative',
+              overflow: 'hidden',
             }}>
-              {/* Corner pins like actual chip */}
+              
+              {/* METALLIC TEXTURE OVERLAY */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: `
+                  repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    ${config.color}05 2px,
+                    ${config.color}05 4px
+                  ),
+                  repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    ${config.color}05 2px,
+                    ${config.color}05 4px
+                  )
+                `,
+                pointerEvents: 'none',
+              }} />
+
+              {/* SCANNING LINE EFFECT */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '2px',
+                background: `linear-gradient(90deg, transparent, ${config.color}, transparent)`,
+                animation: 'scanLine 3s linear infinite',
+                boxShadow: `0 0 10px ${config.color}`,
+              }} />
+
+              {/* CIRCUIT BOARD PATTERN INSIDE CHIP */}
+              <svg style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                opacity: 0.15,
+              }} viewBox="0 0 100 100">
+                {/* Horizontal traces */}
+                {[20, 40, 60, 80].map(y => (
+                  <line key={`h${y}`} x1="0" y1={y} x2="100" y2={y} 
+                    stroke={config.color} strokeWidth="0.5" opacity="0.6">
+                    <animate attributeName="opacity" 
+                      values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite" />
+                  </line>
+                ))}
+                {/* Vertical traces */}
+                {[20, 40, 60, 80].map(x => (
+                  <line key={`v${x}`} x1={x} y1="0" x2={x} y2="100" 
+                    stroke={config.color} strokeWidth="0.5" opacity="0.6">
+                    <animate attributeName="opacity" 
+                      values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite" begin="0.5s" />
+                  </line>
+                ))}
+                {/* Connection nodes */}
+                {[20, 40, 60, 80].map(x => 
+                  [20, 40, 60, 80].map(y => (
+                    <circle key={`${x}-${y}`} cx={x} cy={y} r="1" fill={config.color}>
+                      <animate attributeName="r" values="0.8;1.5;0.8" 
+                        dur="2s" repeatCount="indefinite" />
+                    </circle>
+                  ))
+                )}
+              </svg>
+
+              {/* CORNER CHIP PINS (like real microchip) */}
               {[
-                {top: '-4px', left: '-4px'},
-                {top: '-4px', right: '-4px'},
-                {bottom: '-4px', left: '-4px'},
-                {bottom: '-4px', right: '-4px'},
+                {top: '-6px', left: '-6px'},
+                {top: '-6px', right: '-6px'},
+                {bottom: '-6px', left: '-6px'},
+                {bottom: '-6px', right: '-6px'},
               ].map((pos, i) => (
                 <div key={i} style={{
                   position: 'absolute',
                   ...pos,
+                  width: '12px',
+                  height: '12px',
+                  background: `radial-gradient(circle, ${config.color}, ${config.color}80)`,
+                  borderRadius: '50%',
+                  border: `2px solid #000`,
+                  boxShadow: `
+                    0 0 15px ${config.color},
+                    inset 0 0 5px rgba(255,255,255,0.5)
+                  `,
+                  animation: 'chipPulse 2s ease-in-out infinite',
+                  animationDelay: `${i * 0.2}s`,
+                }} />
+              ))}
+
+              {/* SIDE PINS (like actual chip connectors) */}
+              {/* Left pins */}
+              {[30, 50, 70].map((percent, i) => (
+                <div key={`left-${i}`} style={{
+                  position: 'absolute',
+                  left: '-4px',
+                  top: `${percent}%`,
                   width: '8px',
+                  height: '16px',
+                  background: `linear-gradient(90deg, ${config.color}, ${config.color}60)`,
+                  borderRadius: '2px 0 0 2px',
+                  boxShadow: `0 0 8px ${config.color}`,
+                  animation: 'circuitGlow 1.5s ease-in-out infinite',
+                  animationDelay: `${i * 0.3}s`,
+                }} />
+              ))}
+              
+              {/* Right pins */}
+              {[30, 50, 70].map((percent, i) => (
+                <div key={`right-${i}`} style={{
+                  position: 'absolute',
+                  right: '-4px',
+                  top: `${percent}%`,
+                  width: '8px',
+                  height: '16px',
+                  background: `linear-gradient(270deg, ${config.color}, ${config.color}60)`,
+                  borderRadius: '0 2px 2px 0',
+                  boxShadow: `0 0 8px ${config.color}`,
+                  animation: 'circuitGlow 1.5s ease-in-out infinite',
+                  animationDelay: `${i * 0.3}s`,
+                }} />
+              ))}
+
+              {/* Top pins */}
+              {[30, 50, 70].map((percent, i) => (
+                <div key={`top-${i}`} style={{
+                  position: 'absolute',
+                  top: '-4px',
+                  left: `${percent}%`,
+                  width: '16px',
                   height: '8px',
+                  background: `linear-gradient(180deg, ${config.color}, ${config.color}60)`,
+                  borderRadius: '2px 2px 0 0',
+                  boxShadow: `0 0 8px ${config.color}`,
+                  animation: 'circuitGlow 1.5s ease-in-out infinite',
+                  animationDelay: `${i * 0.3}s`,
+                }} />
+              ))}
+
+              {/* Bottom pins */}
+              {[30, 50, 70].map((percent, i) => (
+                <div key={`bottom-${i}`} style={{
+                  position: 'absolute',
+                  bottom: '-4px',
+                  left: `${percent}%`,
+                  width: '16px',
+                  height: '8px',
+                  background: `linear-gradient(0deg, ${config.color}, ${config.color}60)`,
+                  borderRadius: '0 0 2px 2px',
+                  boxShadow: `0 0 8px ${config.color}`,
+                  animation: 'circuitGlow 1.5s ease-in-out infinite',
+                  animationDelay: `${i * 0.3}s`,
+                }} />
+              ))}
+              
+              {/* CHIP LABEL */}
+              <div style={{
+                fontSize: '0.6rem',
+                color: config.color,
+                letterSpacing: '4px',
+                fontWeight: '800',
+                marginBottom: '8px',
+                opacity: 0.9,
+                fontFamily: 'monospace',
+                textShadow: `0 0 10px ${config.color}`,
+              }}>
+                ◆ AURA-CORE v2.0 ◆
+              </div>
+
+              {/* METALLIC HOLOGRAPHIC NUMBER */}
+              <div className="chip-number" style={{
+                fontSize: '5.5rem',
+                fontWeight: '900',
+                lineHeight: 1,
+                letterSpacing: '-2px',
+                position: 'relative',
+                textShadow: `
+                  0 0 20px ${config.color},
+                  0 0 40px ${config.color},
+                  0 0 60px ${config.color}80,
+                  2px 2px 0 rgba(0,0,0,0.5)
+                `,
+                filter: 'drop-shadow(0 0 30px ' + config.color + ')',
+              }}>
+                {aura.score}
+              </div>
+
+              {/* PROCESSOR MODEL NUMBER */}
+              <div style={{
+                marginTop: '10px',
+                fontSize: '0.5rem',
+                color: config.color,
+                letterSpacing: '2px',
+                fontWeight: '700',
+                opacity: 0.6,
+                fontFamily: 'monospace',
+              }}>
+                SN: {Math.floor(Math.random() * 999999).toString().padStart(6, '0')}
+              </div>
+
+              {/* DIVIDER LINE WITH TECH STYLE */}
+              <div style={{
+                width: '60px',
+                height: '3px',
+                background: `linear-gradient(90deg, transparent, ${config.color}, transparent)`,
+                margin: '12px auto 0',
+                boxShadow: `0 0 10px ${config.color}`,
+                position: 'relative',
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  left: '50%',
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '6px',
+                  height: '6px',
                   background: config.color,
                   borderRadius: '50%',
                   boxShadow: `0 0 8px ${config.color}`,
                 }} />
-              ))}
-              
-              <div style={{
-                fontSize: '0.65rem',
-                color: config.color,
-                letterSpacing: '3px',
-                fontWeight: '700',
-                marginBottom: '10px',
-                opacity: 0.8,
-              }}>
-                AURA CORE
               </div>
-              <div style={{
-                fontSize: '5rem',
-                fontWeight: '900',
-                lineHeight: 1,
-                color: config.color,
-                textShadow: `
-                  0 0 40px ${config.color},
-                  0 0 80px ${config.color}
-                `,
-              }}>
-                {aura.score}
-              </div>
-              <div style={{
-                width: '50px',
-                height: '2px',
-                background: config.color,
-                margin: '12px auto 0',
-                boxShadow: `0 0 10px ${config.color}`,
-              }} />
             </div>
 
             {/* ROAST BOX - BELOW PROCESSOR, FULLY VISIBLE */}
