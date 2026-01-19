@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 import AuraCard from '../components/AuraCard';
 import RoastChat from '../components/RoastChat';
 
@@ -300,6 +301,120 @@ export default function Home() {
                 </div>
               </div>
             </div>
+
+            {/* 🆕 CAMPUS WARS BANNER */}
+            <Link href="/campus-wars">
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 200, 255, 0.15))',
+                border: '2px solid #00FFFF',
+                borderRadius: '20px',
+                padding: '20px',
+                marginBottom: '24px',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 15px 40px rgba(0, 255, 255, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}>
+                
+                {/* Animated glow */}
+                <div style={{
+                  position: 'absolute',
+                  top: '-50%',
+                  left: '-50%',
+                  width: '200%',
+                  height: '200%',
+                  background: 'radial-gradient(circle, rgba(0, 255, 255, 0.2) 0%, transparent 70%)',
+                  animation: 'spin 8s linear infinite'
+                }} />
+
+                {/* NEW badge */}
+                <div style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  background: '#00FFFF',
+                  color: '#000',
+                  padding: '4px 12px',
+                  borderRadius: '20px',
+                  fontSize: '0.65rem',
+                  fontWeight: '900',
+                  letterSpacing: '1px',
+                  animation: 'pulse 2s infinite'
+                }}>
+                  🆕 NEW
+                </div>
+
+                <div style={{ position: 'relative', zIndex: 2 }}>
+                  <div style={{
+                    fontSize: '2.5rem',
+                    marginBottom: '8px',
+                    textAlign: 'center'
+                  }}>
+                    🎓⚔️
+                  </div>
+                  
+                  <h2 style={{
+                    fontSize: '1.5rem',
+                    fontWeight: '900',
+                    color: '#00FFFF',
+                    textAlign: 'center',
+                    margin: '0 0 8px 0',
+                    textShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
+                    letterSpacing: '1px'
+                  }}>
+                    CAMPUS WARS
+                  </h2>
+                  
+                  <p style={{
+                    fontSize: '0.95rem',
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    textAlign: 'center',
+                    margin: '0 0 12px 0',
+                    lineHeight: '1.5'
+                  }}>
+                    Roast your college vs rivals using AI
+                  </p>
+
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    flexWrap: 'wrap',
+                    marginBottom: '12px'
+                  }}>
+                    {['IIT vs NIT', 'BITS vs VIT', 'DU vs DTU'].map(battle => (
+                      <span key={battle} style={{
+                        fontSize: '0.7rem',
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        background: 'rgba(0, 255, 255, 0.1)',
+                        padding: '4px 10px',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(0, 255, 255, 0.3)'
+                      }}>
+                        {battle}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div style={{
+                    textAlign: 'center',
+                    fontSize: '0.85rem',
+                    fontWeight: '700',
+                    color: '#00FFFF'
+                  }}>
+                    👉 Click to Start Battle
+                  </div>
+                </div>
+              </div>
+            </Link>
 
             <div style={{
               background: 'rgba(255, 255, 255, 0.03)',
@@ -872,4 +987,4 @@ export default function Home() {
       `}</style>
     </div>
   );
-          }
+        }
