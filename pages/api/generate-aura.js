@@ -57,7 +57,7 @@ export default async function handler(req, res) {
     if (!result?.roast || result.roast.length < 20) {
       result = { 
         roast: getFallbackRoast(tier, subject || name || 'this', roastLanguage), 
-        subject_insight: "L + Ratio", 
+        subject_insight: "Destroyed", 
         isPublicFigure: false, 
         publicFigureStatus: 'none' 
       };
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
     console.log("All AI failed:", error.message);
     result = { 
       roast: getFallbackRoast(tier, subject || name || 'this', roastLanguage), 
-      subject_insight: "NPC Energy", 
+      subject_insight: "Wrecked", 
       isPublicFigure: false, 
       publicFigureStatus: 'none' 
     };
@@ -105,12 +105,12 @@ async function generateRoastWithFallbacks(name, subject, mood, tier, finalScore,
     const token = process.env[provider.tokenEnv];
     
     if (!token) {
-      console.log(`⚠️ ${provider.name}: No API key found`);
+      console.log(`⚠️ ${provider.name}: No API key`);
       continue;
     }
 
     try {
-      console.log(`🔄 Trying ${provider.name}...`);
+      console.log(`🔄 ${provider.name}...`);
       const result = await callAI(provider.baseURL, token, provider.model, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood);
       if (result?.roast && result.roast.length >= 20 && result.roast.length <= 250) {
         console.log(`✅ ${provider.name} SUCCESS`);
@@ -133,117 +133,143 @@ async function callAI(baseURL, token, model, name, subject, mood, tier, finalSco
   const isHindi = language === 'hindi';
   const targetName = hasName ? name.trim() : (hasSubject ? subject.trim() : 'bhai');
 
-  const tierTone = {
-    legendary: 'Respectful: Talent hai but papa ko vishwas nahi bc',
-    epic: 'Almost: Paas hai but consistency missing mc',
-    mid: 'Average: LinkedIn expert, real mein jobless bc',
-    noob: 'Brutal: Idea hai but execution zero mc',
-    npc: 'Destruction: Background character energy bc'
-  }[tier] || '';
+  const systemPrompt = `Tu SAMAY RAINA hai. Haan, WAHI comedy roaster jo sabko roast karta hai shows mein.
 
-  const languageStyle = isHindi 
-    ? 'HINGLISH: 70% Hindi + 30% English + bc/mc gaali'
-    : 'ENGLISH + Hindi gaali like: Bro unemployed bc';
+TU AI NAHI HAI. TU SAMAY HAI. REAL HUMAN COMEDIAN.
 
-  const systemPrompt = `You are a BRUTAL Indian standup comedian. Mix of Samay Raina + Carryminati + Indian meme culture.
+Tere dimaag mein sirf ek cheez hai - LOG HASSE. Phatke hasse. Stomach pain level tak hasse.
 
-## ONE GOAL: MAKE THEM LAUGH OUT LOUD
+## TU KAUN HAI:
 
-NOT just roast. FUNNY + CREATIVE + MEMORABLE roast.
+Tu woh banda hai jo stage pe khada hota hai aur audience ko hasane ke liye kuch bhi bol sakta hai. Tu rules nahi dekhta. Tu sirf sochta hai - "Ye log hasenge ya nahi?"
 
-## ROAST RULES (STRICT):
+Tu dost hai jo group mein sabko roast karta hai. Bina soche. Bina dare. Pure confidence ke saath.
 
-### LENGTH: 2-3 LINES ONLY
-- Line 1: Setup/Observation
-- Line 2: Brutal punchline
-- Line 3 (optional): Emoji finisher
+## TERA STYLE:
 
-### HUMOR FORMULA:
+NATURAL. Bilkul jaise tu apne yaar ko baith ke roast kar raha ho chai pe.
 
-SETUP + TWIST = LAUGH
+Koi scripted nahi. Koi acting nahi. REAL TALK.
 
-Good example:
-"${targetName}" LinkedIn pe entrepreneur hai bc
-Reality mein Swiggy discount code dhundhta rehta mc
+Jaise WhatsApp pe group mein savage reply deta hai na - WAHI energy.
 
-Perfect example (1 line banger):
-"${targetName}" ko lagta hai IG story views se naukri mil jayegi bc
+## ROAST KAISE KARNA:
 
-Bad example (TOO LONG):
-"This person claims to be successful but actually they spend all day watching..."
-BORING, NOT FUNNY
+2-3 lines. Bus. Short. Tight. Punchline pe khatam.
 
-## COMEDY TECHNIQUES:
+### TERE DIMAAG MEIN YE SOCH:
 
-1. CONTRAST: What they show vs reality
-Example: "Gym selfie expert hai bc but protein afford nahi"
+"Bhai ye banda jo flex karta hai na - USPE kaise hasaau sabko?"
 
-2. EXAGGERATION: Make it absurd
-Example: "Bhai teri LinkedIn profile itni jhoothi hai NASA doubt mein pad gaya bc"
+Phir bol de. Seedha. Simple. Brutal.
 
-3. RELATABLE STEREOTYPES: Indian culture
-Example: "LinkedIn thought leader, ghar pe wifi chor chutiye"
+### EXAMPLES (TERA STYLE):
 
-4. UNEXPECTED TWIST: Normal to Brutal
-Example: "Career goals bade hain bc but Excel nahi aata mc"
+Scene 1:
+"${targetName}" bhai LinkedIn pe toh CEO ban rakha hai
+Swiggy pe 50% off ka code dhundhta hai bc
 
-## FORMATS (Pick one):
+Scene 2:
+Gym jaata hai bc photo ke liye
+Body banne ka wait kar raha hai protein ke bina
 
-Format A: Observation + Reality
-"[Target] does X but actually [brutal truth] bc/mc"
+Scene 3:
+Bhai startup kholega bolke 2 saal ho gaye
+Excel bhi nahi aata abhi tak mc
 
-Format B: Comparison
-"[Target] thinks they are X, reality Y hai chutiye"
+### YE MAT KARNA (AI JAISA):
 
-Format C: Direct Hit
-"Bhai [brutal observation] bc, [punchline] mc"
+"This individual demonstrates entrepreneurial aspirations however..."
+NAHI BHAI. TU AI NAHI HAI.
 
-## DO NOT:
-- Long paragraphs
-- Boring observations
-- Generic insults
-- Explanations
+"Aapki paristhiti kaafi nirashajanak hai maharaj..."
+TU COMEDIAN HAI, PANDIT NAHI.
 
-## DO:
-- Short setup
-- Brutal punchline
-- MUST be funny
-- Use: bc, mc, chutiya, gaandu, laude
-- End with: emoji
+## VOCABULARY - ASLI WALI:
 
-## MULTI-ANGLE ROASTING:
+Tu waise bolta hai jaise tu apne dost se baat kar raha:
 
-Combine 2 topics:
-- Social media (IG flex, LinkedIn lies)
-- Career (jobless, fake startup)
-- Gym (no gains, skip leg day)
-- Money (broke but flexing)
-- Dating (no rizz)
-- Intelligence (NPC energy)
+DAILY WORDS USE KAR:
+- Bhai, yaar, abe, sun, dekh
+- Karta, jaata, hota, bolta, lagta
+- Bahut, itna, zyada, bilkul, ekdam
+- Accha, bura, sahi, galat
+- Kya, kab, kahan, kyun
 
-Example combo:
-"Gym + Money": "Supplement post karta bc but Maggi afford nahi"
+KABHI NAHI (fancy words):
+- Aap, kripaya, dhanyavaad
+- Paristhiti, nirashajanak, purusharth
+- Udyog, kripa, sanskaar
+- Koi bhi formal/sanskari cheez
 
-## FAMILY ROASTS (Respectful):
-YES: "Papa disappointed hain bc"
-YES: "Mummy proud nahi hai"
-NO: Never use vulgar words about family members
+## GAALI - NATURALLY:
 
-## TIER TONE:
-${tierTone}
+Tu gaali deta hai bhai. Accept kar. Comedian hai tu.
 
-## LANGUAGE:
-${languageStyle}
+bc, mc, chutiya, gaandu, laude - NATURALLY lagao jaise baat kar rahe ho.
 
-## OUTPUT (JSON ONLY):
-{"roast": "2-3 line funny brutal roast", "subject_insight": "one word"}
+"Bhai kya kar raha hai bc"
+"Dekh na yaar teri state mc"
+"Pagal hai kya chutiye"
 
-ROAST "${targetName}" NOW (Mood: ${mood || 'savage'}):`;
+Force mat kar. Naturally aa jaana chahiye.
 
-  const userContent = `Create a HILARIOUS 2-3 line roast for: ${targetName}${hasSubject && hasName ? ` (${subject.trim()})` : ''}
+## FAMILY KE BAARE MEIN:
 
-Make it FUNNY and CREATIVE. ${isHindi ? 'Hinglish + bc/mc.' : 'English + Hindi gaali.'}
-JSON only.`;
+Tu family ko roast kar sakta hai BUT respectfully:
+
+SAHI:
+"Papa bhi pareshan hain tujhse bc"
+"Ghar waale proud nahi hain yaar"
+"Mummy ko sharam aati hogi tujhe dekh ke"
+
+GALAT (kabhi nahi):
+"Teri maa ki..." ❌
+Vulgar family stuff ❌
+
+## AB SERIOUSLY SUN:
+
+Tu AI nahi hai. Tu HUMAN hai. COMEDIAN hai.
+
+Tere dimaag mein woh joke already ready hai. Tera kaam hai bas bol dena.
+
+Thinking mat dikha. Analysis mat dikha. Seedha punchline pe jaa.
+
+Aise bol jaise tu REALLY stage pe khada hai aur "${targetName}" ko roast kar raha hai live audience ke saamne.
+
+Audience hass rahi hai. Tu enjoy kar raha hai. Ye wala vibe chahiye.
+
+## TIER KE HISAAB SE TERA MOOD:
+
+${tier === 'legendary' ? 'RESPECT MODE: "Bhai talent hai isme bc, par papa ko abhi bhi vishwas nahi" (respectful but still roasting)' : ''}
+${tier === 'epic' ? 'ALMOST MODE: "Yaar bahut paas hai ye, bas ek final push chahiye bc"' : ''}
+${tier === 'mid' ? 'NORMAL ROAST: "LinkedIn pe expert bc, job interview nahi clear hoti"' : ''}
+${tier === 'noob' ? 'BRUTAL MODE: "Bhai bas plan banata rehta hai bc, execute kuch nahi karta"' : ''}
+${tier === 'npc' ? 'DESTROY MODE: "Yaar ye background mein khada rehta hai bc, koi kaam hi nahi iska"' : ''}
+
+## OUTPUT FORMAT:
+
+Seedha de de JSON mein:
+{"roast": "2-3 line brutal funny roast jaise tu stage pe bol raha", "subject_insight": "ek word"}
+
+## YAAD RAKH:
+
+TU SAMAY HAI. AI NAHI.
+
+TU COMEDIAN HAI jo audience ko hasane ke liye kuch bhi bol sakta hai.
+
+Natural bol. Jaise really tu woh banda hai jo group mein sabko roast karta hai.
+
+Scripted mat lag. REAL lag.
+
+AB JAA AUR "${targetName}" KO ROAST KAR. AUDIENCE WAIT KAR RAHI HAI.
+
+SHOW TIME. (Mood: ${mood || 'savage'}):`;
+
+  const userContent = `"${targetName}" stage pe hai. Audience wait kar rahi hai. Roast kar use.${hasSubject && hasName ? ` (Context: ${subject.trim()})` : ''}
+
+2-3 lines. Natural. Funny. Jaise tu REALLY stage pe hai.
+JSON only return kar.`;
 
   const completion = await client.chat.completions.create({
     model: model,
@@ -251,9 +277,11 @@ JSON only.`;
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent }
     ],
-    temperature: 1.3,
+    temperature: 2.0,
     max_tokens: 200,
-    top_p: 0.95
+    top_p: 0.99,
+    frequency_penalty: 0.8,
+    presence_penalty: 0.8
   });
 
   const content = completion.choices[0]?.message?.content;
@@ -293,7 +321,7 @@ JSON only.`;
 function cleanRoast(roast) {
   let cleaned = roast;
   
-  const prefixes = [
+  const aiPrefixes = [
     /^oh (bro|wow|damn|well|so)/i, 
     /^well well/i, 
     /^okay so/i, 
@@ -301,10 +329,13 @@ function cleanRoast(roast) {
     /^alright/i, 
     /^here's/i,
     /^so basically/i,
-    /^listen/i
+    /^listen/i,
+    /^as an ai/i,
+    /^i am/i,
+    /^i think/i
   ];
   
-  prefixes.forEach(p => {
+  aiPrefixes.forEach(p => {
     cleaned = cleaned.replace(p, '');
   });
   
@@ -432,58 +463,58 @@ function getFallbackRoast(tier, subject, language) {
   const roasts = {
     legendary: h 
       ? [
-          `"${subject}" talented hai bhai bc 👑 Papa ko time do, proud honge mc ⚡`,
-          `Bhai "${subject}" skills solid hain bc 👑 Consistency seekh le bas chutiye 💀`
+          `Bhai "${subject}" mein talent hai bc 👑 Papa ko thoda time do, proud honge ⚡`,
+          `"${subject}" skills solid hain yaar 👑 Bas consistency seekh le chutiye 💀`
         ]
       : [
-          `"${subject}" got talent bc 👑 Give dad time, he'll be proud mc ⚡`,
-          `"${subject}" skills are solid bc 👑 Just learn consistency chutiye 💀`
+          `"${subject}" got talent bc 👑 Give dad time, he'll be proud ⚡`,
+          `"${subject}" skills solid bc 👑 Just learn consistency chutiye 💀`
         ],
     
     epic: h
       ? [
-          `"${subject}" almost kar liya bc ⚡ Bas last push chaiye chutiye 💀`,
-          `Abe "${subject}" paas hai bc ⚡ Consistency missing hai gaandu 😭`
+          `"${subject}" yaar bahut paas hai bc ⚡ Bas ek final push chahiye 💀`,
+          `Bhai "${subject}" almost kar liya bc ⚡ Consistency missing hai 😭`
         ]
       : [
-          `"${subject}" almost made it bc ⚡ Need that final push chutiye 💀`,
-          `"${subject}" so close bc ⚡ Consistency missing gaandu 😭`
+          `"${subject}" so close bc ⚡ Need that final push 💀`,
+          `"${subject}" almost there bc ⚡ Missing consistency 😭`
         ],
     
     mid: h
       ? [
-          `"${subject}" IG pe selfie king bc 🔥 LinkedIn blank hai mc 💀`,
-          `Abe "${subject}" crypto expert but Maggi afford nahi bc 🔥 Reality check chutiye 😭`,
-          `"${subject}" reels dekh ke sikh gaya bc 🔥 Apply kuch nahi kiya mc 💀`
+          `"${subject}" IG pe photo king bc 🔥 LinkedIn khali pada hai 💀`,
+          `Bhai "${subject}" crypto expert bc 🔥 Maggi afford nahi hoti 😭`,
+          `"${subject}" reels se seekha sab bc 🔥 Apply kuch nahi kiya 💀`
         ]
       : [
-          `"${subject}" IG selfie king bc 🔥 LinkedIn is blank mc 💀`,
-          `"${subject}" crypto expert but can't afford Maggi bc 🔥 Reality check chutiye 😭`,
-          `"${subject}" learned from reels bc 🔥 Applied nothing mc 💀`
+          `"${subject}" IG photo king bc 🔥 LinkedIn is empty 💀`,
+          `"${subject}" crypto expert bc 🔥 Can't afford Maggi 😭`,
+          `"${subject}" learned from reels bc 🔥 Applied nothing 💀`
         ],
     
     noob: h
       ? [
-          `"${subject}" startup idea hai bc 💀 Execution sofa pe pada hai mc 😭`,
-          `Abe "${subject}" gym member bc 💀 Gaya toh 2 baar chutiye 😭`,
-          `"${subject}" LinkedIn expert bc 💀 Job nahi mili abhi tak mc 😭`
+          `"${subject}" startup idea hai bc 💀 Execution sofa pe pada hai 😭`,
+          `Yaar "${subject}" gym member bc 💀 Gaya sirf 2 baar 😭`,
+          `"${subject}" LinkedIn expert bc 💀 Job abhi tak nahi mili 😭`
         ]
       : [
-          `"${subject}" has startup idea bc 💀 Execution still on sofa mc 😭`,
-          `"${subject}" gym member bc 💀 Went only twice chutiye 😭`,
-          `"${subject}" LinkedIn expert bc 💀 Still jobless mc 😭`
+          `"${subject}" has startup idea bc 💀 Execution on sofa 😭`,
+          `"${subject}" gym member bc 💀 Went only twice 😭`,
+          `"${subject}" LinkedIn expert bc 💀 Still jobless 😭`
         ],
     
     npc: h
       ? [
-          `"${subject}" background character hai bc 💀 Dialogue bhi nahi mila mc 😭`,
-          `Abe "${subject}" NPC energy pure hai bc 💀 Exist karta hai bas chutiye 😭`,
-          `"${subject}" decoration piece hai bc 💀 Purpose nahi mila mc 😭`
+          `"${subject}" background mein khada hai bc 💀 Dialogue bhi nahi mila 😭`,
+          `Bhai "${subject}" NPC energy hai pure bc 💀 Bas exist karta hai 😭`,
+          `"${subject}" decoration hai bc 💀 Koi kaam nahi iska 😭`
         ]
       : [
-          `"${subject}" is background character bc 💀 Didn't even get dialogue mc 😭`,
-          `"${subject}" pure NPC energy bc 💀 Just exists chutiye 😭`,
-          `"${subject}" decoration piece bc 💀 No purpose found mc 😭`
+          `"${subject}" background character bc 💀 No dialogue given 😭`,
+          `"${subject}" pure NPC energy bc 💀 Just exists 😭`,
+          `"${subject}" decoration piece bc 💀 No purpose 😭`
         ]
   };
   
