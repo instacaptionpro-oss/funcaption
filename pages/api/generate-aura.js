@@ -4,28 +4,28 @@ import { OpenAI } from "openai";
 
 const AI_PROVIDERS = [
   {
-    name: "Llama 70B Novita",
-    baseURL: "https://router.huggingface.co/v1",
-    model: "meta-llama/Llama-3.3-70B-Instruct:novita",
-    tokenEnv: "HF_TOKEN"
+    name: "Groq Llama 70B",
+    baseURL: "https://api.groq.com/openai/v1",
+    model: "llama-3.3-70b-versatile",
+    tokenEnv: "GROQ_API_KEY"
   },
   {
-    name: "Llama 8B Novita",
-    baseURL: "https://router.huggingface.co/v1",
-    model: "meta-llama/Llama-3.1-8B-Instruct:novita",
-    tokenEnv: "HF_TOKEN"
+    name: "Groq Kimi K2",
+    baseURL: "https://api.groq.com/openai/v1",
+    model: "moonshotai/kimi-k2-instruct-0905",
+    tokenEnv: "GROQ_API_KEY"
   },
   {
-    name: "DeepSeek Fireworks",
-    baseURL: "https://router.huggingface.co/v1",
-    model: "deepseek-ai/DeepSeek-V3.2:fireworks-ai",
-    tokenEnv: "HF_TOKEN"
+    name: "Groq Qwen 32B",
+    baseURL: "https://api.groq.com/openai/v1",
+    model: "qwen/qwen3-32b",
+    tokenEnv: "GROQ_API_KEY"
   },
   {
-    name: "Qwen Hyperbolic",
-    baseURL: "https://router.huggingface.co/v1",
-    model: "Qwen/Qwen3-Next-80B-A3B-Instruct:hyperbolic",
-    tokenEnv: "HF_TOKEN"
+    name: "Groq Llama 17B",
+    baseURL: "https://api.groq.com/openai/v1",
+    model: "meta-llama/llama-4-maverick-17b-128e-instruct",
+    tokenEnv: "GROQ_API_KEY"
   }
 ];
 
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
     if (!result?.roast || result.roast.length < 20) {
       result = { 
         roast: getFallbackRoast(tier, subject || name || 'this', roastLanguage), 
-        subject_insight: "L + Ratio + No Aura", 
+        subject_insight: "L + Ratio", 
         isPublicFigure: false, 
         publicFigureStatus: 'none' 
       };
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
     console.log("All AI failed:", error.message);
     result = { 
       roast: getFallbackRoast(tier, subject || name || 'this', roastLanguage), 
-      subject_insight: "NPC Energy Detected", 
+      subject_insight: "NPC Energy", 
       isPublicFigure: false, 
       publicFigureStatus: 'none' 
     };
@@ -104,12 +104,15 @@ async function generateRoastWithFallbacks(name, subject, mood, tier, finalScore,
     const provider = AI_PROVIDERS[i];
     const token = process.env[provider.tokenEnv];
     
-    if (!token) continue;
+    if (!token) {
+      console.log(`⚠️ ${provider.name}: No API key found`);
+      continue;
+    }
 
     try {
       console.log(`🔄 Trying ${provider.name}...`);
       const result = await callAI(provider.baseURL, token, provider.model, name, subject, mood, tier, finalScore, language, hasName, hasSubject, hasMood);
-      if (result?.roast && result.roast.length >= 20 && result.roast.length <= 200) {
+      if (result?.roast && result.roast.length >= 20 && result.roast.length <= 250) {
         console.log(`✅ ${provider.name} SUCCESS`);
         return result;
       }
@@ -130,169 +133,108 @@ async function callAI(baseURL, token, model, name, subject, mood, tier, finalSco
   const isHindi = language === 'hindi';
   const targetName = hasName ? name.trim() : (hasSubject ? subject.trim() : 'bhai');
 
-  const systemPrompt = `You are an INDIAN STANDUP COMEDIAN specializing in BRUTAL roasts. Think Samay Raina + Carryminati + Indian meme culture.
+  const systemPrompt = `You are a BRUTAL Indian standup comedian. Mix of Samay Raina + Carryminati + Indian meme culture.
 
-## 🎯 YOUR ONE JOB: MAKE PEOPLE LAUGH OUT LOUD
+## 🎯 ONE GOAL: MAKE THEM LAUGH OUT LOUD 😂
 
-NOT just roast. FUNNY roast. CREATIVE roast. MEMORABLE roast.
+NOT just roast. FUNNY + CREATIVE + MEMORABLE roast.
 
-## 🔥 ROAST FORMULA (CRITICAL):
+## 🔥 ROAST RULES (STRICT):
 
-### LENGTH: EXACTLY 2-3 LINES (STRICT!)
-- Line 1: Setup (observation/comparison)
-- Line 2: Punchline (brutal twist)
+### LENGTH: 2-3 LINES ONLY
+- Line 1: Setup/Observation
+- Line 2: Brutal punchline
 - Line 3 (optional): Emoji finisher
 
-### EXAMPLES OF PERFECT ROASTS:
+### HUMOR FORMULA:
 
-**GOOD (2 lines):**
-"${targetName}" LinkedIn pe CEO hai, Swiggy pe 50% off waits karta bc 💀
+**SETUP + TWIST = LAUGH**
 
-**GOOD (3 lines):**
-"${targetName}" gym selfie expert hai bhai 🏋️
-Protein shake post karta but chicken afford nahi hota mc
-Bulk nahi kar raha, bas mota ho raha hai chutiye 😭
+Good example:
+"${targetName}" LinkedIn pe entrepreneur hai bc 💀
+Reality mein Swiggy discount code dhundhta rehta mc 😭
 
-**GOOD (1 line BANGER):**
-"${targetName}" ko lagta hai uski story views se job mil jayegi bc 💀
+Perfect example (1 line banger):
+"${targetName}" ko lagta hai IG story views se naukri mil jayegi bc 💀
 
-**BAD (too long):**
-"This person thinks they're an entrepreneur but actually they just sit at home and watch motivational videos all day while their parents wonder what went wrong with their life choices and..."
-❌ TOO LONG, NOT FUNNY, NO PUNCHLINE
+Bad example (TOO LONG):
+"This person claims to be successful but actually they spend all day watching motivational videos..."
+❌ BORING, NOT FUNNY
 
-**BAD (too generic):**
-"You're a failure"
-❌ BORING, NOT CREATIVE
+## 🎭 COMEDY TECHNIQUES:
 
-## 🎭 HUMOR TECHNIQUES (USE THESE):
+1. **CONTRAST**: What they show vs reality
+   "Gym selfie expert hai bc but protein afford nahi 💀"
 
-### 1. CONTRAST/IRONY:
-Setup: What they CLAIM
-Punchline: What's ACTUALLY true
+2. **EXAGGERATION**: Make it absurd
+   "Bhai teri LinkedIn profile itni jhoothi hai NASA doubt mein pad gaya bc 🚀"
 
-Example:
-"Abe crypto expert banta hai bc but Maggi afford nahi hota 💀"
+3. **RELATABLE STEREOTYPES**: Indian culture
+   "LinkedIn thought leader, ghar pe wifi chor chutiye 😭"
 
-### 2. EXAGGERATION:
-Make it absurdly extreme
+4. **UNEXPECTED TWIST**: Normal → Brutal
+   "Career goals bade hain bc but Excel nahi aata mc 💀"
 
-Example:
-"Bhai teri LinkedIn profile itni jhoothi hai NASA ko doubt ho gaya bc 🚀"
+## 📝 FORMATS (Pick one):
 
-### 3. RELATABLE STEREOTYPES:
-Indian culture references
+**Format A: Observation + Reality**
+"[Target] does X but actually [brutal truth] bc/mc 💀"
 
-Example:
-"LinkedIn pe thought leader, ghar pe wifi chor chutiye 😭"
+**Format B: Comparison**
+"[Target] thinks they're X, reality Y hai chutiye 😭"
 
-### 4. UNEXPECTED TWIST:
-Start normal, end brutal
+**Format C: Direct Hit**
+"Bhai [brutal observation] bc, [punchline] mc 💀"
 
-Example:
-"Career goals toh bade hain bc but reality mein tujhe Excel nahi aata mc 💀"
+## 🚫 DON'T:
+❌ Long paragraphs
+❌ Boring observations
+❌ Generic insults
+❌ Explanations
 
-### 5. VISUAL HUMOR:
-Make them SEE the joke
-
-Example:
-"Gym body bana raha hai but tu toh chaiwala se bhi patla hai bc 😂"
-
-## 📝 STRUCTURE (FOLLOW EXACTLY):
-
-**Format 1: OBSERVATION + TWIST**
-"[Target] does [X] but actually [brutal reality] bc/mc 💀"
-
-**Format 2: COMPARISON**
-"[Target] thinks they're [X], reality mein [complete opposite] chutiye 😭"
-
-**Format 3: IRONIC STATEMENT**
-"Bhai [ironic observation about target] bc, [brutal punchline] mc 💀"
-
-## 🚫 STRICT RULES:
-
-❌ NO paragraphs (max 3 lines)
-❌ NO boring observations
-❌ NO generic insults
-❌ NO explanations
-❌ NO long setups
-
-✅ SHORT setup
-✅ BRUTAL punchline
-✅ MUST be FUNNY
-✅ MUST use bc/mc/chutiye
-✅ MUST end with emoji (💀 😭 🔥 😂)
-
-## 🎯 BAD WORDS (Unlimited on USER):
-
-Use freely: bc, mc, chutiya, gaandu, laude, bhosdike, saale
-
-NEVER use on family members (papa, mummy) - keep family mentions respectful:
-✅ "Papa disappointed hain bc"
-❌ "Teri maa ki chut" (NEVER)
+## ✅ DO:
+✅ Short setup
+✅ Brutal punchline
+✅ MUST be funny
+✅ Use: bc, mc, chutiya, gaandu, laude
+✅ End with: 💀 😭 🔥 😂
 
 ## 🎪 MULTI-ANGLE ROASTING:
 
-Combine 2 topics randomly:
+Combine 2 topics:
+- Social media (IG flex, LinkedIn lies)
+- Career (jobless, fake startup)
+- Gym (no gains, skip leg day)
+- Money (broke but flexing)
+- Dating (no rizz)
+- Intelligence (NPC energy)
 
-**Topics Pool:**
-- Social media flex (IG selfies, LinkedIn lies)
-- Career (unemployed, fake entrepreneur)
-- Gym culture (skip leg day, no gains)
-- Dating life (no rizz, single forever)
-- Money (broke but flexing, discount hunter)
-- Intelligence (dumb takes, NPC thoughts)
-- Hobbies (podcast bro, crypto expert)
+Example combo:
+"Gym + Money": "Supplement post karta bc but Maggi afford nahi 💀"
 
-**Example combo:**
-"Gym + Money": "Protein supplement post karta bc but Maggi afford nahi 💀"
+## FAMILY ROASTS (Respectful):
+✅ "Papa disappointed hain bc"
+✅ "Mummy proud nahi hai"
+❌ NEVER: "Teri maa ki..." (NO sexual/vulgar about family)
 
-## TIER SPECIFIC TONE:
+## TIER TONE:
+${tier === 'legendary' ? 'Respectful: "Talent hai but papa ko vishwas nahi bc 👑"' : ''}
+${tier === 'epic' ? 'Almost: "Paas hai but consistency missing mc ⚡"' : ''}
+${tier === 'mid' ? 'Average: "LinkedIn expert, real mein jobless bc 🔥"' : ''}
+${tier === 'noob' ? 'Brutal: "Idea hai but execution zero mc 💀"' : ''}
+${tier === 'npc' ? 'Destruction: "Background character energy bc 😭"' : ''}
 
-${tier === 'legendary' ? '→ Respectful roast: "Talent hai but papa ko abhi bhi vishwas nahi bc 👑"' : ''}
-${tier === 'epic' ? '→ Almost there: "Itna paas hai but consistency missing mc ⚡"' : ''}
-${tier === 'mid' ? '→ Average destroyer: "LinkedIn expert, reality mein jobless bc 🔥"' : ''}
-${tier === 'noob' ? '→ Brutal but funny: "Startup idea hai but execution ghar pe pada hai mc 💀"' : ''}
-${tier === 'npc' ? '→ Complete destruction: "Background character energy bc, dialogue bhi nahi mila tujhe 😭"' : ''}
+## LANGUAGE:
+${isHindi ? 'HINGLISH: 70% Hindi + 30% English + bc/mc gaali' : 'ENGLISH + Hindi gaali: "Bro you're unemployed bc 💀"'}
 
-## LANGUAGE STYLE:
+## OUTPUT (JSON ONLY):
+{"roast": "2-3 line funny brutal roast", "subject_insight": "one word"}
 
-${isHindi ? `
-HINGLISH (Mix):
-- 70% Hindi words
-- 30% English words
-- Gaali: bc, mc, chutiye (MUST)
-- Natural flow like talking to friend
+ROAST "${targetName}" NOW (Mood: ${mood || 'savage'}):`;
 
-Example:
-"Abe yaar tera IG bio itna cringe hai bc 💀 'CEO of grinding' lekin tu toh sofa pe pada hai mc 😭"
-` : `
-ENGLISH + HINDI GAALI:
-"Your LinkedIn says entrepreneur bc but you're unemployed mc 💀"
-`}
+  const userContent = `Create a HILARIOUS 2-3 line roast for: ${targetName}${hasSubject && hasName ? ` (${subject.trim()})` : ''}
 
-## FINAL OUTPUT FORMAT:
-
-Return ONLY JSON (no other text):
-{
-  "roast": "2-3 line FUNNY brutal roast with bc/mc",
-  "subject_insight": "one savage word"
-}
-
-## REMEMBER:
-- 2-3 lines MAX (STRICT!)
-- Setup + Punchline = LAUGH
-- Creative > Generic
-- Funny > Just mean
-- Indian meme culture
-- MUST make user laugh out loud 😂
-
-NOW ROAST "${targetName}" (Mood: ${mood || 'savage'}):`;
-
-  const userContent = `Roast: ${targetName}${hasSubject && hasName ? ` (${subject.trim()})` : ''}
-
-Create a 2-3 line FUNNY brutal roast that makes people LAUGH.
-${isHindi ? 'Hinglish with bc/mc.' : 'English with Hindi gaali.'}
-Must be CREATIVE and HILARIOUS.
+Make it FUNNY and CREATIVE. ${isHindi ? 'Hinglish + bc/mc.' : 'English + Hindi gaali.'}
 JSON only.`;
 
   const completion = await client.chat.completions.create({
@@ -315,10 +257,10 @@ JSON only.`;
       const parsed = JSON.parse(jsonMatch[0]);
       parsed.roast = cleanRoast(parsed.roast);
       
-      const lineCount = parsed.roast.split('\n').filter(l => l.trim()).length;
-      const wordCount = parsed.roast.split(/\s+/).length;
+      const lines = parsed.roast.split('\n').filter(l => l.trim());
+      const words = parsed.roast.split(/\s+/);
       
-      if (lineCount > 4 || wordCount > 50) {
+      if (lines.length > 4 || words.length > 60) {
         return null;
       }
       
@@ -333,7 +275,7 @@ JSON only.`;
   } catch {
     return { 
       roast: cleanRoast(content.trim()), 
-      subject_insight: "L + Ratio", 
+      subject_insight: "Wrecked", 
       isPublicFigure: hasName, 
       publicFigureStatus: 'stable' 
     };
@@ -350,7 +292,8 @@ function cleanRoast(roast) {
     /^let me/i, 
     /^alright/i, 
     /^here's/i,
-    /^so basically/i
+    /^so basically/i,
+    /^listen/i
   ].forEach(p => {
     cleaned = cleaned.replace(p, '');
   });
@@ -361,8 +304,8 @@ function cleanRoast(roast) {
   }
   
   const words = cleaned.trim().split(/\s+/);
-  if (words.length > 50) {
-    cleaned = words.slice(0, 50).join(' ') + '...';
+  if (words.length > 60) {
+    cleaned = words.slice(0, 60).join(' ');
   }
   
   return cleaned.trim();
@@ -479,61 +422,61 @@ function getFallbackRoast(tier, subject, language) {
   const roasts = {
     legendary: h 
       ? [
-          `"${subject}" actually talented hai bc 👑 Papa ko thoda aur time do, proud honge mc ⚡`,
-          `Bhai "${subject}" skills toh hain tere bc 👑 Consistency seekh le bas chutiye 💀`
+          `"${subject}" talented hai bhai bc 👑 Papa ko time do, proud honge mc ⚡`,
+          `Bhai "${subject}" skills solid hain bc 👑 Consistency seekh le bas chutiye 💀`
         ]
       : [
-          `"${subject}" got real talent bc 👑 Give dad some time, he'll be proud mc ⚡`,
-          `"${subject}" you have skills bc 👑 Just learn consistency chutiye 💀`
+          `"${subject}" got talent bc 👑 Give dad time, he'll be proud mc ⚡`,
+          `"${subject}" skills are solid bc 👑 Just learn consistency chutiye 💀`
         ],
     
     epic: h
       ? [
-          `"${subject}" itna paas hai bc ⚡ Bas final push chaiye chutiye, papa waiting mc 💀`,
-          `Abe "${subject}" almost there hai bc ⚡ Consistency missing hai gaandu 😭`
+          `"${subject}" almost kar liya bc ⚡ Bas last push chaiye chutiye 💀`,
+          `Abe "${subject}" paas hai bc ⚡ Consistency missing hai gaandu 😭`
         ]
       : [
-          `"${subject}" so damn close bc ⚡ Need that final push chutiye, dad's waiting mc 💀`,
-          `"${subject}" almost made it bc ⚡ Just lacking consistency gaandu 😭`
+          `"${subject}" almost made it bc ⚡ Need that final push chutiye 💀`,
+          `"${subject}" so close bc ⚡ Consistency missing gaandu 😭`
         ],
     
     mid: h
       ? [
-          `"${subject}" IG pe 47 selfies bc, LinkedIn blank 🔥 Papa ka wifi waste mc 💀`,
-          `Abe "${subject}" crypto bro but Maggi afford nahi bc 🔥 Reality check le chutiye 😭`,
-          `Bhai "${subject}" reels dekh ke expert bc 🔥 Real life zero hai mc 💀`
+          `"${subject}" IG pe selfie king bc 🔥 LinkedIn blank hai mc 💀`,
+          `Abe "${subject}" crypto expert but Maggi afford nahi bc 🔥 Reality check chutiye 😭`,
+          `"${subject}" reels dekh ke sikh gaya bc 🔥 Apply kuch nahi kiya mc 💀`
         ]
       : [
-          `"${subject}" 47 IG selfies bc, LinkedIn empty 🔥 Wasting dad's wifi mc 💀`,
-          `"${subject}" crypto expert but can't afford Maggi bc 🔥 Reality check needed chutiye 😭`,
-          `"${subject}" reels expert bc 🔥 Real life achievements zero mc 💀`
+          `"${subject}" IG selfie king bc 🔥 LinkedIn is blank mc 💀`,
+          `"${subject}" crypto expert but can't afford Maggi bc 🔥 Reality check chutiye 😭`,
+          `"${subject}" learned from reels bc 🔥 Applied nothing mc 💀`
         ],
     
     noob: h
       ? [
-          `"${subject}" LinkedIn blank bc, IG memes only 💀 Papa investment waste chutiye 😭`,
-          `Abe "${subject}" startup idea hai but execution sofa pe bc 💀 Mehnat kar mc 😭`,
-          `"${subject}" gym selfie > actual workout bc 💀 Gains kahan hai gaandu? 😭`
+          `"${subject}" startup idea hai bc 💀 Execution sofa pe pada hai mc 😭`,
+          `Abe "${subject}" gym member bc 💀 Gaya toh 2 baar chutiye 😭`,
+          `"${subject}" LinkedIn expert bc 💀 Job nahi mili abhi tak mc 😭`
         ]
       : [
-          `"${subject}" LinkedIn blank bc, IG just memes 💀 Dad's investment wasted chutiye 😭`,
-          `"${subject}" startup idea but execution on sofa bc 💀 Put in work mc 😭`,
-          `"${subject}" gym selfie > actual workout bc 💀 Where are gains gaandu? 😭`
+          `"${subject}" has startup idea bc 💀 Execution still on sofa mc 😭`,
+          `"${subject}" gym member bc 💀 Went only twice chutiye 😭`,
+          `"${subject}" LinkedIn expert bc 💀 Still jobless mc 😭`
         ],
     
     npc: h
       ? [
-          `"${subject}" background character energy bc 💀 Dialogue bhi nahi mila tujhe mc 😭`,
-          `Abe "${subject}" NPC coded hai bc 💀 Simulation mein bhi glitch chutiye 😭`,
-          `"${subject}" side quest bhi nahi bc 💀 Tu toh decoration hai gaandu 😭`
+          `"${subject}" background character hai bc 💀 Dialogue bhi nahi mila mc 😭`,
+          `Abe "${subject}" NPC energy pure hai bc 💀 Exist karta hai bas chutiye 😭`,
+          `"${subject}" decoration piece hai bc 💀 Purpose nahi mila mc 😭`
         ]
       : [
-          `"${subject}" background character energy bc 💀 Didn't even get dialogue mc 😭`,
-          `"${subject}" NPC coded bc 💀 Even simulation glitches with you chutiye 😭`,
-          `"${subject}" not even side quest bc 💀 You're just decoration gaandu 😭`
+          `"${subject}" is background character bc 💀 Didn't even get dialogue mc 😭`,
+          `"${subject}" pure NPC energy bc 💀 Just exists chutiye 😭`,
+          `"${subject}" decoration piece bc 💀 No purpose found mc 😭`
         ]
   };
   
   const tierRoasts = roasts[tier] || roasts.npc;
   return tierRoasts[Math.floor(Math.random() * tierRoasts.length)];
-}
+                                                                                                          }
