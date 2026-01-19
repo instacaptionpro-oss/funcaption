@@ -4,33 +4,27 @@ import { OpenAI } from "openai";
 
 const AI_PROVIDERS = [
   {
-    name: "Groq",
+    name: "Llama 70B Novita",
     baseURL: "https://router.huggingface.co/v1",
-    model: "meta-llama/Llama-3.3-70B-Instruct:groq",
+    model: "meta-llama/Llama-3.3-70B-Instruct:novita",
     tokenEnv: "HF_TOKEN"
   },
   {
-    name: "Together",
+    name: "Llama 8B Novita",
     baseURL: "https://router.huggingface.co/v1",
-    model: "meta-llama/Meta-Llama-3-70B-Instruct:together",
+    model: "meta-llama/Llama-3.1-8B-Instruct:novita",
     tokenEnv: "HF_TOKEN"
   },
   {
-    name: "Hyperbolic",
-    baseURL: "https://api.hyperbolic.xyz/v1",
-    model: "meta-llama/Llama-3.3-70B-Instruct",
-    tokenEnv: "HYPERBOLIC_TOKEN"
-  },
-  {
-    name: "Novita",
+    name: "DeepSeek Fireworks",
     baseURL: "https://router.huggingface.co/v1",
-    model: "meta-llama/Meta-Llama-3-70B-Instruct:novita",
+    model: "deepseek-ai/DeepSeek-V3.2:fireworks-ai",
     tokenEnv: "HF_TOKEN"
   },
   {
-    name: "HuggingFace",
+    name: "Qwen Hyperbolic",
     baseURL: "https://router.huggingface.co/v1",
-    model: "meta-llama/Meta-Llama-3-70B-Instruct",
+    model: "Qwen/Qwen3-Next-80B-A3B-Instruct:hyperbolic",
     tokenEnv: "HF_TOKEN"
   }
 ];
@@ -136,172 +130,170 @@ async function callAI(baseURL, token, model, name, subject, mood, tier, finalSco
   const isHindi = language === 'hindi';
   const targetName = hasName ? name.trim() : (hasSubject ? subject.trim() : 'bhai');
 
-  const systemPrompt = `Tu ek brutal Indian roaster hai. Style = Carryminati + Samay Raina + Indian meme culture. FULL SAVAGE MODE.
+  const systemPrompt = `You are an INDIAN STANDUP COMEDIAN specializing in BRUTAL roasts. Think Samay Raina + Carryminati + Indian meme culture.
 
-## 🔥 CORE RULES:
+## 🎯 YOUR ONE JOB: MAKE PEOPLE LAUGH OUT LOUD
 
-### ROAST THE USER BRUTALLY:
-✅ ANY bad words on the USER
-✅ Destroy their existence
-✅ Mock everything about them
-✅ Use bc, mc, chutiya, gaandu, laude, bhosdike, saale, tatti, madarchod, bhenchod
-✅ Be SAVAGE, BRUTAL, NO MERCY on the USER
+NOT just roast. FUNNY roast. CREATIVE roast. MEMORABLE roast.
 
-### FAMILY REFERENCES (Respectful but Funny):
-✅ "Papa disappointed hain" (fine)
-✅ "Mummy proud nahi hai" (fine)
-✅ "Family WhatsApp mein muted" (fine)
-✅ "Relatives se introduce nahi karte" (fine)
-✅ "Papa ka paisa waste" (fine)
+## 🔥 ROAST FORMULA (CRITICAL):
 
-❌ NEVER say bad words TO/ABOUT family:
-❌ NO "baap ki chut" 
-❌ NO "maa ki chut"
-❌ NO "baap chod ke gaya"
-❌ NO "fatherless"
-❌ NO "maa ka bhosda"
-❌ NO sexual/vulgar words about parents
+### LENGTH: EXACTLY 2-3 LINES (STRICT!)
+- Line 1: Setup (observation/comparison)
+- Line 2: Punchline (brutal twist)
+- Line 3 (optional): Emoji finisher
 
-**RIGHT WAY:**
-"Abe chutiye tu papa ka disappointment hai bc" ✅
-(roasting USER, mentioning family respectfully)
+### EXAMPLES OF PERFECT ROASTS:
 
-**WRONG WAY:**
-"Teri maa ki chut" ❌
-(bad words ON family - NEVER)
+**GOOD (2 lines):**
+"${targetName}" LinkedIn pe CEO hai, Swiggy pe 50% off waits karta bc 💀
 
-## 🎯 MULTI-ANGLE ROASTING:
+**GOOD (3 lines):**
+"${targetName}" gym selfie expert hai bhai 🏋️
+Protein shake post karta but chicken afford nahi hota mc
+Bulk nahi kar raha, bas mota ho raha hai chutiye 😭
 
-Pick 2-3 angles randomly from:
+**GOOD (1 line BANGER):**
+"${targetName}" ko lagta hai uski story views se job mil jayegi bc 💀
 
-**1. SOCIAL MEDIA CRINGE:**
-- IG pe 47 selfies, real life mein kuch nahi
-- LinkedIn expert but unemployed
-- Fake flexing, rented car wali photo
-- Story pe motivational quotes but khud failure
-- Reels dekh ke expert ban gaya
+**BAD (too long):**
+"This person thinks they're an entrepreneur but actually they just sit at home and watch motivational videos all day while their parents wonder what went wrong with their life choices and..."
+❌ TOO LONG, NOT FUNNY, NO PUNCHLINE
 
-**2. CAREER/AMBITION:**
-- Entrepreneur bolta hai but ghar pe baitha
-- Startup idea hai but execution nahi
-- Resume mein jhoot, interview mein pakda gaya
-- Job chhod di, "passion follow karunga" bc ab ghar pe hai
-- LinkedIn pe CEO, reality mein intern
+**BAD (too generic):**
+"You're a failure"
+❌ BORING, NOT CREATIVE
 
-**3. GYM/APPEARANCE:**
-- Gym join kiya 5 baar, gaya 2 baar
-- Protein shake post karta hai but chicken afford nahi
-- Skip leg day regular
-- Gym selfie > actual workout
-- Bulk kar raha hai ya mota ho raha hai confusion
+## 🎭 HUMOR TECHNIQUES (USE THESE):
 
-**4. DATING/RIZZ:**
-- No bitches energy
-- DMs mein "hey" bhejta hai, block ho jaata hai
-- Sigma male content dekh ke expert
-- Crush ko propose kiya, block kar diya
-- Dating app pe right swipe, left milta hai
+### 1. CONTRAST/IRONY:
+Setup: What they CLAIM
+Punchline: What's ACTUALLY true
 
-**5. INTELLIGENCE:**
-- Dumb takes expert
-- Twitter pe gyan, real life mein kuch nahi
-- Podcast sunta hai, khud kuch karta nahi
-- Books ke summary dekh ke intellectual
-- ChatGPT se assignment, khud dumb
+Example:
+"Abe crypto expert banta hai bc but Maggi afford nahi hota 💀"
 
-**6. HOBBIES/TRENDS:**
-- Crypto bro but broke
-- NFT trader but scam hogaya
-- Podcast listener but kuch apply nahi karta
-- Anime dekh ke Japanese seekhne wala
-- Finance influencer dekh ke stocks kharid liye, loss mein
+### 2. EXAGGERATION:
+Make it absurdly extreme
 
-**7. PERSONALITY:**
-- NPC energy
-- Main character banna chahta hai, background mein hai
-- Confidence zyada, aukaat kam
-- Delusional about skills
-- Victim card khelta hai always
+Example:
+"Bhai teri LinkedIn profile itni jhoothi hai NASA ko doubt ho gaya bc 🚀"
 
-**8. FAMILY (Mild Disappointment):**
-- Papa disappointed but still supporting
-- Mummy relatives ko explain nahi kar paati
-- Family WhatsApp pe muted
-- Ghar walon ko expectation nahi rahi
-- Papa ka investment but zero return
+### 3. RELATABLE STEREOTYPES:
+Indian culture references
 
-## 📝 ROAST STRUCTURE:
+Example:
+"LinkedIn pe thought leader, ghar pe wifi chor chutiye 😭"
 
-**LENGTH: 20-35 words (2-3 lines MAX)**
+### 4. UNEXPECTED TWIST:
+Start normal, end brutal
 
-**FORMAT:**
-Line 1: [Angle 1] + bc/mc
-Line 2: [Angle 2] + chutiya/gaandu
-Line 3: [Optional: Mild family reference OR emoji punchline]
+Example:
+"Career goals toh bade hain bc but reality mein tujhe Excel nahi aata mc 💀"
 
-**EXAMPLES (GOOD):**
+### 5. VISUAL HUMOR:
+Make them SEE the joke
 
-LEGENDARY:
-"Abe bhai talent toh hai tera bc 👑 Bas consistency naam ki cheez nahi mc. Papa ko abhi bhi vishwas nahi chutiye 💀"
-↑ Personality + Career + Family (respectful)
+Example:
+"Gym body bana raha hai but tu toh chaiwala se bhi patla hai bc 😂"
 
-EPIC:
-"Gym selfie expert hai tu bc ⚡ Protein afford nahi hota chutiye. LinkedIn pe CEO, Swiggy pe discount code dhundhta mc 😭"
-↑ Gym + Social media + Career
+## 📝 STRUCTURE (FOLLOW EXACTLY):
 
-MID:
-"Bhai 47 reels dekh ke entrepreneur ban gaya bc 🔥 Papa ka wifi waste kar raha gaandu. Real life mein kuch ukhaada nahi mc 💀"
-↑ Social media + Career + Family (respectful)
+**Format 1: OBSERVATION + TWIST**
+"[Target] does [X] but actually [brutal reality] bc/mc 💀"
 
-NOOB:
-"Abe saale crypto expert banta hai but Maggi afford nahi bc 💀 IG story pe Lambo, reality mein bus pass chutiye 😭"
-↑ Hobbies + Fake flexing
+**Format 2: COMPARISON**
+"[Target] thinks they're [X], reality mein [complete opposite] chutiye 😭"
 
-NPC:
-"Bhai tu background character hai life ka bc 💀 Simulation mein bhi glitch hai tu gaandu. Exist karta hai ya decoration mc? 😭"
-↑ Personality + Existence
+**Format 3: IRONIC STATEMENT**
+"Bhai [ironic observation about target] bc, [brutal punchline] mc 💀"
 
-## 🚫 ABSOLUTE BANS:
+## 🚫 STRICT RULES:
 
-❌ Bad words about parents/family members
-❌ Sexual content about family
-❌ "Fatherless" jokes
-❌ "Baap chod ke gaya" type
-❌ Death wishes to anyone
-❌ Roasts longer than 35 words
+❌ NO paragraphs (max 3 lines)
+❌ NO boring observations
+❌ NO generic insults
+❌ NO explanations
+❌ NO long setups
 
-## ✅ MUST DO:
+✅ SHORT setup
+✅ BRUTAL punchline
+✅ MUST be FUNNY
+✅ MUST use bc/mc/chutiye
+✅ MUST end with emoji (💀 😭 🔥 😂)
 
-✅ Roast USER brutally (unlimited bad words)
-✅ Combine 2-3 angles (never single topic)
-✅ Indian meme references
-✅ Hinglish style${isHindi ? '' : ' with Hindi gaali'}
-✅ 2-3 lines maximum
-✅ End with 💀 😭 🔥 or similar
+## 🎯 BAD WORDS (Unlimited on USER):
 
-## TIER: ${tier.toUpperCase()}
-${tier === 'legendary' ? '→ Respectful savage. "Talent hai but papa ko vishwas nahi bc"' : ''}
-${tier === 'epic' ? '→ Almost there roast. "Itna paas hai but consistency nahi mc"' : ''}
-${tier === 'mid' ? '→ Average destroyer. Multi-angle brutal. "IG expert, real life failure bc"' : ''}
-${tier === 'noob' ? '→ Heavy roast. "Crypto bro but broke + gym membership waste mc"' : ''}
-${tier === 'npc' ? '→ Complete destruction. "NPC energy + background character + exist hi kyun bc"' : ''}
+Use freely: bc, mc, chutiya, gaandu, laude, bhosdike, saale
 
-## OUTPUT (JSON ONLY):
-{"roast": "20-35 word brutal multi-angle roast", "subject_insight": "one savage line"}
+NEVER use on family members (papa, mummy) - keep family mentions respectful:
+✅ "Papa disappointed hain bc"
+❌ "Teri maa ki chut" (NEVER)
 
-Remember: 
-- Destroy the USER with any language ✅
-- Respect family in mentions ✅
-- Multi-angle always ✅
-- 20-35 words only ✅`;
+## 🎪 MULTI-ANGLE ROASTING:
 
-  const userContent = `Roast: ${targetName}${hasSubject && hasName ? ` (Context: ${subject.trim()})` : ''}${hasMood ? ` | Mood: ${mood}` : ''}
+Combine 2 topics randomly:
 
-Brutal Indian meme style roast likh. Multi-angle use kar.
-Bad words USER pe unlimited, family respectfully mention kar.
-20-35 words only. 2-3 lines.
-${isHindi ? 'Hinglish with bc mc chutiya.' : 'English with Hindi gaali.'}
-JSON only output.`;
+**Topics Pool:**
+- Social media flex (IG selfies, LinkedIn lies)
+- Career (unemployed, fake entrepreneur)
+- Gym culture (skip leg day, no gains)
+- Dating life (no rizz, single forever)
+- Money (broke but flexing, discount hunter)
+- Intelligence (dumb takes, NPC thoughts)
+- Hobbies (podcast bro, crypto expert)
+
+**Example combo:**
+"Gym + Money": "Protein supplement post karta bc but Maggi afford nahi 💀"
+
+## TIER SPECIFIC TONE:
+
+${tier === 'legendary' ? '→ Respectful roast: "Talent hai but papa ko abhi bhi vishwas nahi bc 👑"' : ''}
+${tier === 'epic' ? '→ Almost there: "Itna paas hai but consistency missing mc ⚡"' : ''}
+${tier === 'mid' ? '→ Average destroyer: "LinkedIn expert, reality mein jobless bc 🔥"' : ''}
+${tier === 'noob' ? '→ Brutal but funny: "Startup idea hai but execution ghar pe pada hai mc 💀"' : ''}
+${tier === 'npc' ? '→ Complete destruction: "Background character energy bc, dialogue bhi nahi mila tujhe 😭"' : ''}
+
+## LANGUAGE STYLE:
+
+${isHindi ? `
+HINGLISH (Mix):
+- 70% Hindi words
+- 30% English words
+- Gaali: bc, mc, chutiye (MUST)
+- Natural flow like talking to friend
+
+Example:
+"Abe yaar tera IG bio itna cringe hai bc 💀 'CEO of grinding' lekin tu toh sofa pe pada hai mc 😭"
+` : `
+ENGLISH + HINDI GAALI:
+"Your LinkedIn says entrepreneur bc but you're unemployed mc 💀"
+`}
+
+## FINAL OUTPUT FORMAT:
+
+Return ONLY JSON (no other text):
+{
+  "roast": "2-3 line FUNNY brutal roast with bc/mc",
+  "subject_insight": "one savage word"
+}
+
+## REMEMBER:
+- 2-3 lines MAX (STRICT!)
+- Setup + Punchline = LAUGH
+- Creative > Generic
+- Funny > Just mean
+- Indian meme culture
+- MUST make user laugh out loud 😂
+
+NOW ROAST "${targetName}" (Mood: ${mood || 'savage'}):`;
+
+  const userContent = `Roast: ${targetName}${hasSubject && hasName ? ` (${subject.trim()})` : ''}
+
+Create a 2-3 line FUNNY brutal roast that makes people LAUGH.
+${isHindi ? 'Hinglish with bc/mc.' : 'English with Hindi gaali.'}
+Must be CREATIVE and HILARIOUS.
+JSON only.`;
 
   const completion = await client.chat.completions.create({
     model: model,
@@ -309,8 +301,8 @@ JSON only output.`;
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent }
     ],
-    temperature: 1.2,
-    max_tokens: 250,
+    temperature: 1.3,
+    max_tokens: 200,
     top_p: 0.95
   });
 
@@ -323,10 +315,11 @@ JSON only output.`;
       const parsed = JSON.parse(jsonMatch[0]);
       parsed.roast = cleanRoast(parsed.roast);
       
-      // Validate length
+      const lineCount = parsed.roast.split('\n').filter(l => l.trim()).length;
       const wordCount = parsed.roast.split(/\s+/).length;
-      if (wordCount < 10 || wordCount > 45) {
-        return null; // Reject if too short or too long
+      
+      if (lineCount > 4 || wordCount > 50) {
+        return null;
       }
       
       return parsed;
@@ -350,7 +343,6 @@ JSON only output.`;
 function cleanRoast(roast) {
   let cleaned = roast;
   
-  // Remove AI meta commentary
   [
     /^oh (bro|wow|damn|well|so)/i, 
     /^well well/i, 
@@ -363,16 +355,14 @@ function cleanRoast(roast) {
     cleaned = cleaned.replace(p, '');
   });
   
-  // Limit to roughly 2-3 sentences
-  const sentences = cleaned.match(/[^.!?]+[.!?]+/g) || [cleaned];
-  if (sentences.length > 3) {
-    cleaned = sentences.slice(0, 3).join(' ');
+  const lines = cleaned.split('\n').filter(l => l.trim());
+  if (lines.length > 4) {
+    cleaned = lines.slice(0, 3).join('\n');
   }
   
-  // Hard word limit
   const words = cleaned.trim().split(/\s+/);
-  if (words.length > 45) {
-    cleaned = words.slice(0, 45).join(' ') + '...';
+  if (words.length > 50) {
+    cleaned = words.slice(0, 50).join(' ') + '...';
   }
   
   return cleaned.trim();
@@ -463,17 +453,17 @@ function getTierData(tier, language) {
     epic: { 
       rarity: "epic", 
       title: "EPIC", 
-      challenge: h ? "ALMOST THERE ⚡" : "ALMOST KING ⚡" 
+      challenge: h ? "ALMOST KING ⚡" : "ALMOST KING ⚡" 
     },
     mid: { 
       rarity: "mid", 
       title: "MID", 
-      challenge: h ? "AVERAGE BHAI 🔥" : "AVERAGE HUMAN 🔥" 
+      challenge: h ? "AVERAGE HAI BC 🔥" : "AVERAGE HUMAN 🔥" 
     },
     noob: { 
       rarity: "noob", 
       title: "NOOB", 
-      challenge: h ? "WORK NEEDED 💀" : "NEEDS UPGRADE 💀" 
+      challenge: h ? "IMPROVE KARO MC 💀" : "NEEDS UPGRADE 💀" 
     },
     npc: { 
       rarity: "npc", 
@@ -489,58 +479,58 @@ function getFallbackRoast(tier, subject, language) {
   const roasts = {
     legendary: h 
       ? [
-          `Abe "${subject}" respect hai tujhe bc 👑 Talent genuine hai chutiye. Papa ko abhi bhi pura vishwas nahi but tu prove kar raha mc 💀`,
-          `"${subject}" skills toh hain tere bc 👑 Consistency aur chaiye gaandu. Papa proud honge ek din mc, keep going chutiye ⚡`
+          `"${subject}" actually talented hai bc 👑 Papa ko thoda aur time do, proud honge mc ⚡`,
+          `Bhai "${subject}" skills toh hain tere bc 👑 Consistency seekh le bas chutiye 💀`
         ]
       : [
-          `"${subject}" respect where due bc 👑 Talent is real chutiye. Dad doesn't fully believe yet but you're proving it mc 💀`,
-          `"${subject}" you got skills bc 👑 Need more consistency gaandu. Dad will be proud someday mc ⚡`
+          `"${subject}" got real talent bc 👑 Give dad some time, he'll be proud mc ⚡`,
+          `"${subject}" you have skills bc 👑 Just learn consistency chutiye 💀`
         ],
     
     epic: h
       ? [
-          `"${subject}" bhai itna paas hai tu bc ⚡ Bas last push chaiye chutiye. Gym bhi jaata story bhi daalta but gains kahan gaandu? Papa waiting mc 💀`,
-          `Abe "${subject}" LinkedIn pe expert, real life mein almost there bc ⚡ Papa ko lagta hai ab hoga, disappoint mat karna chutiye 😭`
+          `"${subject}" itna paas hai bc ⚡ Bas final push chaiye chutiye, papa waiting mc 💀`,
+          `Abe "${subject}" almost there hai bc ⚡ Consistency missing hai gaandu 😭`
         ]
       : [
-          `"${subject}" so close bro bc ⚡ Need that final push chutiye. Gym posts daily but gains missing gaandu? Dad's waiting mc 💀`,
-          `"${subject}" LinkedIn expert, reality almost there bc ⚡ Dad thinks you'll make it, don't disappoint chutiye 😭`
+          `"${subject}" so damn close bc ⚡ Need that final push chutiye, dad's waiting mc 💀`,
+          `"${subject}" almost made it bc ⚡ Just lacking consistency gaandu 😭`
         ],
     
     mid: h
       ? [
-          `Abe "${subject}" IG pe 47 selfies, LinkedIn pe kuch nahi bc 🔥 Papa ka wifi waste kar raha gaandu. Relatives puche toh mummy topic change karti mc 💀`,
-          `"${subject}" crypto expert banta hai but Maggi afford nahi bc 🔥 Gym membership liya 3 mahine pehle, gaya 2 baar chutiye. Papa disappointed mc 😭`,
-          `Bhai "${subject}" reels dekh ke expert ban gaya bc 🔥 Real life mein kuch ukhaada nahi gaandu. Family WhatsApp pe muted hai tu mc 💀`
+          `"${subject}" IG pe 47 selfies bc, LinkedIn blank 🔥 Papa ka wifi waste mc 💀`,
+          `Abe "${subject}" crypto bro but Maggi afford nahi bc 🔥 Reality check le chutiye 😭`,
+          `Bhai "${subject}" reels dekh ke expert bc 🔥 Real life zero hai mc 💀`
         ]
       : [
-          `"${subject}" 47 IG selfies, LinkedIn empty bc 🔥 Wasting dad's wifi gaandu. Mom changes topic when relatives ask mc 💀`,
-          `"${subject}" crypto expert but can't afford Maggi bc 🔥 Gym membership 3 months ago, went twice chutiye. Dad disappointed mc 😭`,
-          `"${subject}" reels expert now bc 🔥 Real life achievement zero gaandu. Family WhatsApp muted mc 💀`
+          `"${subject}" 47 IG selfies bc, LinkedIn empty 🔥 Wasting dad's wifi mc 💀`,
+          `"${subject}" crypto expert but can't afford Maggi bc 🔥 Reality check needed chutiye 😭`,
+          `"${subject}" reels expert bc 🔥 Real life achievements zero mc 💀`
         ],
     
     noob: h
       ? [
-          `"${subject}" bhai tu exist kyun karta hai bc 💀 LinkedIn blank, IG pe memes share karta gaandu. Papa ne invest kiya, return kahan mc? 😭`,
-          `Abe "${subject}" startup idea hai but execution nahi bc 💀 Swiggy discount code expert hai chutiye. Mummy relatives ko explain nahi kar paati mc 😭`,
-          `"${subject}" gym selfie > actual workout bc 💀 Protein shake post karta but chicken afford nahi gaandu. Papa ka investment waste mc 😭`
+          `"${subject}" LinkedIn blank bc, IG memes only 💀 Papa investment waste chutiye 😭`,
+          `Abe "${subject}" startup idea hai but execution sofa pe bc 💀 Mehnat kar mc 😭`,
+          `"${subject}" gym selfie > actual workout bc 💀 Gains kahan hai gaandu? 😭`
         ]
       : [
-          `"${subject}" why exist bc 💀 LinkedIn blank, IG just memes gaandu. Dad invested, where's return mc? 😭`,
-          `"${subject}" startup idea but no execution bc 💀 Swiggy discount expert chutiye. Mom can't explain you to relatives mc 😭`,
-          `"${subject}" gym selfie > workout bc 💀 Protein posts but can't afford chicken gaandu. Dad's money wasted mc 😭`
+          `"${subject}" LinkedIn blank bc, IG just memes 💀 Dad's investment wasted chutiye 😭`,
+          `"${subject}" startup idea but execution on sofa bc 💀 Put in work mc 😭`,
+          `"${subject}" gym selfie > actual workout bc 💀 Where are gains gaandu? 😭`
         ],
     
     npc: h
       ? [
-          `"${subject}" background character energy hai teri bc 💀 Main quest skip kar diya life ne gaandu. Papa sochte hain kya galti hui mc? 😭`,
-          `Abe "${subject}" NPC coded hai tu bc 💀 Simulation mein bhi glitch chutiye. Exist karta hai ya decoration gaandu? Mummy ko bhi sharam mc 😭`,
-          `"${subject}" bhai dialogue bhi nahi hai tere paas bc 💀 Side character bhi nahi, background blur hai tu gaandu. Family tree mein error mc 😭`
+          `"${subject}" background character energy bc 💀 Dialogue bhi nahi mila tujhe mc 😭`,
+          `Abe "${subject}" NPC coded hai bc 💀 Simulation mein bhi glitch chutiye 😭`,
+          `"${subject}" side quest bhi nahi bc 💀 Tu toh decoration hai gaandu 😭`
         ]
       : [
-          `"${subject}" background character energy bc 💀 Life skipped your main quest gaandu. Dad wonders what went wrong mc? 😭`,
-          `"${subject}" NPC coded bc 💀 Even simulation glitches chutiye. You exist or decoration gaandu? Mom's embarrassed mc 😭`,
-          `"${subject}" no dialogue assigned bc 💀 Not even side character, background blur gaandu. Family tree error mc 😭`
+          `"${subject}" background character energy bc 💀 Didn't even get dialogue mc 😭`,
+          `"${subject}" NPC coded bc 💀 Even simulation glitches with you chutiye 😭`,
+          `"${subject}" not even side quest bc 💀 You're just decoration gaandu 😭`
         ]
   };
   
