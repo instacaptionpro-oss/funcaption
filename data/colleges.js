@@ -969,10 +969,7 @@ export const getCollegeByName = (name) => {
 
 export const getAllCollegeNames = () => {
   return Object.keys(COLLEGES).sort();
-};
-
-// Continue in COLLEGES object...
-
+},
   "IIT Kanpur": {
     id: "iit-kanpur",
     short: "IITK",
