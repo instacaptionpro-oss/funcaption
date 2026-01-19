@@ -547,5 +547,3 @@ function getFallbackRoast(tier, subject, language) {
   const tierRoasts = roasts[tier] || roasts.npc;
   return tierRoasts[Math.floor(Math.random() * tierRoasts.length)];
 }
-
-module.exports = handler;
