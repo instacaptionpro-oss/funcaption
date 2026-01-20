@@ -24,10 +24,10 @@ export default function CampusRoastCard({
         style={{
           background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(10, 10, 10, 0.95))',
           border: `2px solid ${templateColor}`,
-          borderRadius: '24px',
-          padding: '32px 28px',
-          marginBottom: '24px',
-          boxShadow: `0 20px 60px ${templateColor}40`,
+          borderRadius: '20px',
+          padding: '24px 20px',
+          marginBottom: '20px',
+          boxShadow: `0 15px 40px ${templateColor}40`,
           position: 'relative',
           overflow: 'hidden'
         }}
@@ -50,34 +50,31 @@ export default function CampusRoastCard({
           {/* Header */}
           <div style={{
             textAlign: 'center',
-            marginBottom: '28px',
-            paddingBottom: '20px',
+            marginBottom: '20px',
+            paddingBottom: '16px',
             borderBottom: `1px solid ${templateColor}30`
           }}>
-            <div style={{
-              fontSize: '2.5rem',
-              marginBottom: '8px'
-            }}>
+            <div style={{ fontSize: '2rem', marginBottom: '6px' }}>
               {selectedTemplate?.emoji || '⚔️'}
             </div>
             <h2 style={{
-              fontSize: '1.6rem',
+              fontSize: '1.3rem',
               fontWeight: '900',
               background: `linear-gradient(135deg, ${templateColor}, #fff)`,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              margin: '0 0 8px 0',
+              margin: '0 0 6px 0',
               letterSpacing: '0.5px'
             }}>
               {selectedTemplate?.label || 'BATTLE RESULT'}
             </h2>
             <p style={{
               color: 'rgba(255, 255, 255, 0.5)',
-              fontSize: '0.85rem',
+              fontSize: '0.8rem',
               margin: 0,
               fontWeight: '600',
               textTransform: 'uppercase',
-              letterSpacing: '1px'
+              letterSpacing: '0.5px'
             }}>
               {result.topic}
             </p>
@@ -87,16 +84,16 @@ export default function CampusRoastCard({
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr',
-            gap: '16px',
-            marginBottom: '28px'
+            gap: '12px',
+            marginBottom: '20px'
           }}>
             
             {/* YOUR COLLEGE CARD */}
             <div style={{
               background: `linear-gradient(135deg, ${templateColor}15, ${templateColor}05)`,
               border: `2px solid ${templateColor}`,
-              borderRadius: '18px',
-              padding: '24px',
+              borderRadius: '14px',
+              padding: '16px',
               position: 'relative',
               overflow: 'hidden'
             }}>
@@ -106,36 +103,36 @@ export default function CampusRoastCard({
                 top: 0,
                 left: 0,
                 right: 0,
-                height: '4px',
+                height: '3px',
                 background: `linear-gradient(90deg, transparent, ${templateColor}, transparent)`,
                 animation: 'shimmer 2s infinite'
               }} />
 
               <div style={{
-                fontSize: '0.7rem',
+                fontSize: '0.65rem',
                 color: templateColor,
                 fontWeight: '700',
-                marginBottom: '10px',
-                letterSpacing: '1.5px',
+                marginBottom: '8px',
+                letterSpacing: '1px',
                 textTransform: 'uppercase'
               }}>
                 🎓 Your College
               </div>
               
               <div style={{
-                fontSize: '1.4rem',
+                fontSize: '1.1rem',
                 color: '#fff',
                 fontWeight: '800',
-                marginBottom: '6px',
+                marginBottom: '4px',
                 lineHeight: '1.2'
               }}>
                 {userData.college}
               </div>
               
               <div style={{
-                fontSize: '0.85rem',
+                fontSize: '0.75rem',
                 color: 'rgba(255, 255, 255, 0.6)',
-                marginBottom: '18px',
+                marginBottom: '14px',
                 fontWeight: '600'
               }}>
                 {userData.branch} Branch
@@ -145,20 +142,20 @@ export default function CampusRoastCard({
               <div style={{
                 display: 'flex',
                 alignItems: 'baseline',
-                gap: '8px',
-                marginBottom: '14px'
+                gap: '6px',
+                marginBottom: '10px'
               }}>
                 <div style={{
-                  fontSize: '3rem',
+                  fontSize: '2.2rem',
                   color: templateColor,
                   fontWeight: '900',
                   fontFamily: 'monospace',
-                  textShadow: `0 0 20px ${templateColor}80`
+                  textShadow: `0 0 15px ${templateColor}80`
                 }}>
                   {result.yourScore}
                 </div>
                 <div style={{
-                  fontSize: '1.2rem',
+                  fontSize: '1rem',
                   color: 'rgba(255, 255, 255, 0.5)',
                   fontWeight: '700'
                 }}>
@@ -169,8 +166,8 @@ export default function CampusRoastCard({
               {/* Progress Bar */}
               <div style={{
                 background: 'rgba(0, 0, 0, 0.5)',
-                height: '14px',
-                borderRadius: '8px',
+                height: '10px',
+                borderRadius: '6px',
                 overflow: 'hidden',
                 border: `1px solid ${templateColor}40`,
                 position: 'relative'
@@ -183,7 +180,6 @@ export default function CampusRoastCard({
                   position: 'relative',
                   overflow: 'hidden'
                 }}>
-                  {/* Animated shine */}
                   <div style={{
                     position: 'absolute',
                     top: 0,
@@ -200,15 +196,15 @@ export default function CampusRoastCard({
             {/* VS DIVIDER */}
             <div style={{
               textAlign: 'center',
-              fontSize: '1.8rem',
+              fontSize: '1.4rem',
               fontWeight: '900',
               color: '#FF4500',
-              margin: '8px 0',
+              margin: '4px 0',
               position: 'relative'
             }}>
               <div style={{
                 display: 'inline-block',
-                padding: '8px 20px',
+                padding: '6px 16px',
                 background: 'rgba(255, 69, 0, 0.1)',
                 border: '2px solid #FF4500',
                 borderRadius: '50px',
@@ -222,18 +218,17 @@ export default function CampusRoastCard({
             <div style={{
               background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05))',
               border: '2px solid #FFD700',
-              borderRadius: '18px',
-              padding: '24px',
+              borderRadius: '14px',
+              padding: '16px',
               position: 'relative',
               overflow: 'hidden'
             }}>
-              {/* Winner Crown (if rival wins) */}
               {result.rivalScore > result.yourScore && (
                 <div style={{
                   position: 'absolute',
-                  top: '12px',
-                  right: '12px',
-                  fontSize: '1.8rem',
+                  top: '10px',
+                  right: '10px',
+                  fontSize: '1.5rem',
                   animation: 'bounce 1s infinite'
                 }}>
                   👑
@@ -241,30 +236,30 @@ export default function CampusRoastCard({
               )}
 
               <div style={{
-                fontSize: '0.7rem',
+                fontSize: '0.65rem',
                 color: '#FFD700',
                 fontWeight: '700',
-                marginBottom: '10px',
-                letterSpacing: '1.5px',
+                marginBottom: '8px',
+                letterSpacing: '1px',
                 textTransform: 'uppercase'
               }}>
                 🏆 Rival / Benchmark
               </div>
               
               <div style={{
-                fontSize: '1.4rem',
+                fontSize: '1.1rem',
                 color: '#fff',
                 fontWeight: '800',
-                marginBottom: '6px',
+                marginBottom: '4px',
                 lineHeight: '1.2'
               }}>
                 {battleData.rivalCollege}
               </div>
               
               <div style={{
-                fontSize: '0.85rem',
+                fontSize: '0.75rem',
                 color: 'rgba(255, 255, 255, 0.6)',
-                marginBottom: '18px',
+                marginBottom: '14px',
                 fontWeight: '600'
               }}>
                 {userData.branch} Branch
@@ -274,20 +269,20 @@ export default function CampusRoastCard({
               <div style={{
                 display: 'flex',
                 alignItems: 'baseline',
-                gap: '8px',
-                marginBottom: '14px'
+                gap: '6px',
+                marginBottom: '10px'
               }}>
                 <div style={{
-                  fontSize: '3rem',
+                  fontSize: '2.2rem',
                   color: '#FFD700',
                   fontWeight: '900',
                   fontFamily: 'monospace',
-                  textShadow: '0 0 20px rgba(255, 215, 0, 0.8)'
+                  textShadow: '0 0 15px rgba(255, 215, 0, 0.8)'
                 }}>
                   {result.rivalScore}
                 </div>
                 <div style={{
-                  fontSize: '1.2rem',
+                  fontSize: '1rem',
                   color: 'rgba(255, 255, 255, 0.5)',
                   fontWeight: '700'
                 }}>
@@ -298,8 +293,8 @@ export default function CampusRoastCard({
               {/* Progress Bar */}
               <div style={{
                 background: 'rgba(0, 0, 0, 0.5)',
-                height: '14px',
-                borderRadius: '8px',
+                height: '10px',
+                borderRadius: '6px',
                 overflow: 'hidden',
                 border: '1px solid rgba(255, 215, 0, 0.4)',
                 position: 'relative'
@@ -312,7 +307,6 @@ export default function CampusRoastCard({
                   position: 'relative',
                   overflow: 'hidden'
                 }}>
-                  {/* Animated shine */}
                   <div style={{
                     position: 'absolute',
                     top: 0,
@@ -327,126 +321,84 @@ export default function CampusRoastCard({
             </div>
           </div>
 
-          {/* Comparisons Section */}
+          {/* Comparisons Section - COMPACT */}
           {result.comparisons && result.comparisons.length > 0 && (
             <div style={{
               background: 'rgba(255, 255, 255, 0.03)',
-              borderRadius: '16px',
-              padding: '20px',
-              marginBottom: '24px',
+              borderRadius: '12px',
+              padding: '14px',
+              marginBottom: '16px',
               border: '1px solid rgba(255, 255, 255, 0.1)'
             }}>
               <div style={{
-                fontSize: '0.8rem',
+                fontSize: '0.7rem',
                 color: 'rgba(255, 255, 255, 0.6)',
                 fontWeight: '700',
-                marginBottom: '16px',
+                marginBottom: '10px',
                 textAlign: 'center',
                 textTransform: 'uppercase',
-                letterSpacing: '1px'
+                letterSpacing: '0.5px'
               }}>
-                📊 Detailed Comparison
+                📊 Comparison
               </div>
               
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '12px'
+                gap: '8px'
               }}>
-                {result.comparisons.map((comp, index) => (
+                {result.comparisons.slice(0, 3).map((comp, index) => (
                   <div 
                     key={index}
                     style={{
                       display: 'grid',
                       gridTemplateColumns: '1fr auto 1fr',
-                      gap: '12px',
+                      gap: '8px',
                       alignItems: 'center',
-                      padding: '14px',
+                      padding: '10px',
                       background: 'rgba(0, 0, 0, 0.3)',
-                      borderRadius: '10px',
-                      border: '1px solid rgba(255, 255, 255, 0.05)'
+                      borderRadius: '8px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      fontSize: '0.8rem'
                     }}
                   >
-                    {/* Your Value */}
                     <div style={{
                       textAlign: 'right',
-                      padding: '8px 12px',
-                      background: comp.winner === 'you' 
-                        ? `${templateColor}20` 
-                        : 'rgba(255, 255, 255, 0.03)',
-                      borderRadius: '8px',
-                      border: comp.winner === 'you' 
-                        ? `1px solid ${templateColor}60` 
-                        : '1px solid transparent'
+                      padding: '6px',
+                      background: comp.winner === 'you' ? `${templateColor}20` : 'transparent',
+                      borderRadius: '6px',
+                      color: comp.winner === 'you' ? templateColor : 'rgba(255, 255, 255, 0.7)',
+                      fontWeight: '700'
                     }}>
-                      <div style={{
-                        fontSize: '0.95rem',
-                        fontWeight: '700',
-                        color: comp.winner === 'you' ? templateColor : 'rgba(255, 255, 255, 0.8)'
-                      }}>
-                        {comp.yours}
-                      </div>
-                      {comp.winner === 'you' && (
-                        <div style={{
-                          fontSize: '0.7rem',
-                          color: templateColor,
-                          marginTop: '4px',
-                          fontWeight: '600'
-                        }}>
-                          ✓ Better
-                        </div>
-                      )}
+                      {comp.yours}
                     </div>
 
-                    {/* Metric Name */}
                     <div style={{
                       textAlign: 'center',
-                      minWidth: '80px'
+                      minWidth: '60px'
                     }}>
                       <div style={{
-                        fontSize: '0.75rem',
+                        fontSize: '0.65rem',
                         color: 'rgba(255, 255, 255, 0.5)',
                         fontWeight: '600',
-                        marginBottom: '4px'
+                        marginBottom: '2px'
                       }}>
                         {comp.metric}
                       </div>
-                      <div style={{
-                        fontSize: '1.2rem'
-                      }}>
+                      <div style={{ fontSize: '1rem' }}>
                         {comp.winner === 'you' ? '✓' : '✗'}
                       </div>
                     </div>
 
-                    {/* Rival Value */}
                     <div style={{
                       textAlign: 'left',
-                      padding: '8px 12px',
-                      background: comp.winner === 'rival' 
-                        ? 'rgba(255, 215, 0, 0.15)' 
-                        : 'rgba(255, 255, 255, 0.03)',
-                      borderRadius: '8px',
-                      border: comp.winner === 'rival' 
-                        ? '1px solid rgba(255, 215, 0, 0.4)' 
-                        : '1px solid transparent'
+                      padding: '6px',
+                      background: comp.winner === 'rival' ? 'rgba(255, 215, 0, 0.15)' : 'transparent',
+                      borderRadius: '6px',
+                      color: comp.winner === 'rival' ? '#FFD700' : 'rgba(255, 255, 255, 0.7)',
+                      fontWeight: '700'
                     }}>
-                      <div style={{
-                        fontSize: '0.95rem',
-                        fontWeight: '700',
-                        color: comp.winner === 'rival' ? '#FFD700' : 'rgba(255, 255, 255, 0.8)'
-                      }}>
-                        {comp.theirs}
-                      </div>
-                      {comp.winner === 'rival' && (
-                        <div style={{
-                          fontSize: '0.7rem',
-                          color: '#FFD700',
-                          marginTop: '4px',
-                          fontWeight: '600'
-                        }}>
-                          ✓ Better
-                        </div>
-                      )}
+                      {comp.theirs}
                     </div>
                   </div>
                 ))}
@@ -454,16 +406,17 @@ export default function CampusRoastCard({
             </div>
           )}
 
-          {/* THE ROAST - Main Event */}
+          {/* THE ROAST - COMPACT & SCROLLABLE */}
           <div style={{
             background: 'linear-gradient(135deg, rgba(255, 69, 0, 0.2), rgba(255, 69, 0, 0.05))',
             border: '2px solid #FF4500',
-            borderRadius: '18px',
-            padding: '24px',
+            borderRadius: '14px',
+            padding: '16px',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            maxHeight: '180px',
+            overflowY: 'auto'
           }}>
-            {/* Fire animation background */}
             <div style={{
               position: 'absolute',
               top: 0,
@@ -476,37 +429,34 @@ export default function CampusRoastCard({
               pointerEvents: 'none'
             }} />
 
-            <div style={{
-              position: 'relative',
-              zIndex: 1
-            }}>
+            <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{
-                fontSize: '0.85rem',
+                fontSize: '0.75rem',
                 color: '#FF4500',
                 fontWeight: '700',
-                marginBottom: '16px',
+                marginBottom: '10px',
                 textAlign: 'center',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px'
+                gap: '6px'
               }}>
-                <span style={{ fontSize: '1.5rem' }}>💀</span>
-                <span style={{ letterSpacing: '1px', textTransform: 'uppercase' }}>
-                  THE SAVAGE ROAST
+                <span style={{ fontSize: '1.2rem' }}>💀</span>
+                <span style={{ letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                  THE ROAST
                 </span>
-                <span style={{ fontSize: '1.5rem' }}>💀</span>
+                <span style={{ fontSize: '1.2rem' }}>💀</span>
               </div>
               
               <p style={{
-                fontSize: '1.15rem',
-                lineHeight: '1.8',
+                fontSize: '0.9rem',
+                lineHeight: '1.5',
                 color: '#fff',
                 margin: 0,
                 fontWeight: '600',
                 whiteSpace: 'pre-wrap',
-                textAlign: 'center',
-                textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)'
+                textAlign: 'left',
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)'
               }}>
                 {result.roast}
               </p>
@@ -517,12 +467,12 @@ export default function CampusRoastCard({
           {result.modelUsed && (
             <div style={{
               textAlign: 'center',
-              marginTop: '16px',
-              fontSize: '0.7rem',
+              marginTop: '12px',
+              fontSize: '0.65rem',
               color: 'rgba(255, 255, 255, 0.3)',
               fontWeight: '600'
             }}>
-              Generated by {result.modelUsed}
+              Powered by {result.modelUsed}
             </div>
           )}
         </div>
@@ -532,56 +482,56 @@ export default function CampusRoastCard({
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: '14px'
+        gap: '12px'
       }}>
         <button
           onClick={onShare}
           style={{
-            padding: '18px',
+            padding: '14px',
             background: `linear-gradient(135deg, ${templateColor}, ${templateColor}cc)`,
             border: 'none',
-            borderRadius: '14px',
+            borderRadius: '12px',
             color: '#000',
-            fontSize: '1rem',
+            fontSize: '0.9rem',
             fontWeight: '800',
             cursor: 'pointer',
             fontFamily: 'inherit',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px',
-            boxShadow: `0 8px 24px ${templateColor}40`,
+            gap: '6px',
+            boxShadow: `0 6px 20px ${templateColor}40`,
             transition: 'all 0.3s ease'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = `0 12px 32px ${templateColor}60`;
+            e.currentTarget.style.boxShadow = `0 8px 28px ${templateColor}60`;
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = `0 8px 24px ${templateColor}40`;
+            e.currentTarget.style.boxShadow = `0 6px 20px ${templateColor}40`;
           }}
         >
-          <span style={{ fontSize: '1.2rem' }}>📱</span>
-          Share Roast
+          <span style={{ fontSize: '1.1rem' }}>📱</span>
+          Share
         </button>
         
         <button
           onClick={onNewBattle}
           style={{
-            padding: '18px',
+            padding: '14px',
             background: '#222',
             border: '1px solid #666',
-            borderRadius: '14px',
+            borderRadius: '12px',
             color: '#fff',
-            fontSize: '1rem',
+            fontSize: '0.9rem',
             fontWeight: '800',
             cursor: 'pointer',
             fontFamily: 'inherit',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px',
+            gap: '6px',
             transition: 'all 0.3s ease'
           }}
           onMouseEnter={(e) => {
@@ -595,17 +545,17 @@ export default function CampusRoastCard({
             e.currentTarget.style.transform = 'translateY(0)';
           }}
         >
-          <span style={{ fontSize: '1.2rem' }}>🔄</span>
+          <span style={{ fontSize: '1.1rem' }}>🔄</span>
           New Battle
         </button>
       </div>
 
-      {/* Animations */}
+      {/* Animations & Scrollbar */}
       <style jsx>{`
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
@@ -634,7 +584,7 @@ export default function CampusRoastCard({
             transform: translateY(0);
           }
           50% {
-            transform: translateY(-10px);
+            transform: translateY(-8px);
           }
         }
 
@@ -656,7 +606,26 @@ export default function CampusRoastCard({
             background-position: 100% 50%;
           }
         }
+
+        div::-webkit-scrollbar {
+          width: 5px;
+          height: 5px;
+        }
+        
+        div::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 10px;
+        }
+        
+        div::-webkit-scrollbar-thumb {
+          background: #FF4500;
+          border-radius: 10px;
+        }
+
+        div::-webkit-scrollbar-thumb:hover {
+          background: #FF6347;
+        }
       `}</style>
     </div>
   );
-            }
+          }
