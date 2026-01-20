@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import CampusHeader from '../components/CampusHeader';
-import CollegeLeaderboard from '../components/CollegeLeaderboard';
 import TemplateSelector from '../components/TemplateSelector';
 import CampusRoastCard from '../components/CampusRoastCard';
+import LiveLeaderboard from '../components/LiveLeaderboard';
+import RecentBattlesFeed from '../components/RecentBattlesFeed';
 import { getAllCollegeNames } from '../data/colleges';
 import { getTemplate } from '../lib/templateRoasts';
 
@@ -28,7 +29,7 @@ export default function CampusWars() {
     customTopic: '',
     rivalCollege: 'IIT Bombay',
     roastStyle: 'template', // 'template' or 'classic'
-    selectedTemplate: null // NEW: template object
+    selectedTemplate: null
   });
 
   const [loading, setLoading] = useState(false);
@@ -62,6 +63,19 @@ export default function CampusWars() {
       setUserData(JSON.parse(saved));
       setStep('battle');
     }
+
+    // Initialize Firebase Competition
+    const initFirebase = async () => {
+      try {
+        const { initCompetition } = await import('../lib/firebase');
+        await initCompetition();
+        console.log('✅ Firebase Competition Initialized!');
+      } catch (error) {
+        console.error('Firebase init failed:', error);
+      }
+    };
+
+    initFirebase();
   }, []);
 
   const filteredColleges = colleges.filter(c => 
@@ -110,23 +124,22 @@ export default function CampusWars() {
     setNewCollegeName('');
   };
 
-  // NEW: Handle template selection
+  // Handle template selection
   const handleSelectTemplate = (template) => {
     setBattleData({
       ...battleData,
       selectedTemplate: template,
-      topic: template.id, // Auto-set topic based on template
+      topic: template.id,
       roastStyle: 'template'
     });
   };
 
-  // NEW: Enhanced roast generation with templates
+  // Enhanced roast generation with Firebase save
   const handleGenerateRoast = async (e) => {
     e.preventDefault();
 
     let finalTopic = '';
     
-    // Determine topic based on mode
     if (battleData.roastStyle === 'template' && battleData.selectedTemplate) {
       finalTopic = battleData.selectedTemplate.label;
     } else if (battleData.topic === 'custom') {
@@ -152,8 +165,8 @@ export default function CampusWars() {
           branch: userData.branch,
           topic: finalTopic,
           rivalCollege: battleData.rivalCollege,
-          templateId: battleData.selectedTemplate?.id, // NEW: send template ID
-          useTemplate: battleData.roastStyle === 'template' // NEW: flag
+          templateId: battleData.selectedTemplate?.id,
+          useTemplate: battleData.roastStyle === 'template'
         })
       });
 
@@ -161,6 +174,26 @@ export default function CampusWars() {
       
       if (response.ok) {
         setResult(data.roast);
+        
+        // 🔥 SAVE TO FIREBASE
+        try {
+          const { saveBattle } = await import('../lib/firebase');
+          await saveBattle({
+            college1: userData.college,
+            college2: battleData.rivalCollege,
+            score1: data.roast.yourScore,
+            score2: data.roast.rivalScore,
+            winner: data.roast.yourScore > data.roast.rivalScore ? userData.college : battleData.rivalCollege,
+            template: battleData.selectedTemplate?.label || finalTopic,
+            roast: data.roast.roast,
+            userName: userData.name,
+            userBranch: userData.branch
+          });
+          console.log('✅ Battle saved to Firebase!');
+        } catch (firebaseError) {
+          console.error('Firebase save failed:', firebaseError);
+          // Don't block user, just log error
+        }
       } else {
         throw new Error(data.error || 'Failed');
       }
@@ -183,7 +216,7 @@ export default function CampusWars() {
 
   const shareRoast = () => {
     const templateName = battleData.selectedTemplate?.label || 'Roast';
-    const text = `🎓 Campus Wars - ${templateName}\n\n${userData.college} (${userData.branch})\nvs\n${battleData.rivalCollege}\n\n💀 ${result.roast}\n\nScore: ${result.yourScore}/100\n\nCheck yours: aurapro.app/campus-wars`;
+    const text = `🎓 IIT Wars - ${templateName}\n\n${userData.college} (${userData.branch})\nvs\n${battleData.rivalCollege}\n\n💀 ${result.roast}\n\nScore: ${result.yourScore}/100\n\nJoin the battle: aurapro.app/campus-wars`;
     
     if (navigator.share) {
       navigator.share({ text });
@@ -203,12 +236,14 @@ export default function CampusWars() {
     });
   };
 
-  // REGISTRATION SCREEN (unchanged)
+  // ==========================================
+  // REGISTRATION SCREEN
+  // ==========================================
   if (step === 'register') {
     return (
       <div style={{ minHeight: '100vh', background: '#000', padding: '20px' }}>
         <Head>
-          <title>Campus Wars - College Roast Battle</title>
+          <title>IIT Wars - Register for Battle</title>
         </Head>
 
         <div style={{
@@ -229,10 +264,10 @@ export default function CampusWars() {
               fontWeight: '900',
               textShadow: '0 0 20px rgba(0, 255, 255, 0.5)'
             }}>
-              CAMPUS WARS
+              IIT WARS 2025
             </h1>
             <p style={{ color: '#999', fontSize: '1rem', margin: 0 }}>
-              Register to start roasting your college
+              IIT Bombay vs IIT Delhi - 7 Day Battle
             </p>
           </div>
 
@@ -443,7 +478,7 @@ export default function CampusWars() {
                 boxShadow: '0 10px 30px rgba(0, 255, 255, 0.4)'
               }}
             >
-              🔥 START BATTLE
+              🔥 JOIN THE WAR
             </button>
           </form>
 
@@ -453,18 +488,20 @@ export default function CampusWars() {
             color: '#666',
             marginTop: '20px'
           }}>
-            Data saved locally. Anonymous roasting.
+            7-day competition • Live leaderboard • Real-time battles
           </p>
         </div>
       </div>
     );
   }
 
+  // ==========================================
   // BATTLE SCREEN
+  // ==========================================
   return (
     <div style={{ minHeight: '100vh', background: '#000', padding: '20px' }}>
       <Head>
-        <title>Campus Wars - Battle Arena</title>
+        <title>IIT Wars - Live Battle Arena</title>
       </Head>
 
       <CampusHeader 
@@ -477,11 +514,13 @@ export default function CampusWars() {
         maxWidth: '1400px',
         margin: '0 auto',
         display: 'grid',
-        gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth > 1024 ? '2fr 1fr' : '1fr',
+        gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth > 1024 ? '1fr 420px' : '1fr',
         gap: '30px'
       }}>
         
-        {/* Main Battle Section */}
+        {/* ==========================================
+            MAIN BATTLE SECTION (LEFT)
+            ========================================== */}
         <div style={{
           background: '#0a0a0a',
           border: '1px solid #222',
@@ -532,7 +571,7 @@ export default function CampusWars() {
                     transition: 'all 0.2s'
                   }}
                 >
-                  🎨 Template Mode (NEW)
+                  🎨 Template Mode
                 </button>
                 <button
                   type="button"
@@ -606,7 +645,6 @@ export default function CampusWars() {
                     ))}
                   </div>
 
-                  {/* Custom Topic Input */}
                   {battleData.topic === 'custom' && (
                     <div style={{ marginTop: '12px' }}>
                       <input
@@ -638,7 +676,7 @@ export default function CampusWars() {
                   marginBottom: '8px',
                   fontSize: '0.95rem'
                 }}>
-                  Select Rival College (Benchmark)
+                  Select Rival College
                 </label>
                 <select
                   value={battleData.rivalCollege}
@@ -653,8 +691,9 @@ export default function CampusWars() {
                     fontSize: '1rem'
                   }}
                 >
-                  <option value="IIT Bombay">IIT Bombay (Default Benchmark)</option>
-                  {colleges.filter(c => c !== userData.college).map(college => (
+                  <option value="IIT Bombay">IIT Bombay</option>
+                  <option value="IIT Delhi">IIT Delhi</option>
+                  {colleges.filter(c => c !== userData.college && c !== 'IIT Bombay' && c !== 'IIT Delhi').map(college => (
                     <option key={college} value={college}>{college}</option>
                   ))}
                 </select>
@@ -693,13 +732,32 @@ export default function CampusWars() {
           )}
         </div>
 
-        {/* Leaderboard (Desktop only) */}
+        {/* ==========================================
+            LIVE LEADERBOARD & FEED (RIGHT SIDEBAR)
+            ========================================== */}
         {typeof window !== 'undefined' && window.innerWidth > 1024 && (
-          <div style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
-            <CollegeLeaderboard userCollege={userData.college} />
+          <div style={{ 
+            position: 'sticky', 
+            top: '20px', 
+            height: 'fit-content',
+            maxHeight: 'calc(100vh - 40px)',
+            overflowY: 'auto'
+          }}>
+            <LiveLeaderboard />
+            <RecentBattlesFeed />
           </div>
         )}
       </div>
+
+      {/* ==========================================
+          MOBILE LEADERBOARD (BOTTOM)
+          ========================================== */}
+      {typeof window !== 'undefined' && window.innerWidth <= 1024 && !result && (
+        <div style={{ maxWidth: '1400px', margin: '30px auto 0' }}>
+          <LiveLeaderboard />
+          <RecentBattlesFeed />
+        </div>
+      )}
     </div>
   );
-}
+               }
