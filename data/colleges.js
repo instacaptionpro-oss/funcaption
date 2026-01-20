@@ -432,544 +432,6 @@ export const COLLEGES = {
     ]
   },
 
-  "NIT Trichy": {
-    id: "nit-trichy",
-    short: "NITT",
-    location: "Tiruchirappalli, Tamil Nadu",
-    
-    rankings: {
-      nirf: "#9 Engineering",
-      qs: "Not ranked",
-      reputation: "Best NIT, IIT reject hub"
-    },
-    
-    placements: {
-      average: "12 LPA",
-      median: "10 LPA",
-      highest: "₹40 LPA",
-      lowest: "₹4 LPA (core reality)",
-      topRecruiters: ["Microsoft", "Amazon", "Goldman Sachs", "Qualcomm"],
-      offCampus: "CSE good, core struggle"
-    },
-    
-    academics: {
-      fees: "₹7 lakh (4 years)",
-      cutoff: "JEE Main 2000 rank (Gen CSE)",
-      branches: ["CSE", "ECE", "EEE", "Mech", "Civil", "Production"],
-      difficulty: "Moderate",
-      attendance: "75% strict"
-    },
-    
-    campus: {
-      area: "800 acres",
-      hostel: "Good, NIT standard",
-      food: "South Indian heavy",
-      wifi: "Decent",
-      library: "Well maintained",
-      sports: "Good facilities"
-    },
-    
-    lifestyle: {
-      nightLife: "Trichy conservative, campus life only",
-      dating: "Gender ratio 7:1",
-      fests: "Festember (cultural), Pragyan (tech)",
-      clubs: "Active participation",
-      stress: "Medium"
-    },
-    
-    food: {
-      mess: "Idli-Sambar repeat, 4/10",
-      canteen: "Limited variety",
-      outside: "Trichy food good but campus se door",
-      nightSnacks: "Night canteen available",
-      famous: "Mess idli (for better or worse)"
-    },
-    
-    stereotypes: [
-      "Best NIT but still NIT",
-      "IIT nahi mila acceptance phase",
-      "CSE chalo, core mein placements nahi",
-      "South Indian food struggle for North",
-      "Trichy boring AF",
-      "NIT tag IIT se compare karte rehte ho",
-      "Best of NITs = worst of IITs mindset"
-    ],
-    
-    roastMaterial: [
-      "Best NIT ho but still parents bolta 'IIT nahi hua' 💀",
-      "₹12 LPA avg flex karte ho, IIT waale lunch mein itna kharch karte 😂",
-      "CSE mein ho toh placement, baaki branch mein regret 😭",
-      "Trichy mein 4 saal, social life Mumbai local jaisi packed",
-      "Best NIT tag but still second tier reality 💀",
-      "Festember organize karte ho but IIT fests mein crowd jaata 😂",
-      "Idli khate khate personality bhi bland ho gayi 😭",
-      "NIT tag LinkedIn pe, interviews mein 'IIT nahi?' sunta",
-      "JEE Main diya tha, JEE Advanced ka dar abhi bhi hai",
-      "Best NIT = consolation prize"
-    ],
-    
-    funFacts: [
-      "Better than many new IITs in placements",
-      "CSE package IIT level, core package reality check",
-      "South Indian food = make or break",
-      "Trichy rock fort dekhte ho, career rock bottom na ho jaye",
-      "NIT pride strong but IIT complex real"
-    ]
-  },
-
-  "DTU Delhi": {
-    id: "dtu-delhi",
-    short: "DTU",
-    location: "Rohini, Delhi",
-    
-    rankings: {
-      nirf: "#36 Engineering",
-      qs: "Not ranked",
-      reputation: "Delhi quota ka magic"
-    },
-    
-    placements: {
-      average: "10-12 LPA",
-      median: "8 LPA",
-      highest: "₹1.8 CR (rare unicorn)",
-      lowest: "₹3.5 LPA (mass recruiters)",
-      topRecruiters: ["Adobe", "Samsung", "Microsoft", "Atlassian"],
-      offCampus: "Delhi quota privilege shows"
-    },
-    
-    academics: {
-      fees: "₹8 lakh (4 years)",
-      cutoff: "JEE Main 2000 (Delhi), 8000 (Outside)",
-      branches: ["CSE", "ECE", "SE", "IT", "Mech", "Civil"],
-      difficulty: "Moderate, internals hell",
-      attendance: "75% compulsory"
-    },
-    
-    campus: {
-      area: "164 acres",
-      hostel: "Limited, most stay outside",
-      food: "Decent mess",
-      wifi: "Good",
-      library: "Well stocked",
-      sports: "Good facilities"
-    },
-    
-    lifestyle: {
-      nightLife: "Delhi perks - Connaught Place, Hauz Khas",
-      dating: "Better ratio 5:1",
-      fests: "Engifest, Yuvaan, Delhi ka maza",
-      clubs: "Very active",
-      stress: "High competition internally"
-    },
-    
-    food: {
-      mess: "Edible 5/10",
-      canteen: "Multiple canteens, decent",
-      outside: "Rohini, Punjabi Bagh - food heaven",
-      nightSnacks: "Delhi street food nearby",
-      famous: "Outside food > mess any day"
-    },
-    
-    stereotypes: [
-      "Delhi quota magic (rank 2000 vs 8000)",
-      "IIT reject but doing well cope",
-      "Rohini se ho, South Delhi flex karte ho",
-      "Internal competition brutal",
-      "College se zyada CP jaate ho",
-      "State college stigma fight",
-      "Outside quota waalo ko hate"
-    ],
-    
-    roastMaterial: [
-      "Delhi quota se aaye, talent se nahi 💀",
-      "Rank 2000 Delhi quota mila, Outside waala 8000 rank better tha 😂",
-      "DTU tag LinkedIn pe, interviews mein 'NSUT se kam' sunta 😭",
-      "Rohini campus hai but CP mein flex karte ho",
-      "IIT nahi hua par Delhi mein hai cope mechanism 💀",
-      "Engifest organize karte ho but engineers kam ho 😂",
-      "State college ho but central college wala attitude 😭",
-      "₹8L fees di, Metro mein general dabba travel",
-      "Outside quota waalon se jalan, skill se competition nahi",
-      "Adobe dream hai, Infosys reality"
-    ],
-    
-    funFacts: [
-      "Delhi quota = rank mein 6000 difference",
-      "Better placement than many NITs",
-      "Rohini boring but Delhi perks compensate",
-      "Internal politics > actual politics",
-      "DTU vs NSUT rivalry eternal"
-    ]
-  },
-
-  "DU - North Campus": {
-    id: "du-north",
-    short: "DU NC",
-    location: "North Delhi",
-    
-    rankings: {
-      nirf: "#11 Overall",
-      qs: "Not ranked",
-      reputation: "Arts/Commerce ka hub"
-    },
-    
-    placements: {
-      average: "6-8 LPA (non-tech)",
-      median: "5 LPA",
-      highest: "₹15 LPA (rare)",
-      lowest: "₹3 LPA",
-      topRecruiters: ["Deloitte", "EY", "KPMG", "Accenture"],
-      offCampus: "CAT/UPSC aspirants bhi bahut"
-    },
-    
-    academics: {
-      fees: "₹50k-1 lakh (3 years)",
-      cutoff: "98%+ (SRCC, Stephen's)",
-      branches: ["Economics", "Commerce", "English", "Political Science"],
-      difficulty: "Easy-moderate, attendance issue",
-      attendance: "75% but most bunk"
-    },
-    
-    campus: {
-      area: "Multiple colleges, North Delhi spread",
-      hostel: "Limited, most PG mein",
-      food: "Canteen decent",
-      wifi: "College dependent",
-      library: "Good libraries",
-      sports: "Inter-college sports big"
-    },
-    
-    lifestyle: {
-      nightLife: "Party capital - Hudson Lane, Kamla Nagar",
-      dating: "Gender ratio balanced, dating culture peak",
-      fests: "Every college ka fest, non-stop",
-      clubs: "Theater, debate, music scenes huge",
-      stress: "Low - chill vibes"
-    },
-    
-    food: {
-      mess: "No mess culture",
-      canteen: "Decent college canteens",
-      outside: "Kamla Nagar momos, Hudson Lane cafes",
-      nightSnacks: "24/7 options, Delhi perks",
-      famous: "Kamla Nagar street food > any campus mess"
-    },
-    
-    stereotypes: [
-      "Party > studies priority",
-      "Arts waale cool kids",
-      "Engineering reject but happy about it",
-      "Kamla Nagar momos addict",
-      "Fest season = bunk season",
-      "Commerce se ho but finance samajh nahi aata",
-      "Hudson Lane cafe Instagram story king/queen",
-      "3 years bunking, 6 months CAT prep"
-    ],
-    
-    roastMaterial: [
-      "98% laaye the college mein, 50% attendance nahi hai bc 💀",
-      "SRCC se ho but salary receptionist wali 😂",
-      "Commerce padhte ho but loan leke party karte ho 😭",
-      "Hudson Lane cafe mein photo, placement season mein no show 💀",
-      "Arts waala cool flex, engineer ban jaata toh aur cool 😂",
-      "Kamla Nagar momos khate khate career bhi digested 😭",
-      "3 saal bunk mara, ab job hunt mein reality check",
-      "Fest organize karte ho but organized life nahi hai 💀",
-      "North Campus cool hai but South Delhi afford nahi hai 😂",
-      "DU tag flex karte ho, DTU waale engineer ban gaye"
-    ],
-    
-    funFacts: [
-      "Cheapest quality education in India",
-      "Party culture unmatched",
-      "CAT/UPSC backup solid",
-      "Social life > placements priority",
-      "Arts waale happier than engineers (maybe)"
-    ]
-  },
-
-  "Amity University Noida": {
-    id: "amity-noida",
-    short: "Amity",
-    location: "Noida, UP",
-    
-    rankings: {
-      nirf: "#50+",
-      qs: "Not ranked",
-      reputation: "Private ka poster child"
-    },
-    
-    placements: {
-      average: "4-5 LPA",
-      median: "3.5 LPA",
-      highest: "₹20 LPA (1-2 students)",
-      lowest: "₹2.5 LPA (mass placement)",
-      topRecruiters: ["Infosys", "TCS", "Wipro", "Cognizant"],
-      offCampus: "Mass recruiters dominate"
-    },
-    
-    academics: {
-      fees: "₹15-20 lakh (4 years)",
-      cutoff: "Board marks based (easy entry)",
-      branches: ["CSE", "IT", "ECE", "BBA", "Law", "Mass Comm"],
-      difficulty: "Easy academics, tough attendance",
-      attendance: "75% strict, biometric punch"
-    },
-    
-    campus: {
-      area: "1000 acres (multiple campuses)",
-      hostel: "AC rooms, luxury feel",
-      food: "Multiple food courts, decent",
-      wifi: "Good connectivity",
-      library: "Well equipped",
-      sports: "Excellent facilities"
-    },
-    
-    lifestyle: {
-      nightLife: "Delhi nearby but campus strict",
-      dating: "Good gender ratio, couples everywhere",
-      fests: "Amity Youth Fest - big budget",
-      clubs: "Active but forced participation",
-      stress: "Attendance stress > academics"
-    },
-    
-    food: {
-      mess: "Food court system 6/10",
-      canteen: "Multiple outlets, pricey",
-      outside: "Noida food options good",
-      nightSnacks: "Campus food available late",
-      famous: "AC food court (better than mess)"
-    },
-    
-    stereotypes: [
-      "Rich kids ka backup",
-      "Fees IIT se zyada, placement 1/5th",
-      "Attendance hell (biometric torture)",
-      "Everyone's backup college",
-      "Corporate college feel",
-      "AC campus but career mein AC nahi",
-      "Parents paid ₹20L, expectation Google",
-      "Mass Communication mein sabse zyada students"
-    ],
-    
-    roastMaterial: [
-      "₹20 lakh fees di, ₹4 lakh package - profit kidhar hai? 💀",
-      "AC rooms hai but future mein AC afford nahi hoga 😂",
-      "Biometric attendance se darr, interviews se nahi 😭",
-      "Parents ne ₹20L invest kiya, ROI negative hai bc 💀",
-      "Amity se ho = every exam ka backup the 😂",
-      "Campus corporate jaisa, package Kirana store jaisa 😭",
-      "TCS placement ko highest bolte ho, IIT waale reject karte",
-      "75% attendance compulsory, 25% placement optional lagta 💀",
-      "Mass Comm padh rahe, mass placement mein khade ho 😂",
-      "Fees premium, tag cheap, future uncertain"
-    ],
-    
-    funFacts: [
-      "Most expensive college, lowest ROI",
-      "Attendance system NASA level strict",
-      "AC campus but reality check brutal",
-      "Good facilities, mid placement",
-      "Everyone's backup, no one's first choice"
-    ]
-  },
-
-  "Manipal Institute of Technology": {
-    id: "manipal-mit",
-    short: "MIT Manipal",
-    location: "Manipal, Karnataka",
-    
-    rankings: {
-      nirf: "#45 Engineering",
-      qs: "Not ranked",
-      reputation: "Party ka Mecca"
-    },
-    
-    placements: {
-      average: "7-8 LPA",
-      median: "6 LPA",
-      highest: "₹40 LPA (rare)",
-      lowest: "₹3.5 LPA",
-      topRecruiters: ["Microsoft", "Amazon", "Oracle", "Cisco"],
-      offCampus: "Varies heavily"
-    },
-    
-    academics: {
-      fees: "₹17 lakh (4 years)",
-      cutoff: "MET rank 5000+ (easy)",
-      branches: ["CSE", "IT", "ECE", "Mech", "Civil", "Biotech"],
-      difficulty: "Moderate, lenient system",
-      attendance: "75% but flexible"
-    },
-    
-    campus: {
-      area: "313 acres",
-      hostel: "Good hostels, party culture",
-      food: "Decent mess + food court",
-      wifi: "Good coverage",
-      library: "Well maintained",
-      sports: "Beach nearby, water sports"
-    },
-    
-    lifestyle: {
-      nightLife: "Legendary - bars, clubs, beach",
-      dating: "Gender ratio 6:1, active scene",
-      fests: "Revels (cultural), TechTatva (tech)",
-      clubs: "Very active, party > academics",
-      stress: "Low - chill college life"
-    },
-    
-    food: {
-      mess: "Decent 6/10",
-      canteen: "Food court good variety",
-      outside: "Manipal town - student friendly prices",
-      nightSnacks: "Night mess + town eateries",
-      famous: "Malnad mess (hostel mess legend)"
-    },
-    
-    stereotypes: [
-      "Party college > engineering college",
-      "Beach > books priority",
-      "₹17L di, 4 saal party ki",
-      "Placement week mein sober rehna challenge",
-      "Everyone's backup after BITS",
-      "Weekend mein Mangalore beach guaranteed",
-      "CSE padhte ho but CSS nahi aata",
-      "Revels mein hungover, exams mein sleep deprived"
-    ],
-    
-    roastMaterial: [
-      "₹17 lakh fees di, beach photos se recover karoge? 💀",
-      "4 saal party ki, 40 saal loan bharoge 😂",
-      "Manipal tag hai but manipulate nahi kar paa rahe career 😭",
-      "Beach dekhne gaye the, placement wave mein doob gaye 💀",
-      "Party skills 10/10, coding skills 2/10 😂",
-      "Revels organize karte ho but life mein revel nahi hai 😭",
-      "₹7 LPA avg ko achievement bolte ho",
-      "Mangalore beach flex, Mumbai salary reject 💀",
-      "Parents ne engineering bheja, tum hospitality mein graduate 😂",
-      "MIT tag flex, IIT tag envy"
-    ],
-    
-    funFacts: [
-      "Best college life in India (arguably)",
-      "Beach town = permanent vacation feel",
-      "Party culture legendary among privates",
-      "Placement decent if you actually studied",
-      "₹17L worth it for memories, not package"
-    ]
-  },
-
-  "VIT Vellore": {
-    id: "vit-vellore",
-    short: "VIT",
-    location: "Vellore, Tamil Nadu",
-    
-    rankings: {
-      nirf: "#11 Engineering",
-      qs: "#801-1000",
-      reputation: "Private ka best alternative"
-    },
-    
-    placements: {
-      average: "7.5 LPA",
-      median: "6 LPA",
-      highest: "₹45 LPA",
-      lowest: "₹3.5 LPA (core reality)",
-      topRecruiters: ["Microsoft", "Amazon", "Cisco", "PayPal"],
-      offCampus: "CSE good, core weak"
-    },
-    
-    academics: {
-      fees: "₹8-10 lakh (4 years) (rank based)",
-      cutoff: "VITEEE rank 5000 (decent category)",
-      branches: ["CSE", "ECE", "Mech", "IT", "EEE", "Chemical"],
-      difficulty: "Moderate to tough",
-      attendance: "75% mandatory, biometric"
-    },
-    
-    campus: {
-      area: "350 acres",
-      hostel: "Separate boys/girls, strict rules",
-      food: "Mess average 4/10",
-      wifi: "Good in academic blocks",
-      library: "24/7 library during exams",
-      sports: "Good facilities"
-    },
-    
-    lifestyle: {
-      nightLife: "Dead - Vellore conservative town",
-      dating: "Strict rules, hostel curfews",
-      fests: "Riviera (cultural), GraVITas (tech)",
-      clubs: "Decent club activity",
-      stress: "High - competitive environment"
-    },
-    
-    food: {
-      mess: "South Indian heavy, repetitive 4/10",
-      canteen: "Subway, Dominos available (expensive)",
-      outside: "Vellore limited, Chennai 2 hours",
-      nightSnacks: "Campus Subway late night",
-      famous: "Nothing notable (mess complaints common)"
-    },
-    
-    stereotypes: [
-      "BITS ka backup, NIT nahi mila",
-      "Fees rank based - discrimination feel",
-      "Strict hostel rules (boarding school vibes)",
-      "Vellore boring, Chennai door",
-      "Good academics but social life zero",
-      "CSE mein CSE, baaki branch regret",
-      "Biometric attendance torture",
-      "Private college but government jaisi strictness"
-    ],
-    
-    roastMaterial: [
-      "₹10 lakh di ho lekin Category 1 nahi aaya 💀",
-      "VIT tag flex, BITS envy real hai 😂",
-      "Vellore mein 4 saal, social skills Vellore level hi reh gayi 😭",
-      "Biometric attendance se bachne ki jugaad engineer bana di 💀",
-      "Riviera organize karte ho but social life river dry hai 😂",
-      "CSE mein ho toh theek, baaki branch = mistake 😭",
-      "Hostel rules strict, future rules bhi strict lagenge",
-      "₹7.5 LPA avg bolte ho but IIT se compare karte ho 💀",
-      "Rank based fees = parents ka mood based treatment 😂",
-      "Private college paid, government college ki feeling free"
-    ],
-    
-    funFacts: [
-      "Better than many NITs in CSE placement",
-      "Rank 1 gets ₹4L fees, Rank 50000 pays ₹10L (same degree)",
-      "Strict hostel = relationship success rate 0%",
-      "Vellore nothing to do, Chennai weekend escape",
-      "Good for studying, bad for living"
-    ]
-  }
-
-  // ... Continue for remaining 40 colleges (adding in next message)
-};
-
-// College categories for easy filtering
-export const COLLEGE_CATEGORIES = {
-  iits: Object.keys(COLLEGES).filter(c => c.startsWith('IIT')),
-  nits: Object.keys(COLLEGES).filter(c => c.startsWith('NIT')),
-  bits: ['BITS Pilani', 'BITS Goa', 'BITS Hyderabad'],
-  private: ['Amity University Noida', 'Manipal Institute of Technology', 'VIT Vellore'],
-  du: Object.keys(COLLEGES).filter(c => c.includes('DU')),
-  state: Object.keys(COLLEGES).filter(c => c.includes('DTU') || c.includes('NSUT'))
-};
-
-export const getCollegeById = (id) => {
-  return Object.values(COLLEGES).find(c => c.id === id);
-};
-
-export const getCollegeByName = (name) => {
-  return COLLEGES[name];
-};
-
-export const getAllCollegeNames = () => {
-  return Object.keys(COLLEGES).sort();
-},
   "IIT Kanpur": {
     id: "iit-kanpur",
     short: "IITK",
@@ -1045,7 +507,7 @@ export const getAllCollegeNames = () => {
       "Research paper publish karte ho but dating resume blank 💀",
       "Startup kholne ka sapna, Kanpur mein fund nahi milta 😂",
       "4 saal fog mein, career bhi foggy"
-    },
+    ],
     
     funFacts: [
       "Highest research output after Madras",
@@ -1228,175 +690,88 @@ export const getAllCollegeNames = () => {
     ]
   },
 
-  "IIT Hyderabad": {
-    id: "iit-hyderabad",
-    short: "IITH",
-    location: "Hyderabad, Telangana",
+  "NIT Trichy": {
+    id: "nit-trichy",
+    short: "NITT",
+    location: "Tiruchirappalli, Tamil Nadu",
     
     rankings: {
-      nirf: "#8 Engineering",
-      qs: "Not ranked yet",
-      reputation: "New IIT, growing fast"
+      nirf: "#9 Engineering",
+      qs: "Not ranked",
+      reputation: "Best NIT, IIT reject hub"
     },
     
     placements: {
-      average: "14 LPA",
-      median: "12 LPA",
-      highest: "₹55 LPA",
-      lowest: "₹6 LPA",
-      topRecruiters: ["Microsoft", "Google", "Amazon", "Qualcomm"],
-      offCampus: "Growing alumni network"
+      average: "12 LPA",
+      median: "10 LPA",
+      highest: "₹40 LPA",
+      lowest: "₹4 LPA (core reality)",
+      topRecruiters: ["Microsoft", "Amazon", "Goldman Sachs", "Qualcomm"],
+      offCampus: "CSE good, core struggle"
     },
     
     academics: {
-      fees: "₹9 lakh (4 years)",
-      cutoff: "JEE Advanced Rank 1500 (Gen CSE)",
-      branches: ["CSE", "EE", "Mech", "AI", "Materials", "Civil"],
-      difficulty: "Tough, new curriculum",
+      fees: "₹7 lakh (4 years)",
+      cutoff: "JEE Main 2000 rank (Gen CSE)",
+      branches: ["CSE", "ECE", "EEE", "Mech", "Civil", "Production"],
+      difficulty: "Moderate",
       attendance: "75% strict"
     },
     
     campus: {
-      area: "576 acres",
-      hostel: "Modern hostels, AC rooms",
-      food: "Biryani city benefits",
-      wifi: "Excellent connectivity",
-      library: "Modern library",
-      sports: "Developing facilities"
+      area: "800 acres",
+      hostel: "Good, NIT standard",
+      food: "South Indian heavy",
+      wifi: "Decent",
+      library: "Well maintained",
+      sports: "Good facilities"
     },
     
     lifestyle: {
-      nightLife: "Hyderabad city accessible",
-      dating: "Gender ratio 7:1, improving",
-      fests: "Elan & nVision (combined fest)",
-      clubs: "Growing club culture",
-      stress: "Medium-high"
-    },
-    
-    food: {
-      mess: "Hyderabadi influence, decent 6/10",
-      canteen: "Campus canteens good",
-      outside: "Hyderabad biryani paradise nearby",
-      nightSnacks: "Late night canteen available",
-      famous: "Better mess than old IITs (being new helps)"
-    },
-    
-    stereotypes: [
-      "New IIT = guinea pig batch feeling",
-      "Facilities better than old IITs (modern infra)",
-      "Lower cutoff but trying hard to prove",
-      "Hyderabad biryani only positive",
-      "Still building reputation",
-      "Old IIT students look down",
-      "Good faculty but alumni network weak",
-      "Beta testing IIT experience"
-    ],
-    
-    roastMaterial: [
-      "New IIT ho = experimental batch guinea pig 💀",
-      "Hyderabad mein ho but biryani afford nahi hoti 😂",
-      "Modern facilities hai but legacy zero 😭",
-      "₹14 LPA bolte ho, old IIT waale ₹20L se shuru karte 💀",
-      "New IIT tag = every job interview mein explain karna padta 😂",
-      "Alumni network nahi hai, LinkedIn connections pending 😭",
-      "Elan organize karte ho but IIT Bombay nahi bulata",
-      "Modern campus hai but modern package nahi 💀",
-      "Biryani khate ho, career half-cooked hai 😂",
-      "IIT hai but purani IIT se comparison mein roasted"
-    ],
-    
-    funFacts: [
-      "Best infrastructure among new IITs",
-      "Hyderabad IT hub helps placement",
-      "AC hostels (old IIT students jealous)",
-      "Growing fast in rankings",
-      "Biryani actually good near campus"
-    ]
-  },
-
-  "IIT BHU": {
-    id: "iit-bhu",
-    short: "IIT BHU",
-    location: "Varanasi, UP",
-    
-    rankings: {
-      nirf: "#10 Engineering",
-      qs: "Not ranked",
-      reputation: "Heritage + IIT tag combo"
-    },
-    
-    placements: {
-      average: "14 LPA",
-      median: "11 LPA",
-      highest: "₹1.4 CR",
-      lowest: "₹6 LPA",
-      topRecruiters: ["Microsoft", "Amazon", "Samsung", "Goldman Sachs"],
-      offCampus: "BHU alumni network helps"
-    },
-    
-    academics: {
-      fees: "₹9 lakh (4 years)",
-      cutoff: "JEE Advanced Rank 2000 (Gen CSE)",
-      branches: ["CSE", "EE", "Mech", "Mining", "Metallurgy", "Ceramic"],
-      difficulty: "Moderate",
-      attendance: "75% required"
-    },
-    
-    campus: {
-      area: "1300 acres (BHU campus)",
-      hostel: "Old infrastructure",
-      food: "North Indian, street food vibes",
-      wifi: "Improving",
-      library: "Heritage library",
-      sports: "Good grounds"
-    },
-    
-    lifestyle: {
-      nightLife: "Varanasi traditional, campus life centered",
-      dating: "Conservative environment",
-      fests: "Kashiyatra (cultural), Technex (tech)",
-      clubs: "Active clubs",
+      nightLife: "Trichy conservative, campus life only",
+      dating: "Gender ratio 7:1",
+      fests: "Festember (cultural), Pragyan (tech)",
+      clubs: "Active participation",
       stress: "Medium"
     },
     
     food: {
-      mess: "Decent UP food 5/10",
-      canteen: "Multiple canteens",
-      outside: "Varanasi street food legendary",
-      nightSnacks: "Night canteen + Lanka area",
-      famous: "Lanka chaat, kachori"
+      mess: "Idli-Sambar repeat, 4/10",
+      canteen: "Limited variety",
+      outside: "Trichy food good but campus se door",
+      nightSnacks: "Night canteen available",
+      famous: "Mess idli (for better or worse)"
     },
     
     stereotypes: [
-      "BHU tag > IIT tag sometimes",
-      "Varanasi ghats flex constant",
-      "Spiritual vibes but engineering reality",
-      "Mining/Ceramic engineering exists (why?)",
-      "Conservative culture clash for outsiders",
-      "Heritage buildings, heritage placements",
-      "Ganga aarti dekhte ho, career doob rahi",
-      "UP politics center mein rehte ho"
+      "Best NIT but still NIT",
+      "IIT nahi mila acceptance phase",
+      "CSE chalo, core mein placements nahi",
+      "South Indian food struggle for North",
+      "Trichy boring AF",
+      "NIT tag IIT se compare karte rehte ho",
+      "Best of NITs = worst of IITs mindset"
     ],
     
     roastMaterial: [
-      "IIT BHU se ho but BHU zyada famous hai 💀",
-      "Ganga aarti dekhte ho, placement mein prayer zaroori 😂",
-      "Varanasi spiritual hai, career bhi invisible 😭",
-      "Mining engineering padhte ho, apna potential mine kar diya 💀",
-      "Heritage tag hai but modern skills heritage 😂",
-      "Lanka chaat khate ho, placement mein launcha 😭",
-      "Kashiyatra organize karte ho but kashi mein hi fas gaye",
-      "₹14 LPA bolte ho, Ganga mein doob jao 💀",
-      "BHU alumni network strong but IIT tag weak feel 😂",
-      "Spiritual city mein ho, materialistic package nahi"
+      "Best NIT ho but still parents bolta 'IIT nahi hua' 💀",
+      "₹12 LPA avg flex karte ho, IIT waale lunch mein itna kharch karte 😂",
+      "CSE mein ho toh placement, baaki branch mein regret 😭",
+      "Trichy mein 4 saal, social life Mumbai local jaisi packed",
+      "Best NIT tag but still second tier reality 💀",
+      "Festember organize karte ho but IIT fests mein crowd jaata 😂",
+      "Idli khate khate personality bhi bland ho gayi 😭",
+      "NIT tag LinkedIn pe, interviews mein 'IIT nahi?' sunta",
+      "JEE Main diya tha, JEE Advanced ka dar abhi bhi hai",
+      "Best NIT = consolation prize"
     ],
     
     funFacts: [
-      "BHU converted to IIT (heritage + tag)",
-      "Varanasi street food best in North India",
-      "Ganga ghats walking distance",
-      "Mining engineering unique offering",
-      "Conservative culture but chill studies"
+      "Better than many new IITs in placements",
+      "CSE package IIT level, core package reality check",
+      "South Indian food = make or break",
+      "Trichy rock fort dekhte ho, career rock bottom na ho jaye",
+      "NIT pride strong but IIT complex real"
     ]
   },
 
@@ -1657,89 +1032,88 @@ export const getAllCollegeNames = () => {
     ]
   },
 
-  "IIIT Bangalore": {
-    id: "iiit-bangalore",
-    short: "IIITB",
-    location: "Bangalore, Karnataka",
+  "DTU Delhi": {
+    id: "dtu-delhi",
+    short: "DTU",
+    location: "Rohini, Delhi",
     
     rankings: {
-      nirf: "#52 Overall",
+      nirf: "#36 Engineering",
       qs: "Not ranked",
-      reputation: "IT city advantage, startup culture"
+      reputation: "Delhi quota ka magic"
     },
     
     placements: {
-      average: "24 LPA",
-      median: "22 LPA",
-      highest: "₹60 LPA",
-      lowest: "₹10 LPA",
-      topRecruiters: ["Amazon", "Microsoft", "Goldman Sachs", "Flipkart"],
-      offCampus: "Bangalore startups hire heavily"
+      average: "10-12 LPA",
+      median: "8 LPA",
+      highest: "₹1.8 CR (rare unicorn)",
+      lowest: "₹3.5 LPA (mass recruiters)",
+      topRecruiters: ["Adobe", "Samsung", "Microsoft", "Atlassian"],
+      offCampus: "Delhi quota privilege shows"
     },
     
     academics: {
-      fees: "₹15 lakh (4 years)",
-      cutoff: "JEE Main Rank 1500-2000",
-      branches: ["CSE", "ECE", "iMTech (Integrated MTech)"],
-      difficulty: "Very tough, research focused",
-      attendance: "Flexible (research institute)"
+      fees: "₹8 lakh (4 years)",
+      cutoff: "JEE Main 2000 (Delhi), 8000 (Outside)",
+      branches: ["CSE", "ECE", "SE", "IT", "Mech", "Civil"],
+      difficulty: "Moderate, internals hell",
+      attendance: "75% compulsory"
     },
     
     campus: {
-      area: "compact urban campus",
-      hostel: "Limited hostel, most stay PG",
-      food: "No mess culture, city dependent",
-      wifi: "Excellent connectivity",
-      library: "Good research library",
-      sports: "Limited on-campus"
+      area: "164 acres",
+      hostel: "Limited, most stay outside",
+      food: "Decent mess",
+      wifi: "Good",
+      library: "Well stocked",
+      sports: "Good facilities"
     },
     
     lifestyle: {
-      nightLife: "Bangalore IT hub - best nightlife",
-      dating: "Gender ratio 5:1, city helps",
-      fests: "IIITB cultural fest (smaller scale)",
-      clubs: "Startup clubs dominant",
-      stress: "High - startup pressure + academics"
+      nightLife: "Delhi perks - Connaught Place, Hauz Khas",
+      dating: "Better ratio 5:1",
+      fests: "Engifest, Yuvaan, Delhi ka maza",
+      clubs: "Very active",
+      stress: "High competition internally"
     },
     
     food: {
-      mess: "No mess - city food dependent",
-      canteen: "Campus canteen basic",
-      outside: "Bangalore food paradise",
-      nightSnacks: "Swiggy/Zomato 24/7",
-      famous: "Outside food culture (expensive)"
+      mess: "Edible 5/10",
+      canteen: "Multiple canteens, decent",
+      outside: "Rohini, Punjabi Bagh - food heaven",
+      nightSnacks: "Delhi street food nearby",
+      famous: "Outside food > mess any day"
     },
     
     stereotypes: [
-      "Bangalore weather flex daily",
-      "Startup intern = unpaid slave",
-      "PG life = expensive AF",
-      "No campus life, city college feel",
-      "IIIT tag but expensive private fees",
-      "Research focus but startup distraction",
-      "Weather good, rent bad",
-      "Everyone's founding a startup (failing mostly)"
+      "Delhi quota magic (rank 2000 vs 8000)",
+      "IIT reject but doing well cope",
+      "Rohini se ho, South Delhi flex karte ho",
+      "Internal competition brutal",
+      "College se zyada CP jaate ho",
+      "State college stigma fight",
+      "Outside quota waalo ko hate"
     ],
     
     roastMaterial: [
-      "₹24 LPA avg but rent mein ₹15K kharch 💀",
-      "Bangalore weather flex but PG ka AC nahi chalta 😂",
-      "Startup intern ho but stipend zero 😭",
-      "₹15L fees di, campus nahi mila properly 💀",
-      "IT hub mein ho but job nahi mili abhi tak 😂",
-      "Research karte ho but startup mein research ho gaye 😭",
-      "IIIT tag hai but private fees public se zyada",
-      "Weather perfect hai but placement stress imperfect 💀",
-      "Bangalore food khate ho but afford karne ke liye loan 😂",
-      "Startup culture hai but success rate startup level low"
+      "Delhi quota se aaye, talent se nahi 💀",
+      "Rank 2000 Delhi quota mila, Outside waala 8000 rank better tha 😂",
+      "DTU tag LinkedIn pe, interviews mein 'NSUT se kam' sunta 😭",
+      "Rohini campus hai but CP mein flex karte ho",
+      "IIT nahi hua par Delhi mein hai cope mechanism 💀",
+      "Engifest organize karte ho but engineers kam ho 😂",
+      "State college ho but central college wala attitude 😭",
+      "₹8L fees di, Metro mein general dabba travel",
+      "Outside quota waalon se jalan, skill se competition nahi",
+      "Adobe dream hai, Infosys reality"
     ],
     
     funFacts: [
-      "Bangalore IT hub advantage real",
-      "No traditional campus life",
-      "Startup ecosystem access best in India",
-      "Expensive city, expensive education",
-      "Better placement than many NITs"
+      "Delhi quota = rank mein 6000 difference",
+      "Better placement than many NITs",
+      "Rohini boring but Delhi perks compensate",
+      "Internal politics > actual politics",
+      "DTU vs NSUT rivalry eternal"
     ]
   },
 
@@ -1829,6 +1203,92 @@ export const getAllCollegeNames = () => {
     ]
   },
 
+  "DU - North Campus": {
+    id: "du-north",
+    short: "DU NC",
+    location: "North Delhi",
+    
+    rankings: {
+      nirf: "#11 Overall",
+      qs: "Not ranked",
+      reputation: "Arts/Commerce ka hub"
+    },
+    
+    placements: {
+      average: "6-8 LPA (non-tech)",
+      median: "5 LPA",
+      highest: "₹15 LPA (rare)",
+      lowest: "₹3 LPA",
+      topRecruiters: ["Deloitte", "EY", "KPMG", "Accenture"],
+      offCampus: "CAT/UPSC aspirants bhi bahut"
+    },
+    
+    academics: {
+      fees: "₹50k-1 lakh (3 years)",
+      cutoff: "98%+ (SRCC, Stephen's)",
+      branches: ["Economics", "Commerce", "English", "Political Science"],
+      difficulty: "Easy-moderate, attendance issue",
+      attendance: "75% but most bunk"
+    },
+    
+    campus: {
+      area: "Multiple colleges, North Delhi spread",
+      hostel: "Limited, most PG mein",
+      food: "Canteen decent",
+      wifi: "College dependent",
+      library: "Good libraries",
+      sports: "Inter-college sports big"
+    },
+    
+    lifestyle: {
+      nightLife: "Party capital - Hudson Lane, Kamla Nagar",
+      dating: "Gender ratio balanced, dating culture peak",
+      fests: "Every college ka fest, non-stop",
+      clubs: "Theater, debate, music scenes huge",
+      stress: "Low - chill vibes"
+    },
+    
+    food: {
+      mess: "No mess culture",
+      canteen: "Decent college canteens",
+      outside: "Kamla Nagar momos, Hudson Lane cafes",
+      nightSnacks: "24/7 options, Delhi perks",
+      famous: "Kamla Nagar street food > any campus mess"
+    },
+    
+    stereotypes: [
+      "Party > studies priority",
+      "Arts waale cool kids",
+      "Engineering reject but happy about it",
+      "Kamla Nagar momos addict",
+      "Fest season = bunk season",
+      "Commerce se ho but finance samajh nahi aata",
+      "Hudson Lane cafe Instagram story king/queen",
+      "3 years bunking, 6 months CAT prep"
+    ],
+    
+    roastMaterial: [
+      "98% laaye the college mein, 50% attendance nahi hai bc 💀",
+      "SRCC se ho but salary receptionist wali 😂",
+      "Commerce padhte ho but loan leke party karte ho 😭",
+      "Hudson Lane cafe mein photo, placement season mein no show 💀",
+      "Arts waala cool flex, engineer ban jaata toh aur cool 😂",
+      "Kamla Nagar momos khate khate career bhi digested 😭",
+      "3 saal bunk mara, ab job hunt mein reality check",
+      "Fest organize karte ho but organized life nahi hai 💀",
+      "North Campus cool hai but South Delhi afford nahi hai 😂",
+      "DU tag flex karte ho, DTU waale engineer ban gaye"
+    ],
+    
+    funFacts: [
+      "Cheapest quality education in India",
+      "Party culture unmatched",
+      "CAT/UPSC backup solid",
+      "Social life > placements priority",
+      "Arts waale happier than engineers (maybe)"
+    ]
+  },
+
   "SRCC (DU)": {
     id: "srcc-du",
     short: "SRCC",
@@ -1915,93 +1375,265 @@ export const getAllCollegeNames = () => {
     ]
   },
 
-  "St. Stephen's College (DU)": {
-    id: "stephens-du",
-    short: "Stephens",
-    location: "North Campus, Delhi",
+  "Amity University Noida": {
+    id: "amity-noida",
+    short: "Amity",
+    location: "Noida, UP",
     
     rankings: {
-      nirf: "#9 Overall colleges",
+      nirf: "#50+",
       qs: "Not ranked",
-      reputation: "Elite legacy, interview waala college"
+      reputation: "Private ka poster child"
     },
     
     placements: {
-      average: "6-8 LPA",
-      median: "5 LPA",
-      highest: "₹18 LPA",
-      lowest: "₹3 LPA",
-      topRecruiters: ["Deloitte", "McKinsey", "Teach For India"],
-      offCampus: "Civil services, journalism common"
+      average: "4-5 LPA",
+      median: "3.5 LPA",
+      highest: "₹20 LPA (1-2 students)",
+      lowest: "₹2.5 LPA (mass placement)",
+      topRecruiters: ["Infosys", "TCS", "Wipro", "Cognizant"],
+      offCampus: "Mass recruiters dominate"
     },
     
     academics: {
-      fees: "₹70k (3 years)",
-      cutoff: "98%+ but interview crucial",
-      branches: ["Economics", "English", "History", "Political Science"],
-      difficulty: "Moderate, legacy pressure",
-      attendance: "Strict 75%"
+      fees: "₹15-20 lakh (4 years)",
+      cutoff: "Board marks based (easy entry)",
+      branches: ["CSE", "IT", "ECE", "BBA", "Law", "Mass Comm"],
+      difficulty: "Easy academics, tough attendance",
+      attendance: "75% strict, biometric punch"
     },
     
     campus: {
-      area: "Small heritage campus",
-      hostel: "Limited hostel",
-      food: "Canteen basic",
-      wifi: "Basic",
-      library: "Historic library",
-      sports: "Limited"
+      area: "1000 acres (multiple campuses)",
+      hostel: "AC rooms, luxury feel",
+      food: "Multiple food courts, decent",
+      wifi: "Good connectivity",
+      library: "Well equipped",
+      sports: "Excellent facilities"
     },
     
     lifestyle: {
-      nightLife: "North Campus culture",
-      dating: "Gender ratio balanced",
-      fests: "Stephen's fest understated",
-      clubs: "Debate, theater, quiz dominant",
-      stress: "Low - chill vibe"
+      nightLife: "Delhi nearby but campus strict",
+      dating: "Good gender ratio, couples everywhere",
+      fests: "Amity Youth Fest - big budget",
+      clubs: "Active but forced participation",
+      stress: "Attendance stress > academics"
     },
     
     food: {
-      mess: "No mess",
-      canteen: "Heritage canteen vibes",
-      outside: "Kamla Nagar, Hudson Lane",
-      nightSnacks: "Delhi street food",
-      famous: "Canteen nostalgia > actual food"
+      mess: "Food court system 6/10",
+      canteen: "Multiple outlets, pricey",
+      outside: "Noida food options good",
+      nightSnacks: "Campus food available late",
+      famous: "AC food court (better than mess)"
     },
     
     stereotypes: [
-      "Interview clear karna > degree",
-      "Elite tag but package mid",
-      "South Delhi rich kids + missionaries",
-      "Arts waale intellectual flex",
-      "UPSC aspirants hub",
-      "Legacy tag > actual achievement",
-      "Stephen's tag LinkedIn pe, salary mid",
-      "Interview horror stories legendary"
+      "Rich kids ka backup",
+      "Fees IIT se zyada, placement 1/5th",
+      "Attendance hell (biometric torture)",
+      "Everyone's backup college",
+      "Corporate college feel",
+      "AC campus but career mein AC nahi",
+      "Parents paid ₹20L, expectation Google",
+      "Mass Communication mein sabse zyada students"
     ],
     
     roastMaterial: [
-      "Interview clear kiya but job interview clear nahi hota 💀",
-      "Elite tag hai but elite package nahi 😂",
-      "Stephen's se ho but salary step-by-step hi badh rahi 😭",
-      "Arts padha, artist ban gaye (starving) 💀",
-      "Legacy tag flex but legacy wealth nahi 😂",
-      "₹70k fees, ₹7L package expectation delusion 😭",
-      "Debate win karte ho but salary negotiate nahi hota",
-      "Intellectual flex but bank balance intellectual nahi 💀",
-      "UPSC prepare karte ho kyunki private sector reject 😂",
-      "Stephen's tag > skills"
+      "₹20 lakh fees di, ₹4 lakh package - profit kidhar hai? 💀",
+      "AC rooms hai but future mein AC afford nahi hoga 😂",
+      "Biometric attendance se darr, interviews se nahi 😭",
+      "Parents ne ₹20L invest kiya, ROI negative hai bc 💀",
+      "Amity se ho = every exam ka backup the 😂",
+      "Campus corporate jaisa, package Kirana store jaisa 😭",
+      "TCS placement ko highest bolte ho, IIT waale reject karte",
+      "75% attendance compulsory, 25% placement optional lagta 💀",
+      "Mass Comm padh rahe, mass placement mein khade ho 😂",
+      "Fees premium, tag cheap, future uncertain"
     ],
     
     funFacts: [
-      "Most prestigious DU college",
-      "Interview process legendary",
-      "UPSC toppers factory",
-      "Heritage campus beautiful",
-      "Elite tag but placement mid"
+      "Most expensive college, lowest ROI",
+      "Attendance system NASA level strict",
+      "AC campus but reality check brutal",
+      "Good facilities, mid placement",
+      "Everyone's backup, no one's first choice"
     ]
   },
 
-  "Lovely Professional University (LPU)": {
+  "Manipal Institute of Technology": {
+    id: "manipal-mit",
+    short: "MIT Manipal",
+    location: "Manipal, Karnataka",
+    
+    rankings: {
+      nirf: "#45 Engineering",
+      qs: "Not ranked",
+      reputation: "Party ka Mecca"
+    },
+    
+    placements: {
+      average: "7-8 LPA",
+      median: "6 LPA",
+      highest: "₹40 LPA (rare)",
+      lowest: "₹3.5 LPA",
+      topRecruiters: ["Microsoft", "Amazon", "Oracle", "Cisco"],
+      offCampus: "Varies heavily"
+    },
+    
+    academics: {
+      fees: "₹17 lakh (4 years)",
+      cutoff: "MET rank 5000+ (easy)",
+      branches: ["CSE", "IT", "ECE", "Mech", "Civil", "Biotech"],
+      difficulty: "Moderate, lenient system",
+      attendance: "75% but flexible"
+    },
+    
+    campus: {
+      area: "313 acres",
+      hostel: "Good hostels, party culture",
+      food: "Decent mess + food court",
+      wifi: "Good coverage",
+      library: "Well maintained",
+      sports: "Beach nearby, water sports"
+    },
+    
+    lifestyle: {
+      nightLife: "Legendary - bars, clubs, beach",
+      dating: "Gender ratio 6:1, active scene",
+      fests: "Revels (cultural), TechTatva (tech)",
+      clubs: "Very active, party > academics",
+      stress: "Low - chill college life"
+    },
+    
+    food: {
+      mess: "Decent 6/10",
+      canteen: "Food court good variety",
+      outside: "Manipal town - student friendly prices",
+      nightSnacks: "Night mess + town eateries",
+      famous: "Malnad mess (hostel mess legend)"
+    },
+    
+    stereotypes: [
+      "Party college > engineering college",
+      "Beach > books priority",
+      "₹17L di, 4 saal party ki",
+      "Placement week mein sober rehna challenge",
+      "Everyone's backup after BITS",
+      "Weekend mein Mangalore beach guaranteed",
+      "CSE padhte ho but CSS nahi aata",
+      "Revels mein hungover, exams mein sleep deprived"
+    ],
+    
+    roastMaterial: [
+      "₹17 lakh fees di, beach photos se recover karoge? 💀",
+      "4 saal party ki, 40 saal loan bharoge 😂",
+      "Manipal tag hai but manipulate nahi kar paa rahe career 😭",
+      "Beach dekhne gaye the, placement wave mein doob gaye 💀",
+      "Party skills 10/10, coding skills 2/10 😂",
+      "Revels organize karte ho but life mein revel nahi hai 😭",
+      "₹7 LPA avg ko achievement bolte ho",
+      "Mangalore beach flex, Mumbai salary reject 💀",
+      "Parents ne engineering bheja, tum hospitality mein graduate 😂",
+      "MIT tag flex, IIT tag envy"
+    ],
+    
+    funFacts: [
+      "Best college life in India (arguably)",
+      "Beach town = permanent vacation feel",
+      "Party culture legendary among privates",
+      "Placement decent if you actually studied",
+      "₹17L worth it for memories, not package"
+    ]
+  },
+
+  "VIT Vellore": {
+    id: "vit-vellore",
+    short: "VIT",
+    location: "Vellore, Tamil Nadu",
+    
+    rankings: {
+      nirf: "#11 Engineering",
+      qs: "#801-1000",
+      reputation: "Private ka best alternative"
+    },
+    
+    placements: {
+      average: "7.5 LPA",
+      median: "6 LPA",
+      highest: "₹45 LPA",
+      lowest: "₹3.5 LPA (core reality)",
+      topRecruiters: ["Microsoft", "Amazon", "Cisco", "PayPal"],
+      offCampus: "CSE good, core weak"
+    },
+    
+    academics: {
+      fees: "₹8-10 lakh (4 years) (rank based)",
+      cutoff: "VITEEE rank 5000 (decent category)",
+      branches: ["CSE", "ECE", "Mech", "IT", "EEE", "Chemical"],
+      difficulty: "Moderate to tough",
+      attendance: "75% mandatory, biometric"
+    },
+    
+    campus: {
+      area: "350 acres",
+      hostel: "Separate boys/girls, strict rules",
+      food: "Mess average 4/10",
+      wifi: "Good in academic blocks",
+      library: "24/7 library during exams",
+      sports: "Good facilities"
+    },
+    
+    lifestyle: {
+      nightLife: "Dead - Vellore conservative town",
+      dating: "Strict rules, hostel curfews",
+      fests: "Riviera (cultural), GraVITas (tech)",
+      clubs: "Decent club activity",
+      stress: "High - competitive environment"
+    },
+    
+    food: {
+      mess: "South Indian heavy, repetitive 4/10",
+      canteen: "Subway, Dominos available (expensive)",
+      outside: "Vellore limited, Chennai 2 hours",
+      nightSnacks: "Campus Subway late night",
+      famous: "Nothing notable (mess complaints common)"
+    },
+    
+    stereotypes: [
+      "BITS ka backup, NIT nahi mila",
+      "Fees rank based - discrimination feel",
+      "Strict hostel rules (boarding school vibes)",
+      "Vellore boring, Chennai door",
+      "Good academics but social life zero",
+      "CSE mein CSE, baaki branch regret",
+      "Biometric attendance torture",
+      "Private college but government jaisi strictness"
+    ],
+    
+    roastMaterial: [
+      "₹10 lakh di ho lekin Category 1 nahi aaya 💀",
+      "VIT tag flex, BITS envy real hai 😂",
+      "Vellore mein 4 saal, social skills Vellore level hi reh gayi 😭",
+      "Biometric attendance se bachne ki jugaad engineer bana di 💀",
+      "Riviera organize karte ho but social life river dry hai 😂",
+      "CSE mein ho toh theek, baaki branch = mistake 😭",
+      "Hostel rules strict, future rules bhi strict lagenge",
+      "₹7.5 LPA avg bolte ho but IIT se compare karte ho 💀",
+      "Rank based fees = parents ka mood based treatment 😂",
+      "Private college paid, government college ki feeling free"
+    ],
+    
+    funFacts: [
+      "Better than many NITs in CSE placement",
+      "Rank 1 gets ₹4L fees, Rank 50000 pays ₹10L (same degree)",
+      "Strict hostel = relationship success rate 0%",
+      "Vellore nothing to do, Chennai weekend escape",
+      "Good for studying, bad for living"
+    ]
+  },
+
+  "LPU Jalandhar": {
     id: "lpu-punjab",
     short: "LPU",
     location: "Phagwara, Punjab",
@@ -2085,775 +1717,13 @@ export const getAllCollegeNames = () => {
       "Good facilities, mid education",
       "Everyone's last option"
     ]
-  },
-
-  "Chitkara University": {
-    id: "chitkara-punjab",
-    short: "Chitkara",
-    location: "Rajpura, Punjab",
-    
-    rankings: {
-      nirf: "#60+",
-      qs: "Not ranked",
-      reputation: "LPU ka competitor, similar vibes"
-    },
-    
-    placements: {
-      average: "5 LPA",
-      median: "4 LPA",
-      highest: "₹31 LPA (rare)",
-      lowest: "₹2.5 LPA",
-      topRecruiters: ["Amazon", "Microsoft", "Infosys", "TCS"],
-      offCampus: "Service based dominate"
-    },
-    
-    academics: {
-      fees: "₹10-14 lakh (4 years)",
-      cutoff: "Easy admission",
-      branches: ["CSE", "ECE", "Mech", "Civil"],
-      difficulty: "Easy",
-      attendance: "75% strict"
-    },
-    
-    campus: {
-      area: "good sized campus",
-      hostel: "Modern hostels",
-      food: "Food court system",
-      wifi: "Good",
-      library: "Well equipped",
-      sports: "Good facilities"
-    },
-    
-    lifestyle: {
-      nightLife: "Rajpura boring",
-      dating: "Active scene",
-      fests: "Big budget marketing fests",
-      clubs: "Active clubs",
-      stress: "Low"
-    },
-    
-    food: {
-      mess: "Food court 5/10",
-      canteen: "Multiple options",
-      outside: "Rajpura limited, Chandigarh far",
-      nightSnacks: "Campus food",
-      famous: "Nothing special"
-    },
-    
-    stereotypes: [
-      "LPU reject (ironic)",
-      "Punjab ka another billboard college",
-      "Fees high, placement low pattern",
-      "Chandigarh flex but 50km away",
-      "Good facilities, average education",
-      "Everyone's backup backup",
-      "Marketing heavy college"
-    ],
-    
-    roastMaterial: [
-      "LPU nahi mila toh Chitkara, IIT toh sapne mein 💀",
-      "₹14 lakh fees, ₹5 lakh package - math weak? 😂",
-      "Chandigarh flex karte ho, 50km door hai bc 😭",
-      "₹31L highest (1 banda), baaki TCS 💀",
-      "Punjab mein backup ka backup ho 😂",
-      "Good facilities hai but good placement nahi 😭",
-      "Marketing mein ₹₹₹, education mein ₹",
-      "Chitkara tag > nobody cares 💀",
-      "Private university lottery ticket 😂",
-      "Fees private, value government se bhi kam"
-    ],
-    
-    funFacts: [
-      "Competes with LPU in Punjab",
-      "Good infrastructure",
-      "Marketing budget high",
-      "Placement average",
-      "Backup college status"
-    ]
-  },
-
-  "SRM Chennai": {
-    id: "srm-chennai",
-    short: "SRM",
-    location: "Kattankulathur, Chennai",
-    
-    rankings: {
-      nirf: "#22 Engineering",
-      qs: "#801-1000",
-      reputation: "South ka VIT competitor"
-    },
-    
-    placements: {
-      average: "6 LPA",
-      median: "5 LPA",
-      highest: "₹45 LPA (CSE rare)",
-      lowest: "₹3 LPA (core reality)",
-      topRecruiters: ["Amazon", "Microsoft", "TCS", "Infosys"],
-      offCampus: "CSE decent, core struggle"
-    },
-    
-    academics: {
-      fees: "₹10-12 lakh (4 years)",
-      cutoff: "SRMJEEE rank based (easy)",
-      branches: ["CSE", "IT", "ECE", "Mech", "Civil"],
-      difficulty: "Easy to moderate",
-      attendance: "75% compulsory"
-    },
-    
-    campus: {
-      area: "250+ acres",
-      hostel: "Decent hostels",
-      food: "South Indian heavy",
-      wifi: "Good coverage",
-      library: "Large library",
-      sports: "Good facilities"
-    },
-    
-    lifestyle: {
-      nightLife: "Chennai conservative",
-      dating: "Active but conservative pressure",
-      fests: "Milan (cultural), Aaruush (tech)",
-      clubs: "Active participation",
-      stress: "Medium"
-    },
-    
-    food: {
-      mess: "South Indian only 4/10 for North",
-      canteen: "Multiple canteens",
-      outside: "Chennai food good but far",
-      nightSnacks: "Campus options limited",
-      famous: "Mess idli (love/hate)"
-    },
-    
-    stereotypes: [
-      "VIT reject (ironic comparison)",
-      "North Indians struggle with food",
-      "Chennai conservative culture shock",
-      "CSE vs core salary gap massive",
-      "Good marketing, average reality",
-      "Private college expensive version",
-      "South Indian food everyday torture"
-    ],
-    
-    roastMaterial: [
-      "₹12 lakh di, ₹6 lakh package - loss business 💀",
-      "VIT nahi mila toh SRM cope mechanism 😂",
-      "Idli roz khate khate personality bhi bland 😭",
-      "₹45L highest bolte ho, TCS ₹3.5L reality 💀",
-      "Chennai mein ho, social life bhi conservative 😂",
-      "CSE mein ho toh theek, Mech mein regret 😭",
-      "Milan organize karte ho but milan job se nahi ho rahi",
-      "North se aaye the, South Indian food se haare 💀",
-      "Private fees premium, placement mid 😂",
-      "SRM tag < VIT tag < NIT tag < IIT tag"
-    ],
-    
-    funFacts: [
-      "Large campus",
-      "Better than Amity in South",
-      "South Indian food make or break",
-      "Chennai conservative but safe",
-      "VIT competitor but lower tier"
-    ]
-  },
-
-  "Thapar University": {
-    id: "thapar-patiala",
-    short: "Thapar",
-    location: "Patiala, Punjab",
-    
-    rankings: {
-      nirf: "#27 Engineering",
-      qs: "Not ranked",
-      reputation: "Punjab ka decent private option"
-    },
-    
-    placements: {
-      average: "8 LPA",
-      median: "7 LPA",
-      highest: "₹40 LPA",
-      lowest: "₹4 LPA",
-      topRecruiters: ["Amazon", "Microsoft", "Adobe", "Oracle"],
-      offCampus: "Decent for CSE"
-    },
-    
-    academics: {
-      fees: "₹13 lakh (4 years)",
-      cutoff: "JEE Main 15000-20000",
-      branches: ["COE", "Mech", "ECE", "Civil"],
-      difficulty: "Moderate",
-      attendance: "75% required"
-    },
-    
-    campus: {
-      area: "250 acres",
-      hostel: "Good hostels",
-      food: "North Indian food",
-      wifi: "Good",
-      library: "Well stocked",
-      sports: "Good facilities"
-    },
-    
-    lifestyle: {
-      nightLife: "Patiala small city",
-      dating: "Gender ratio 7:1",
-      fests: "Crossroads (cultural), Techfest",
-      clubs: "Active clubs",
-      stress: "Medium"
-    },
-    
-    food: {
-      mess: "Punjabi food 6/10",
-      canteen: "Campus canteens decent",
-      outside: "Patiala limited, Chandigarh accessible",
-      nightSnacks: "Night mess available",
-      famous: "Better than South private colleges (food)"
-    },
-    
-    stereotypes: [
-      "Punjab ka better private option",
-      "LPU se behtar but still private",
-      "Patiala boring city",
-      "COE vs other branches gap",
-      "Fees high for Punjab parents",
-      "Better than VIT in North perception",
-      "Chandigarh weekend escape"
-    ],
-    
-    roastMaterial: [
-      "₹13 lakh fees, ₹8 lakh package - ROI weak 💀",
-      "Thapar tag kisi ko pata nahi 😂",
-      "Patiala mein ho, social life bhi sober 😭",
-      "LPU se better cope but NIT se compare mat karo 💀",
-      "Punjab ka better private = still private college 😂",
-      "COE mein ho toh decent, baaki regret 😭",
-      "₹40L highest (1 banda), average toh dekho",
-      "Chandigarh bhaag jaate ho Patiala se 💀",
-      "Private tag but government level fees 😂",
-      "Thapar > LPU > nobody cares"
-    },
-    
-    funFacts: [
-      "Better than LPU/Chitkara in quality",
-      "Patiala Peg city but conservative campus",
-      "Good faculty",
-      "Chandigarh proximity helps",
-      "Decent placement for North private"
-    ]
-  },
-
-  "Jadavpur University": {
-    id: "jadavpur-kolkata",
-    short: "JU",
-    location: "Kolkata, West Bengal",
-    
-    rankings: {
-      nirf: "#12 Engineering",
-      qs: "Not ranked",
-      reputation: "Bengal ka pride, political campus"
-    },
-    
-    placements: {
-      average: "11 LPA",
-      median: "9 LPA",
-      highest: "₹42 LPA",
-      lowest: "₹4 LPA",
-      topRecruiters: ["Microsoft", "Amazon", "Goldman Sachs"],
-      offCampus: "Good alumni network"
-    },
-    
-    academics: {
-      fees: "₹50k (4 years) - dirt cheap",
-      cutoff: "JEE Main Rank 5000-8000",
-      branches: ["CSE", "IT", "ECE", "Mech", "Civil"],
-      difficulty: "Moderate",
-      attendance: "Flexible (political culture)"
-    },
-    
-    campus: {
-      area: "Urban campus",
-      hostel: "Old infrastructure",
-      food: "Bengali food",
-      wifi: "Basic",
-      library: "Good collection",
-      sports: "Limited"
-    },
-    
-    lifestyle: {
-      nightLife: "Kolkata culture rich",
-      dating: "Active culture",
-      fests: "Sanskriti, political rallies",
-      clubs: "Politics > technical clubs",
-      stress: "Low - chill vibe"
-    },
-    
-    food: {
-      mess: "Bengali food 5/10 for non-Bengali",
-      canteen: "Campus canteen basic",
-      outside: "Kolkata food legendary",
-      nightSnacks: "Street food paradise nearby",
-      famous: "Fish curry (daily struggle)"
-    },
-    
-    stereotypes: [
-      "Political campus > technical campus",
-      "Strike culture legendary",
-      "Bengal quota advantage",
-      "Fish smell constant",
-      "Kolkata culture > engineering",
-      "Communist nostalgia",
-      "Fees cheap but infrastructure shows",
-      "Rabindra Sangeet > coding"
-    ],
-    
-    roastMaterial: [
-      "Political rally attend karte ho, placement rally attend nahi 💀",
-      "₹50k fees hai but fish ka budget ₹50k 😂",
-      "Strike karte ho but striking personality nahi 😭",
-      "Kolkata culture flex but placement culture weak 💀",
-      "Bengali pride hai but Bengali package nahi 😂",
-      "₹11 LPA avg hai but half Bengal mein hi rehte ho 😭",
-      "Political science > computer science focus",
-      "Fish khate khate future bhi fishy 💀",
-      "Cheap fees flex but placements bhi cheap feel 😂",
-      "Heritage tag but modern skills heritage"
-    },
-    
-    funFacts: [
-      "Cheapest quality engineering (₹50k total)",
-      "Political culture legendary",
-      "Kolkata city perks",
-      "Better than many NITs",
-      "Strike culture real problem"
-    ]
-  },
-
-  "PES University Bangalore": {
-    id: "pes-bangalore",
-    short: "PESU",
-    location: "Bangalore, Karnataka",
-    
-    rankings: {
-      nirf: "#62 Engineering",
-      qs: "Not ranked",
-      reputation: "Bangalore private option, startup culture"
-    },
-    
-    placements: {
-      average: "9 LPA",
-      median: "7 LPA",
-      highest: "₹50 LPA",
-      lowest: "₹4 LPA",
-      topRecruiters: ["Amazon", "Microsoft", "Flipkart", "Goldman Sachs"],
-      offCampus: "Bangalore startups"
-    },
-    
-    academics: {
-      fees: "₹12 lakh (4 years)",
-      cutoff: "PESSAT/KCET rank based",
-      branches: ["CSE", "ECE", "Mech", "Biotech"],
-      difficulty: "Moderate",
-      attendance: "75% strict"
-    },
-    
-    campus: {
-      area: "Urban campus",
-      hostel: "Good hostels",
-      food: "Decent mess",
-      wifi: "Excellent",
-      library: "Modern library",
-      sports: "Good facilities"
-    },
-    
-    lifestyle: {
-      nightLife: "Bangalore IT hub perks",
-      dating: "Active scene",
-      fests: "INQUIZITIVE, tech fests",
-      clubs: "Startup clubs dominant",
-      stress: "Medium-high"
-    },
-    
-    food: {
-      mess: "Decent 6/10",
-      canteen: "Multiple outlets",
-      outside: "Bangalore food paradise",
-      nightSnacks: "Swiggy/Zomato culture",
-      famous: "Outside food culture (expensive)"
-    },
-    
-    stereotypes: [
-      "Bangalore weather daily flex",
-      "Startup intern unpaid reality",
-      "PES tag kisi ko pata nahi",
-      "RV College rival",
-      "Bangalore traffic victim",
-      "Expensive city, expensive college",
-      "Good placements but Bangalore rent kills"
-    ],
-    
-    roastMaterial: [
-      "₹12L fees + Bangalore rent = broke life 💀",
-      "Bangalore weather flex but PG ka AC nahi 😂",
-      "Startup intern ho but stipend negative 😭",
-      "₹9 LPA package, ₹3 LPA rent 💀",
-      "PES tag kisi ko nahi pata outside Bangalore 😂",
-      "Traffic mein 2 ghante, campus 10 min 😭",
-      "IT hub mein ho but IT job nahi mili",
-      "Weather perfect hai but wallet imperfect 💀",
-      "Startup culture hai but success startup level rare 😂",
-      "Private fees, government chaos"
-    },
-    
-    funFacts: [
-      "Bangalore IT hub advantage",
-      "Good placement compared to tier",
-      "Expensive city life",
-      "Startup ecosystem access",
-      "Better than many state colleges"
-    ]
-  },
-
-  "KIIT Bhubaneswar": {
-    id: "kiit-bhubaneswar",
-    short: "KIIT",
-    location: "Bhubaneswar, Odisha",
-    
-    rankings: {
-      nirf: "#30 Engineering",
-      qs: "Not ranked",
-      reputation: "Odisha ka pride, expensive private"
-    },
-    
-    placements: {
-      average: "6 LPA",
-      median: "5 LPA",
-      highest: "₹39 LPA",
-      lowest: "₹3 LPA",
-      topRecruiters: ["TCS", "Infosys", "Wipro", "Cognizant"],
-      offCampus: "Mass recruiters dominant"
-    },
-    
-    academics: {
-      fees: "₹10-13 lakh (4 years)",
-      cutoff: "KIITEE rank based (easy)",
-      branches: ["CSE", "IT", "ECE", "Mech", "Civil"],
-      difficulty: "Easy",
-      attendance: "Strict biometric"
-    },
-    
-    campus: {
-      area: "Large campus",
-      hostel: "Good facilities",
-      food: "Food court system",
-      wifi: "Good",
-      library: "Well equipped",
-      sports: "Excellent sports facilities"
-    },
-    
-    lifestyle: {
-      nightLife: "Bhubaneswar boring",
-      dating: "Active scene",
-      fests: "KIIT fest (huge budget)",
-      clubs: "Active clubs",
-      stress: "Low"
-    },
-    
-    food: {
-      mess: "Food court 5/10",
-      canteen: "Multiple options",
-      outside: "Bhubaneswar limited",
-      nightSnacks: "Campus food available",
-      famous: "Nothing special"
-    },
-    
-    stereotypes: [
-      "Odisha ka LPU",
-      "Expensive for Odisha standards",
-      "Good facilities, mid placement",
-      "Mass placement college",
-      "Everyone's backup in East",
-      "Sports facilities > academic quality",
-      "KIIT tag Odisha mein hi famous"
-    ],
-    
-    roastMaterial: [
-      "₹13L fees di, ₹6L package - Odisha mein scam 💀",
-      "₹39L highest bolte ho, 1 banda out of 5000 😂",
-      "KIIT tag Odisha ke bahar nobody knows 😭",
-      "Sports facilities best but placement mid 💀",
-      "Bhubaneswar mein ho, opportunities bhi bore 😂",
-      "TCS mass placement ko flex karte ho 😭",
-      "Expensive private but government level chaos",
-      "KIIT fest budget > education budget obvious 💀",
-      "Biometric strict but quality optional 😂",
-      "Backup ka backup in East India"
-    },
-    
-    funFacts: [
-      "Best sports facilities among privates",
-      "Expensive for Odisha",
-      "Large campus",
-      "Mass placement model",
-      "Regional pride strong"
-    ]
-  },
-
-  "NIT Calicut": {
-    id: "nit-calicut",
-    short: "NITC",
-    location: "Calicut, Kerala",
-    
-    rankings: {
-      nirf: "#23 Engineering",
-      qs: "Not ranked",
-      reputation: "Kerala ka pride, God's own NIT"
-    },
-    
-    placements: {
-      average: "11 LPA",
-      median: "9 LPA",
-      highest: "₹49 LPA",
-      lowest: "₹4 LPA",
-      topRecruiters: ["Microsoft", "Google", "Amazon", "Oracle"],
-      offCampus: "CSE good, core average"
-    },
-    
-    academics: {
-      fees: "₹7 lakh (4 years)",
-      cutoff: "JEE Main Rank 5000 (Gen CSE)",
-      branches: ["CSE", "ECE", "EE", "Mech", "Civil"],
-      difficulty: "Moderate to tough",
-      attendance: "75% compulsory"
-    },
-    
-    campus: {
-      area: "625 acres",
-      hostel: "Good hostels",
-      food: "Kerala food (coconut overload)",
-      wifi: "Good coverage",
-      library: "Well maintained",
-      sports: "Good facilities"
-    },
-    
-    lifestyle: {
-      nightLife: "Calicut conservative",
-      dating: "Gender ratio 8:1",
-      fests: "Ragam (cultural), Tathva (tech)",
-      clubs: "Active participation",
-      stress: "Medium"
-    },
-    
-    food: {
-      mess: "Kerala food 4/10 for non-Keralites",
-      canteen: "Campus canteens",
-      outside: "Calicut city food good",
-      nightSnacks: "Limited late night",
-      famous: "Coconut in everything (horror for North)"
-    },
-    
-    stereotypes: [
-      "God's own NIT (Kerala pride)",
-      "Coconut overload in food",
-      "Malayalam everywhere",
-      "Conservative Kerala culture",
-      "Rainy season depression",
-      "CSE package flex, core hide",
-      "Better than Trichy cope mechanism",
-      "Kerala literacy vs placement gap"
-    ],
-    
-    roastMaterial: [
-      "God's own country but God's own package nahi 💀",
-      "Coconut har cheez mein, career bhi coconut size 😂",
-      "₹11 LPA avg, NIT Trichy ₹12L hassta hai 😭",
-      "Malayalam seekh rahe ho survive karne ke liye 💀",
-      "Kerala literacy 100%, placement rate 60% 😂",
-      "Ragam organize karte ho but career mein ragam 😭",
-      "Rain mein bheeg rahe ho, placement mein doob rahe ho",
-      "CSE package flex, Mech waale chhupte hain 💀",
-      "Conservative Kerala mein ho, career bhi conserve ho gaya 😂",
-      "Best NIT cope but Trichy reality"
-    },
-    
-    funFacts: [
-      "Beautiful Kerala campus",
-      "High literacy state perks",
-      "Rain throughout year",
-      "Better than many new IITs",
-      "Coconut actually in everything (true)"
-    ]
-  },
-
-  "NIT Rourkela": {
-    id: "nit-rourkela",
-    short: "NITR",
-    location: "Rourkela, Odisha",
-    
-    rankings: {
-      nirf: "#16 Engineering",
-      qs: "Not ranked",
-      reputation: "Metallurgy ka Mecca, industrial town NIT"
-    },
-    
-    placements: {
-      average: "10 LPA",
-      median: "8 LPA",
-      highest: "₹50 LPA",
-      lowest: "₹4 LPA (core)",
-      topRecruiters: ["Microsoft", "Amazon", "Tata Steel", "Oracle"],
-      offCampus: "Metallurgy placement best"
-    },
-    
-    academics: {
-      fees: "₹7 lakh (4 years)",
-      cutoff: "JEE Main Rank 6000 (Gen CSE)",
-      branches: ["CSE", "Metallurgy", "ECE", "Mech", "Mining"],
-      difficulty: "Moderate",
-      attendance: "75% required"
-    },
-    
-    campus: {
-      area: "690 acres",
-      hostel: "Decent hostels",
-      food: "Odia food influence",
-      wifi: "Good",
-      library: "Good library",
-      sports: "Good facilities"
-    },
-    
-    lifestyle: {
-      nightLife: "Rourkela industrial town, dead",
-      dating: "Gender ratio 8:1",
-      fests: "Nitrutsav (cultural)",
-      clubs: "Active clubs",
-      stress: "Medium"
-    },
-    
-    food: {
-      mess: "Odia food 5/10",
-      canteen: "Basic canteens",
-      outside: "Rourkela limited options",
-      nightSnacks: "Night mess",
-      famous: "Nothing notable"
-    },
-    
-    stereotypes: [
-      "Metallurgy famous but nobody takes it",
-      "Industrial town vibes",
-      "Rourkela deadest among NITs",
-      "Steel city but rusty placement",
-      "Odisha quota advantage",
-      "CSE vs Metallurgy campus divide",
-      "Better than new NITs cope"
-    ],
-    
-    roastMaterial: [
-      "Metallurgy famous but CSE mein hi ho 💀",
-      "Steel city mein ho, future bhi hard lagta 😂",
-      "Rourkela mein 4 saal, social skills rust ho gayi 😭",
-      "₹10 LPA avg bolte ho but top NIT nahi ho 💀",
-      "Industrial town hai but industrial package nahi 😂",
-      "Metallurgy padhate ho but metal health issues 😭",
-      "NIT tag hai but location tag embarrassing",
-      "Steel plant dekhte ho, career bhi rigid 💀",
-      "Nitrutsav organize karte ho but nitr-aas bhari 😂",
-      "Better than new NITs = not a flex"
-    ],
-    
-    funFacts: [
-      "Best Metallurgy department in India",
-      "Industrial town campus",
-      "Rourkela boring AF",
-      "Steel plant nearby",
-      "Better core placement than other NITs"
-    ]
-  },
-
-  "Anna University Chennai": {
-    id: "anna-university",
-    short: "Anna Univ",
-    location: "Chennai, Tamil Nadu",
-    
-    rankings: {
-      nirf: "#14 Engineering",
-      qs: "#751-800",
-      reputation: "Tamil Nadu engineering hub"
-    },
-    
-    placements: {
-      average: "6-7 LPA",
-      median: "5 LPA",
-      highest: "₹20 LPA",
-      lowest: "₹3 LPA",
-      topRecruiters: ["TCS", "Infosys", "Wipro", "Cognizant"],
-      offCampus: "Mass recruiters"
-    },
-    
-    academics: {
-      fees: "₹2 lakh (4 years) - government college",
-      cutoff: "TNEA rank based",
-      branches: ["CSE", "IT", "ECE", "Mech", "Civil"],
-      difficulty: "Moderate",
-      attendance: "75% strict"
-    },
-    
-    campus: {
-      area: "Urban Chennai campus",
-      hostel: "Limited hostel",
-      food: "South Indian only",
-      wifi: "Basic",
-      library: "Large library",
-      sports: "Basic facilities"
-    },
-    
-    lifestyle: {
-      nightLife: "Chennai conservative",
-      dating: "Conservative culture",
-      fests: "Anna fest",
-      clubs: "Basic clubs",
-      stress: "Medium"
-    },
-    
-    food: {
-      mess: "South Indian 4/10 for North",
-      canteen: "Campus canteen basic",
-      outside: "Chennai food good",
-      nightSnacks: "Limited",
-      famous: "Idli breakfast (mandatory)"
-    },
-    
-    stereotypes: [
-      "TN ka every engineer affiliated",
-      "Mass university feel",
-      "Government college chaos",
-      "Tamil mandatory for survival",
-      "South Indian food only",
-      "Conservative campus culture",
-      "Cheap fees but basic facilities"
-    ],
-    
-    roastMaterial: [
-      "₹2 lakh fees hai but ₹2 lakh package bhi nahi 💀",
-      "Anna University tag har TN engineer ke paas 😂",
-      "Tamil nahi aati toh alien feel 😭",
-      "Government college hai but government job nahi milti 💀",
-      "Idli roz khate khate personality bhi plain 😂",
-      "Mass university = mass placement 😭",
-      "Chennai conservative hai, career bhi conserve ho gaya",
-      "₹6 LPA avg ko achievement bolte ho 💀",
-      "TCS mass hire ko flex karte ho 😂",
-      "Cheap fees flex but cheap value bhi"
-    ],
-    
-    funFacts: [
-      "Cheapest engineering (₹2L total)",
-      "All TN engineering affiliated",
-      "Mass university model",
-      "Government college perks",
-      "Tamil Nadu pride"
-    ]
   }
+};
 
-}; // End of COLLEGES object
+export const getAllCollegeNames = () => {
+  return Object.keys(COLLEGES).sort();
+};
 
-// Export functions remain same...
+export const getCollegeByName = (name) => {
+  return COLLEGES[name];
+};
