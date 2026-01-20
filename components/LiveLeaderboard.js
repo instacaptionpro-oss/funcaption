@@ -58,8 +58,8 @@ export default function LiveLeaderboard() {
     <div style={{
       background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(10, 10, 20, 0.98))',
       border: '2px solid rgba(255, 255, 255, 0.1)',
-      borderRadius: '24px',
-      padding: '28px',
+      borderRadius: '20px',
+      padding: '20px',
       position: 'relative',
       overflow: 'hidden'
     }}>
@@ -79,21 +79,21 @@ export default function LiveLeaderboard() {
       {/* Content */}
       <div style={{ position: 'relative', zIndex: 1 }}>
         
-        {/* Header */}
+        {/* Header - COMPACT */}
         <div style={{
           textAlign: 'center',
-          marginBottom: '24px',
-          paddingBottom: '20px',
+          marginBottom: '16px',
+          paddingBottom: '12px',
           borderBottom: '2px solid rgba(255, 255, 255, 0.1)'
         }}>
           <div style={{
-            fontSize: '2rem',
+            fontSize: '1.4rem',
             fontWeight: '900',
             background: 'linear-gradient(135deg, #00D4FF, #FF4500)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            marginBottom: '8px',
-            letterSpacing: '1px'
+            marginBottom: '6px',
+            letterSpacing: '0.5px'
           }}>
             {COMPETITION.name}
           </div>
@@ -102,67 +102,67 @@ export default function LiveLeaderboard() {
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '6px',
             background: compStatus.status === 'live' 
               ? 'rgba(239, 68, 68, 0.2)' 
               : 'rgba(255, 255, 255, 0.1)',
             border: compStatus.status === 'live'
               ? '2px solid #EF4444'
               : '1px solid rgba(255, 255, 255, 0.2)',
-            borderRadius: '20px',
-            padding: '6px 16px',
-            marginBottom: '12px'
+            borderRadius: '16px',
+            padding: '4px 12px',
+            marginBottom: '8px'
           }}>
             {compStatus.status === 'live' && (
               <div style={{
-                width: '8px',
-                height: '8px',
+                width: '6px',
+                height: '6px',
                 borderRadius: '50%',
                 background: '#EF4444',
-                boxShadow: '0 0 10px #EF4444',
+                boxShadow: '0 0 8px #EF4444',
                 animation: 'pulse 2s infinite'
               }} />
             )}
             <span style={{
-              fontSize: '0.85rem',
+              fontSize: '0.75rem',
               fontWeight: '700',
               color: compStatus.status === 'live' ? '#EF4444' : 'rgba(255, 255, 255, 0.7)',
-              letterSpacing: '1px'
+              letterSpacing: '0.5px'
             }}>
               {compStatus.message}
             </span>
           </div>
 
-          {/* Countdown */}
+          {/* Countdown - COMPACT */}
           {compStatus.status === 'live' && (
             <div style={{
-              fontSize: '1.2rem',
+              fontSize: '0.95rem',
               fontWeight: '800',
               color: '#00D4FF',
               fontFamily: 'monospace',
-              marginTop: '8px'
+              marginTop: '4px'
             }}>
-              ⏰ {timeLeft} remaining
+              ⏰ {timeLeft}
             </div>
           )}
         </div>
 
-        {/* Live Stats */}
+        {/* Live Stats - COMPACT */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '12px',
-          marginBottom: '24px'
+          gap: '10px',
+          marginBottom: '16px'
         }}>
           <div style={{
             background: 'rgba(0, 212, 255, 0.1)',
             border: '1px solid rgba(0, 212, 255, 0.3)',
-            borderRadius: '12px',
-            padding: '12px',
+            borderRadius: '10px',
+            padding: '10px',
             textAlign: 'center'
           }}>
             <div style={{
-              fontSize: '1.8rem',
+              fontSize: '1.4rem',
               fontWeight: '900',
               color: '#00D4FF',
               fontFamily: 'monospace'
@@ -170,26 +170,26 @@ export default function LiveLeaderboard() {
               {stats.totalBattles || 0}
             </div>
             <div style={{
-              fontSize: '0.75rem',
+              fontSize: '0.65rem',
               color: 'rgba(255, 255, 255, 0.6)',
               fontWeight: '600',
               textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              marginTop: '4px'
+              letterSpacing: '0.3px',
+              marginTop: '2px'
             }}>
-              Total Battles
+              Battles
             </div>
           </div>
 
           <div style={{
             background: 'rgba(34, 197, 94, 0.1)',
             border: '1px solid rgba(34, 197, 94, 0.3)',
-            borderRadius: '12px',
-            padding: '12px',
+            borderRadius: '10px',
+            padding: '10px',
             textAlign: 'center'
           }}>
             <div style={{
-              fontSize: '1.8rem',
+              fontSize: '1.4rem',
               fontWeight: '900',
               color: '#22C55E',
               fontFamily: 'monospace'
@@ -197,12 +197,12 @@ export default function LiveLeaderboard() {
               {stats.liveUsers || 0}
             </div>
             <div style={{
-              fontSize: '0.75rem',
+              fontSize: '0.65rem',
               color: 'rgba(255, 255, 255, 0.6)',
               fontWeight: '600',
               textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              marginTop: '4px'
+              letterSpacing: '0.3px',
+              marginTop: '2px'
             }}>
               Live Users
             </div>
@@ -211,22 +211,22 @@ export default function LiveLeaderboard() {
 
         {/* Leaderboard Title */}
         <div style={{
-          fontSize: '1.2rem',
+          fontSize: '1rem',
           fontWeight: '800',
           color: '#FFD700',
           textAlign: 'center',
-          marginBottom: '16px',
+          marginBottom: '12px',
           textTransform: 'uppercase',
-          letterSpacing: '1px'
+          letterSpacing: '0.5px'
         }}>
           👑 Live Rankings
         </div>
 
-        {/* Teams */}
+        {/* Teams - COMPACT */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '16px'
+          gap: '12px'
         }}>
           {leaderboard.map((team, index) => {
             const teamColor = getTeamColor(team.name);
@@ -239,14 +239,14 @@ export default function LiveLeaderboard() {
                 key={team.name}
                 style={{
                   background: `linear-gradient(135deg, ${teamColor}15, ${teamColor}05)`,
-                  border: isWinning ? `3px solid ${teamColor}` : `2px solid ${teamColor}40`,
-                  borderRadius: '18px',
-                  padding: '20px',
+                  border: isWinning ? `2px solid ${teamColor}` : `1px solid ${teamColor}40`,
+                  borderRadius: '12px',
+                  padding: '14px',
                   position: 'relative',
                   overflow: 'hidden',
                   transform: isWinning ? 'scale(1.02)' : 'scale(1)',
                   transition: 'all 0.3s ease',
-                  boxShadow: isWinning ? `0 10px 40px ${teamColor}40` : 'none'
+                  boxShadow: isWinning ? `0 8px 30px ${teamColor}40` : 'none'
                 }}
               >
                 {/* Winning Glow */}
@@ -267,9 +267,9 @@ export default function LiveLeaderboard() {
                 {isWinning && (
                   <div style={{
                     position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    fontSize: '2rem',
+                    top: '8px',
+                    right: '8px',
+                    fontSize: '1.5rem',
                     animation: 'bounce 2s infinite'
                   }}>
                     👑
@@ -281,62 +281,62 @@ export default function LiveLeaderboard() {
                   <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '12px',
-                    marginBottom: '16px'
+                    gap: '10px',
+                    marginBottom: '12px'
                   }}>
                     <div style={{
-                      width: '50px',
-                      height: '50px',
+                      width: '40px',
+                      height: '40px',
                       borderRadius: '50%',
                       background: `linear-gradient(135deg, ${teamColor}, ${teamColor}cc)`,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.8rem',
+                      fontSize: '1.4rem',
                       fontWeight: '900',
                       color: '#000',
-                      boxShadow: `0 0 20px ${teamColor}60`
+                      boxShadow: `0 0 15px ${teamColor}60`
                     }}>
                       #{index + 1}
                     </div>
                     
                     <div style={{ flex: 1 }}>
                       <div style={{
-                        fontSize: '1.4rem',
+                        fontSize: '1.1rem',
                         fontWeight: '900',
                         color: teamColor,
-                        marginBottom: '4px',
+                        marginBottom: '2px',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '8px'
+                        gap: '6px'
                       }}>
                         {teamEmoji} {team.name}
                       </div>
                       <div style={{
-                        fontSize: '0.75rem',
+                        fontSize: '0.7rem',
                         color: 'rgba(255, 255, 255, 0.5)',
                         fontWeight: '600'
                       }}>
-                        {team.battles} battles • {winRate}% win rate
+                        {team.battles} battles • {winRate}% win
                       </div>
                     </div>
                   </div>
 
-                  {/* Score Display */}
+                  {/* Score Display - COMPACT */}
                   <div style={{
                     background: 'rgba(0, 0, 0, 0.3)',
-                    borderRadius: '12px',
-                    padding: '16px',
-                    marginBottom: '12px'
+                    borderRadius: '10px',
+                    padding: '12px',
+                    marginBottom: '10px'
                   }}>
                     <div style={{
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'baseline',
-                      marginBottom: '10px'
+                      marginBottom: '8px'
                     }}>
                       <span style={{
-                        fontSize: '0.8rem',
+                        fontSize: '0.7rem',
                         color: 'rgba(255, 255, 255, 0.6)',
                         fontWeight: '600',
                         textTransform: 'uppercase'
@@ -344,21 +344,21 @@ export default function LiveLeaderboard() {
                         Total Score
                       </span>
                       <span style={{
-                        fontSize: '2.5rem',
+                        fontSize: '1.8rem',
                         fontWeight: '900',
                         color: teamColor,
                         fontFamily: 'monospace',
-                        textShadow: `0 0 20px ${teamColor}80`
+                        textShadow: `0 0 15px ${teamColor}80`
                       }}>
                         {team.totalScore?.toLocaleString() || 0}
                       </span>
                     </div>
 
-                    {/* Animated Progress Bar */}
+                    {/* Progress Bar - COMPACT */}
                     <div style={{
                       background: 'rgba(0, 0, 0, 0.5)',
-                      height: '12px',
-                      borderRadius: '6px',
+                      height: '8px',
+                      borderRadius: '4px',
                       overflow: 'hidden',
                       position: 'relative'
                     }}>
@@ -366,12 +366,11 @@ export default function LiveLeaderboard() {
                         width: `${Math.min((team.totalScore / Math.max(...leaderboard.map(t => t.totalScore || 0))) * 100, 100)}%`,
                         height: '100%',
                         background: `linear-gradient(90deg, ${teamColor}, ${teamColor}cc)`,
-                        borderRadius: '6px',
+                        borderRadius: '4px',
                         transition: 'width 1s cubic-bezier(0.34, 1.56, 0.64, 1)',
                         position: 'relative',
                         overflow: 'hidden'
                       }}>
-                        {/* Shine effect */}
                         <div style={{
                           position: 'absolute',
                           top: 0,
@@ -385,21 +384,21 @@ export default function LiveLeaderboard() {
                     </div>
                   </div>
 
-                  {/* Stats Grid */}
+                  {/* Stats Grid - COMPACT */}
                   <div style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(2, 1fr)',
-                    gap: '10px'
+                    gap: '8px'
                   }}>
                     <div style={{
                       background: 'rgba(34, 197, 94, 0.15)',
                       border: '1px solid rgba(34, 197, 94, 0.3)',
-                      borderRadius: '8px',
-                      padding: '10px',
+                      borderRadius: '6px',
+                      padding: '8px',
                       textAlign: 'center'
                     }}>
                       <div style={{
-                        fontSize: '1.5rem',
+                        fontSize: '1.2rem',
                         fontWeight: '900',
                         color: '#22C55E',
                         fontFamily: 'monospace'
@@ -407,7 +406,7 @@ export default function LiveLeaderboard() {
                         {team.wins || 0}
                       </div>
                       <div style={{
-                        fontSize: '0.7rem',
+                        fontSize: '0.65rem',
                         color: 'rgba(255, 255, 255, 0.5)',
                         fontWeight: '600',
                         marginTop: '2px'
@@ -419,12 +418,12 @@ export default function LiveLeaderboard() {
                     <div style={{
                       background: 'rgba(239, 68, 68, 0.15)',
                       border: '1px solid rgba(239, 68, 68, 0.3)',
-                      borderRadius: '8px',
-                      padding: '10px',
+                      borderRadius: '6px',
+                      padding: '8px',
                       textAlign: 'center'
                     }}>
                       <div style={{
-                        fontSize: '1.5rem',
+                        fontSize: '1.2rem',
                         fontWeight: '900',
                         color: '#EF4444',
                         fontFamily: 'monospace'
@@ -432,7 +431,7 @@ export default function LiveLeaderboard() {
                         {team.losses || 0}
                       </div>
                       <div style={{
-                        fontSize: '0.7rem',
+                        fontSize: '0.65rem',
                         color: 'rgba(255, 255, 255, 0.5)',
                         fontWeight: '600',
                         marginTop: '2px'
@@ -451,11 +450,11 @@ export default function LiveLeaderboard() {
         {leaderboard.length === 0 && (
           <div style={{
             textAlign: 'center',
-            padding: '40px 20px',
+            padding: '30px 15px',
             color: 'rgba(255, 255, 255, 0.5)'
           }}>
-            <div style={{ fontSize: '3rem', marginBottom: '12px' }}>⏳</div>
-            <div style={{ fontSize: '1rem', fontWeight: '600' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>⏳</div>
+            <div style={{ fontSize: '0.9rem', fontWeight: '600' }}>
               Waiting for first battle...
             </div>
           </div>
@@ -476,7 +475,7 @@ export default function LiveLeaderboard() {
         
         @keyframes bounce {
           0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+          50% { transform: translateY(-8px); }
         }
         
         @keyframes shimmer {
@@ -491,4 +490,4 @@ export default function LiveLeaderboard() {
       `}</style>
     </div>
   );
-}
+    }
