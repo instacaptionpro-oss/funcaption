@@ -1,8 +1,13 @@
+// pages/campus-wars.js
+
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import CampusHeader from '../components/CampusHeader';
 import CollegeLeaderboard from '../components/CollegeLeaderboard';
+import TemplateSelector from '../components/TemplateSelector';
+import CampusRoastCard from '../components/CampusRoastCard';
 import { getAllCollegeNames } from '../data/colleges';
+import { getTemplate } from '../lib/templateRoasts';
 
 export default function CampusWars() {
   const [step, setStep] = useState('register'); // 'register' or 'battle'
@@ -22,7 +27,8 @@ export default function CampusWars() {
     topic: '',
     customTopic: '',
     rivalCollege: 'IIT Bombay',
-    roastStyle: 'custom' // 'auto' or 'custom'
+    roastStyle: 'template', // 'template' or 'classic'
+    selectedTemplate: null // NEW: template object
   });
 
   const [loading, setLoading] = useState(false);
@@ -35,6 +41,7 @@ export default function CampusWars() {
     'Chemical', 'Aerospace', 'Biotechnology', 'Other'
   ];
 
+  // Classic topics (keep for backwards compatibility)
   const topics = [
     { id: 'placements', label: '💼 Placements', emoji: '💼' },
     { id: 'campus', label: '🏫 Campus Life', emoji: '🏫' },
@@ -94,27 +101,42 @@ export default function CampusWars() {
       return;
     }
 
-    // Add to local list
     setColleges([...colleges, newCollegeName.trim()]);
     setFormData({...formData, college: newCollegeName.trim()});
     
-    // Submit to Google Form (you'll add this URL)
-    // For now, just alert
     alert(`✅ "${newCollegeName}" submitted!\n\nWe'll add it in next update.\nFor now, you can use it!`);
     
     setShowAddCollege(false);
     setNewCollegeName('');
   };
 
+  // NEW: Handle template selection
+  const handleSelectTemplate = (template) => {
+    setBattleData({
+      ...battleData,
+      selectedTemplate: template,
+      topic: template.id, // Auto-set topic based on template
+      roastStyle: 'template'
+    });
+  };
+
+  // NEW: Enhanced roast generation with templates
   const handleGenerateRoast = async (e) => {
     e.preventDefault();
 
-    const topic = battleData.topic === 'custom' ? 
-      battleData.customTopic : 
-      topics.find(t => t.id === battleData.topic)?.label || 'everything';
+    let finalTopic = '';
+    
+    // Determine topic based on mode
+    if (battleData.roastStyle === 'template' && battleData.selectedTemplate) {
+      finalTopic = battleData.selectedTemplate.label;
+    } else if (battleData.topic === 'custom') {
+      finalTopic = battleData.customTopic;
+    } else {
+      finalTopic = topics.find(t => t.id === battleData.topic)?.label || 'everything';
+    }
 
-    if (!topic || (battleData.topic === 'custom' && !battleData.customTopic.trim())) {
-      alert('Select topic or write custom topic!');
+    if (!finalTopic || (battleData.topic === 'custom' && !battleData.customTopic.trim())) {
+      alert('Select template or topic first!');
       return;
     }
 
@@ -128,8 +150,10 @@ export default function CampusWars() {
         body: JSON.stringify({
           college: userData.college,
           branch: userData.branch,
-          topic: topic,
-          rivalCollege: battleData.rivalCollege
+          topic: finalTopic,
+          rivalCollege: battleData.rivalCollege,
+          templateId: battleData.selectedTemplate?.id, // NEW: send template ID
+          useTemplate: battleData.roastStyle === 'template' // NEW: flag
         })
       });
 
@@ -144,14 +168,13 @@ export default function CampusWars() {
       console.error(error);
       // Fallback roast
       setResult({
-        roast: `${userData.college} se ho? Chutiye IIT Bombay dekh ke jal rahe ho 💀\nUnka avg 21 LPA, tumhara sapne mein bhi nahi\nReality check lelo bc 😂`,
+        roast: `${userData.college} se ho? Chutiye ${battleData.rivalCollege} dekh ke jal rahe ho 💀\n\nReality check lelo bc 😂`,
         yourScore: Math.floor(Math.random() * 30) + 40,
         rivalScore: 85,
         comparisons: [
-          { metric: 'Placements', yours: 'Mid', theirs: 'Best', winner: 'rival' },
-          { metric: 'Campus', yours: 'Good', theirs: 'Elite', winner: 'rival' }
+          { metric: 'Overall', yours: 'Mid', theirs: 'Elite', winner: 'rival' }
         ],
-        topic: topic
+        topic: finalTopic
       });
     }
 
@@ -159,7 +182,8 @@ export default function CampusWars() {
   };
 
   const shareRoast = () => {
-    const text = `🎓 Campus Wars Roast\n\n${userData.college} (${userData.branch})\nvs\n${battleData.rivalCollege}\n\n💀 ${result.roast}\n\nScore: ${result.yourScore}/100\n\nCheck yours: aurapro.app/campus-wars`;
+    const templateName = battleData.selectedTemplate?.label || 'Roast';
+    const text = `🎓 Campus Wars - ${templateName}\n\n${userData.college} (${userData.branch})\nvs\n${battleData.rivalCollege}\n\n💀 ${result.roast}\n\nScore: ${result.yourScore}/100\n\nCheck yours: aurapro.app/campus-wars`;
     
     if (navigator.share) {
       navigator.share({ text });
@@ -169,7 +193,17 @@ export default function CampusWars() {
     }
   };
 
-  // REGISTRATION SCREEN
+  const handleNewBattle = () => {
+    setResult(null);
+    setBattleData({
+      ...battleData,
+      selectedTemplate: null,
+      topic: '',
+      customTopic: ''
+    });
+  };
+
+  // REGISTRATION SCREEN (unchanged)
   if (step === 'register') {
     return (
       <div style={{ minHeight: '100vh', background: '#000', padding: '20px' }}>
@@ -443,7 +477,7 @@ export default function CampusWars() {
         maxWidth: '1400px',
         margin: '0 auto',
         display: 'grid',
-        gridTemplateColumns: window.innerWidth > 1024 ? '2fr 1fr' : '1fr',
+        gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth > 1024 ? '2fr 1fr' : '1fr',
         gap: '30px'
       }}>
         
@@ -463,77 +497,135 @@ export default function CampusWars() {
             ⚔️ START ROAST BATTLE
           </h1>
           <p style={{ color: '#999', marginBottom: '30px', fontSize: '0.95rem' }}>
-            Select topic and rival to generate savage roast
+            Select template and rival to generate savage roast
           </p>
 
           {!result ? (
             <form onSubmit={handleGenerateRoast} style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '20px'
+              gap: '24px'
             }}>
               
-              {/* Topic Selection */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  color: '#00FFFF',
-                  fontWeight: '700',
-                  marginBottom: '12px',
-                  fontSize: '0.95rem'
-                }}>
-                  Choose Roast Topic
-                </label>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                  gap: '10px'
-                }}>
-                  {topics.map(topic => (
-                    <button
-                      key={topic.id}
-                      type="button"
-                      onClick={() => setBattleData({...battleData, topic: topic.id})}
-                      style={{
-                        padding: '15px',
-                        background: battleData.topic === topic.id ? 
-                          'rgba(0, 255, 255, 0.2)' : '#000',
-                        border: battleData.topic === topic.id ? 
-                          '2px solid #00FFFF' : '1px solid #333',
-                        borderRadius: '12px',
-                        color: battleData.topic === topic.id ? '#00FFFF' : '#999',
-                        fontSize: '0.9rem',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                        fontFamily: 'inherit',
-                        transition: 'all 0.2s',
-                        textAlign: 'left'
-                      }}
-                    >
-                      {topic.emoji} {topic.label.replace(topic.emoji, '').trim()}
-                    </button>
-                  ))}
-                </div>
+              {/* MODE SELECTOR */}
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                padding: '4px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '12px'
+              }}>
+                <button
+                  type="button"
+                  onClick={() => setBattleData({...battleData, roastStyle: 'template', topic: ''})}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    background: battleData.roastStyle === 'template' ? '#00FFFF' : 'transparent',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: battleData.roastStyle === 'template' ? '#000' : '#999',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    fontSize: '0.9rem',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  🎨 Template Mode (NEW)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBattleData({...battleData, roastStyle: 'classic', selectedTemplate: null})}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    background: battleData.roastStyle === 'classic' ? '#00FFFF' : 'transparent',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: battleData.roastStyle === 'classic' ? '#000' : '#999',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    fontSize: '0.9rem',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  ⚡ Quick Mode
+                </button>
               </div>
 
-              {/* Custom Topic Input */}
-              {battleData.topic === 'custom' && (
+              {/* TEMPLATE MODE */}
+              {battleData.roastStyle === 'template' && (
+                <TemplateSelector 
+                  onSelectTemplate={handleSelectTemplate}
+                  selectedTemplate={battleData.selectedTemplate}
+                />
+              )}
+
+              {/* CLASSIC MODE */}
+              {battleData.roastStyle === 'classic' && (
                 <div>
-                  <input
-                    type="text"
-                    value={battleData.customTopic}
-                    onChange={(e) => setBattleData({...battleData, customTopic: e.target.value})}
-                    placeholder="e.g., Internship opportunities, Faculty quality..."
-                    style={{
-                      width: '100%',
-                      padding: '15px',
-                      background: '#000',
-                      border: '2px solid #00FFFF',
-                      borderRadius: '12px',
-                      color: '#fff',
-                      fontSize: '1rem'
-                    }}
-                  />
+                  <label style={{
+                    display: 'block',
+                    color: '#00FFFF',
+                    fontWeight: '700',
+                    marginBottom: '12px',
+                    fontSize: '0.95rem'
+                  }}>
+                    Choose Roast Topic
+                  </label>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '10px'
+                  }}>
+                    {topics.map(topic => (
+                      <button
+                        key={topic.id}
+                        type="button"
+                        onClick={() => setBattleData({...battleData, topic: topic.id})}
+                        style={{
+                          padding: '15px',
+                          background: battleData.topic === topic.id ? 
+                            'rgba(0, 255, 255, 0.2)' : '#000',
+                          border: battleData.topic === topic.id ? 
+                            '2px solid #00FFFF' : '1px solid #333',
+                          borderRadius: '12px',
+                          color: battleData.topic === topic.id ? '#00FFFF' : '#999',
+                          fontSize: '0.9rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          transition: 'all 0.2s',
+                          textAlign: 'left'
+                        }}
+                      >
+                        {topic.emoji} {topic.label.replace(topic.emoji, '').trim()}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Custom Topic Input */}
+                  {battleData.topic === 'custom' && (
+                    <div style={{ marginTop: '12px' }}>
+                      <input
+                        type="text"
+                        value={battleData.customTopic}
+                        onChange={(e) => setBattleData({...battleData, customTopic: e.target.value})}
+                        placeholder="e.g., Internship opportunities, Faculty quality..."
+                        style={{
+                          width: '100%',
+                          padding: '15px',
+                          background: '#000',
+                          border: '2px solid #00FFFF',
+                          borderRadius: '12px',
+                          color: '#fff',
+                          fontSize: '1rem'
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -570,304 +662,39 @@ export default function CampusWars() {
 
               <button
                 type="submit"
-                disabled={loading || !battleData.topic}
+                disabled={loading || (battleData.roastStyle === 'template' ? !battleData.selectedTemplate : !battleData.topic)}
                 style={{
                   padding: '18px',
-                  background: loading || !battleData.topic ? 
+                  background: loading || (battleData.roastStyle === 'template' ? !battleData.selectedTemplate : !battleData.topic) ? 
                     '#333' : 'linear-gradient(135deg, #FF4500, #FF6347)',
                   border: 'none',
                   borderRadius: '12px',
                   color: '#fff',
                   fontSize: '1.1rem',
                   fontWeight: '800',
-                  cursor: loading || !battleData.topic ? 'not-allowed' : 'pointer',
+                  cursor: loading || (battleData.roastStyle === 'template' ? !battleData.selectedTemplate : !battleData.topic) ? 'not-allowed' : 'pointer',
                   marginTop: '10px',
                   fontFamily: 'inherit',
-                  boxShadow: loading || !battleData.topic ? 'none' : '0 10px 30px rgba(255, 69, 0, 0.4)'
+                  boxShadow: loading || (battleData.roastStyle === 'template' ? !battleData.selectedTemplate : !battleData.topic) ? 'none' : '0 10px 30px rgba(255, 69, 0, 0.4)'
                 }}
               >
                 {loading ? '⏳ Generating Roast...' : '💀 GENERATE SAVAGE ROAST'}
               </button>
             </form>
           ) : (
-            // RESULT CARD (Mobile-first vertical design)
-            <div>
-              <div style={{
-                background: '#000',
-                border: '2px solid #00FFFF',
-                borderRadius: '20px',
-                padding: '25px',
-                marginBottom: '20px',
-                boxShadow: '0 10px 40px rgba(0, 255, 255, 0.3)'
-              }}>
-                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                  <h2 style={{
-                    fontSize: '1.5rem',
-                    color: '#00FFFF',
-                    margin: '0 0 5px 0',
-                    fontWeight: '900'
-                  }}>
-                    BATTLE RESULT
-                  </h2>
-                  <p style={{ color: '#666', fontSize: '0.85rem', margin: 0 }}>
-                    Topic: {result.topic}
-                  </p>
-                </div>
-
-                {/* YOUR COLLEGE */}
-                <div style={{
-                  background: 'rgba(0, 255, 255, 0.1)',
-                  border: '2px solid #00FFFF',
-                  borderRadius: '16px',
-                  padding: '20px',
-                  marginBottom: '15px'
-                }}>
-                  <div style={{
-                    fontSize: '0.75rem',
-                    color: '#00FFFF',
-                    fontWeight: '700',
-                    marginBottom: '8px',
-                    letterSpacing: '1px'
-                  }}>
-                    YOUR COLLEGE
-                  </div>
-                  <div style={{
-                    fontSize: '1.3rem',
-                    color: '#fff',
-                    fontWeight: '800',
-                    marginBottom: '5px'
-                  }}>
-                    {userData.college}
-                  </div>
-                  <div style={{
-                    fontSize: '0.85rem',
-                    color: '#999',
-                    marginBottom: '15px'
-                  }}>
-                    {userData.branch}
-                  </div>
-                  
-                  <div style={{
-                    fontSize: '2.5rem',
-                    color: '#00FFFF',
-                    fontWeight: '900',
-                    marginBottom: '10px'
-                  }}>
-                    {result.yourScore}/100
-                  </div>
-                  
-                  <div style={{
-                    background: '#000',
-                    height: '12px',
-                    borderRadius: '6px',
-                    overflow: 'hidden',
-                    border: '1px solid #00FFFF40'
-                  }}>
-                    <div style={{
-                      width: `${result.yourScore}%`,
-                      height: '100%',
-                      background: 'linear-gradient(90deg, #00FFFF, #00AAFF)',
-                      transition: 'width 1s ease'
-                    }} />
-                  </div>
-                </div>
-
-                {/* VS */}
-                <div style={{
-                  textAlign: 'center',
-                  fontSize: '1.5rem',
-                  color: '#FF4500',
-                  fontWeight: '900',
-                  margin: '15px 0'
-                }}>
-                  ⚔️ VS
-                </div>
-
-                {/* RIVAL COLLEGE */}
-                <div style={{
-                  background: 'rgba(255, 215, 0, 0.1)',
-                  border: '2px solid #FFD700',
-                  borderRadius: '16px',
-                  padding: '20px',
-                  marginBottom: '20px'
-                }}>
-                  <div style={{
-                    fontSize: '0.75rem',
-                    color: '#FFD700',
-                    fontWeight: '700',
-                    marginBottom: '8px',
-                    letterSpacing: '1px'
-                  }}>
-                    RIVAL / BENCHMARK
-                  </div>
-                  <div style={{
-                    fontSize: '1.3rem',
-                    color: '#fff',
-                    fontWeight: '800',
-                    marginBottom: '5px'
-                  }}>
-                    {battleData.rivalCollege}
-                  </div>
-                  <div style={{
-                    fontSize: '0.85rem',
-                    color: '#999',
-                    marginBottom: '15px'
-                  }}>
-                    {userData.branch}
-                  </div>
-                  
-                  <div style={{
-                    fontSize: '2.5rem',
-                    color: '#FFD700',
-                    fontWeight: '900',
-                    marginBottom: '10px'
-                  }}>
-                    {result.rivalScore}/100
-                  </div>
-                  
-                  <div style={{
-                    background: '#000',
-                    height: '12px',
-                    borderRadius: '6px',
-                    overflow: 'hidden',
-                    border: '1px solid #FFD70040'
-                  }}>
-                    <div style={{
-                      width: `${result.rivalScore}%`,
-                      height: '100%',
-                      background: 'linear-gradient(90deg, #FFD700, #FFA500)',
-                      transition: 'width 1s ease'
-                    }} />
-                  </div>
-                </div>
-
-                {/* COMPARISONS */}
-                {result.comparisons && result.comparisons.length > 0 && (
-                  <div style={{
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    borderRadius: '12px',
-                    padding: '15px',
-                    marginBottom: '20px'
-                  }}>
-                    <div style={{
-                      fontSize: '0.85rem',
-                      color: '#999',
-                      fontWeight: '700',
-                      marginBottom: '12px',
-                      textAlign: 'center'
-                    }}>
-                      📊 COMPARISONS
-                    </div>
-                    {result.comparisons.map((comp, i) => (
-                      <div key={i} style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '10px 0',
-                        borderBottom: i < result.comparisons.length - 1 ? '1px solid #222' : 'none'
-                      }}>
-                        <div style={{
-                          fontSize: '0.8rem',
-                          color: '#666',
-                          fontWeight: '600'
-                        }}>
-                          {comp.metric}
-                        </div>
-                        <div style={{
-                          display: 'flex',
-                          gap: '10px',
-                          alignItems: 'center',
-                          fontSize: '0.85rem',
-                          fontWeight: '700'
-                        }}>
-                          <span style={{ color: comp.winner === 'you' ? '#00FF00' : '#FF4444' }}>
-                            {comp.yours}
-                          </span>
-                          <span style={{ color: '#666' }}>{comp.winner === 'you' ? '>' : '<'}</span>
-                          <span style={{ color: comp.winner === 'rival' ? '#FFD700' : '#666' }}>
-                            {comp.theirs}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* ROAST TEXT */}
-                <div style={{
-                  background: 'rgba(255, 69, 0, 0.1)',
-                  border: '2px solid #FF4500',
-                  borderRadius: '16px',
-                  padding: '20px'
-                }}>
-                  <div style={{
-                    fontSize: '0.85rem',
-                    color: '#FF4500',
-                    fontWeight: '700',
-                    marginBottom: '12px',
-                    textAlign: 'center'
-                  }}>
-                    💀 THE ROAST
-                  </div>
-                  <p style={{
-                    fontSize: '1.1rem',
-                    lineHeight: '1.7',
-                    color: '#fff',
-                    margin: 0,
-                    fontWeight: '600',
-                    whiteSpace: 'pre-wrap'
-                  }}>
-                    {result.roast}
-                  </p>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '12px'
-              }}>
-                <button
-                  onClick={shareRoast}
-                  style={{
-                    padding: '16px',
-                    background: 'linear-gradient(135deg, #00FFFF, #0088FF)',
-                    border: 'none',
-                    borderRadius: '12px',
-                    color: '#000',
-                    fontSize: '0.95rem',
-                    fontWeight: '800',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit'
-                  }}
-                >
-                  📱 Share Roast
-                </button>
-                
-                <button
-                  onClick={() => setResult(null)}
-                  style={{
-                    padding: '16px',
-                    background: '#222',
-                    border: '1px solid #666',
-                    borderRadius: '12px',
-                    color: '#fff',
-                    fontSize: '0.95rem',
-                    fontWeight: '800',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit'
-                  }}
-                >
-                  🔄 New Battle
-                </button>
-              </div>
-            </div>
+            <CampusRoastCard 
+              result={result}
+              userData={userData}
+              battleData={battleData}
+              selectedTemplate={battleData.selectedTemplate}
+              onShare={shareRoast}
+              onNewBattle={handleNewBattle}
+            />
           )}
         </div>
 
         {/* Leaderboard (Desktop only) */}
-        {window.innerWidth > 1024 && (
+        {typeof window !== 'undefined' && window.innerWidth > 1024 && (
           <div style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
             <CollegeLeaderboard userCollege={userData.college} />
           </div>
@@ -875,4 +702,4 @@ export default function CampusWars() {
       </div>
     </div>
   );
-        }
+}
