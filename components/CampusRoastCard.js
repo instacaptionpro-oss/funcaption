@@ -1,6 +1,7 @@
 // components/CampusRoastCard.js
 
 import { useRef } from 'react';
+import html2canvas from 'html2canvas';
 
 export default function CampusRoastCard({ 
   result, 
@@ -15,6 +16,38 @@ export default function CampusRoastCard({
   if (!result) return null;
 
   const templateColor = selectedTemplate?.color || '#00FFFF';
+
+  // Download function
+  const downloadAsImage = async () => {
+    if (!cardRef.current) return;
+
+    try {
+      // Hide the action buttons temporarily
+      const actionButtons = cardRef.current.nextElementSibling;
+      if (actionButtons) actionButtons.style.display = 'none';
+
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: '#000000',
+        scale: 2, // Higher quality
+        logging: false,
+        useCORS: true,
+        allowTaint: true
+      });
+
+      // Show buttons again
+      if (actionButtons) actionButtons.style.display = 'grid';
+
+      // Convert to image and download
+      const image = canvas.toDataURL('image/png', 1.0);
+      const link = document.createElement('a');
+      link.download = `${userData.college.replace(/\s+/g, '-')}-roast.png`;
+      link.href = image;
+      link.click();
+    } catch (error) {
+      console.error('Error downloading image:', error);
+      alert('Failed to download image. Please try again.');
+    }
+  };
 
   return (
     <div style={{ animation: 'fadeInUp 0.6s ease' }}>
@@ -478,12 +511,44 @@ export default function CampusRoastCard({
         </div>
       </div>
 
-      {/* Action Buttons */}
+      {/* Action Buttons - NOW WITH 3 BUTTONS */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: '12px'
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '10px'
       }}>
+        <button
+          onClick={downloadAsImage}
+          style={{
+            padding: '14px',
+            background: 'linear-gradient(135deg, #9333ea, #7e22ce)',
+            border: 'none',
+            borderRadius: '12px',
+            color: '#fff',
+            fontSize: '0.9rem',
+            fontWeight: '800',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px',
+            boxShadow: '0 6px 20px rgba(147, 51, 234, 0.4)',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 8px 28px rgba(147, 51, 234, 0.6)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(147, 51, 234, 0.4)';
+          }}
+        >
+          <span style={{ fontSize: '1.1rem' }}>📥</span>
+          Download
+        </button>
+
         <button
           onClick={onShare}
           style={{
@@ -628,4 +693,4 @@ export default function CampusRoastCard({
       `}</style>
     </div>
   );
-          }
+            }
