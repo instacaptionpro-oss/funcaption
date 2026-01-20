@@ -3,6 +3,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 import AuraCard from '../components/AuraCard';
 import RoastChat from '../components/RoastChat';
+import LiveLeaderboard from '../components/LiveLeaderboard';
+import RecentBattlesFeed from '../components/RecentBattlesFeed';
 
 const moods = [
   { id: 'savage', emoji: '🔥', label: 'Savage', color: '#EF4444' },
@@ -61,7 +63,7 @@ export default function Home() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [activeCategory, setActiveCategory] = useState('influencers');
   const [liveScanners, setLiveScanners] = useState(47);
-  const [campusWarsBattles, setCampusWarsBattles] = useState(1247); // New state
+  const [campusWarsBattles, setCampusWarsBattles] = useState(1247);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -70,7 +72,7 @@ export default function Home() {
         const change = Math.floor(Math.random() * 7) - 3;
         return Math.max(40, Math.min(60, prev + change));
       });
-      setCampusWarsBattles(prev => prev + Math.floor(Math.random() * 2)); // Increment battles
+      setCampusWarsBattles(prev => prev + Math.floor(Math.random() * 2));
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -207,6 +209,7 @@ export default function Home() {
         
         {!aura ? (
           <div>
+            {/* HEADER */}
             <div style={{ textAlign: 'center', marginBottom: '35px' }}>
               <div style={{
                 display: 'inline-block',
@@ -304,7 +307,76 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 🔥🔥🔥 MASSIVELY IMPROVED CAMPUS WARS BANNER 🔥🔥🔥 */}
+            {/* 🔥🔥🔥 NEW - IIT WARS LIVE LEADERBOARD SECTION 🔥🔥🔥 */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '24px',
+              padding: '24px 20px',
+              marginBottom: '30px',
+              boxShadow: '0 15px 40px rgba(0, 0, 0, 0.3)'
+            }}>
+              <div style={{
+                textAlign: 'center',
+                marginBottom: '20px'
+              }}>
+                <h2 style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '900',
+                  background: 'linear-gradient(135deg, #00D4FF, #FF4500)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  margin: '0 0 8px 0',
+                  letterSpacing: '0.5px'
+                }}>
+                  🔥 IIT WARS - LIVE NOW
+                </h2>
+                <p style={{
+                  color: 'rgba(255, 255, 255, 0.6)',
+                  fontSize: '0.85rem',
+                  margin: 0
+                }}>
+                  IIT Bombay vs Delhi - 7 Day Battle
+                </p>
+              </div>
+
+              <LiveLeaderboard />
+
+              <Link href="/campus-wars">
+                <div style={{
+                  marginTop: '20px',
+                  textAlign: 'center'
+                }}>
+                  <button style={{
+                    padding: '14px 28px',
+                    background: 'linear-gradient(135deg, #00FFFF, #0088FF)',
+                    border: 'none',
+                    borderRadius: '14px',
+                    color: '#000',
+                    fontSize: '0.95rem',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    boxShadow: '0 8px 24px rgba(0, 255, 255, 0.4)',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 12px 32px rgba(0, 255, 255, 0.6)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 8px 24px rgba(0, 255, 255, 0.4)';
+                  }}>
+                    🎯 JOIN THE BATTLE
+                  </button>
+                </div>
+              </Link>
+
+              <RecentBattlesFeed />
+            </div>
+            {/* CAMPUS WARS BANNER */}
             <Link href="/campus-wars">
               <div style={{
                 background: 'linear-gradient(135deg, rgba(0, 255, 255, 0.25), rgba(0, 180, 255, 0.25))',
@@ -328,7 +400,6 @@ export default function Home() {
                 e.currentTarget.style.boxShadow = '0 10px 40px rgba(0, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
               }}>
                 
-                {/* Animated rotating background */}
                 <div style={{
                   position: 'absolute',
                   top: '-100%',
@@ -340,7 +411,6 @@ export default function Home() {
                   pointerEvents: 'none'
                 }} />
 
-                {/* Pulsing glow effect */}
                 <div style={{
                   position: 'absolute',
                   inset: '-20px',
@@ -349,7 +419,6 @@ export default function Home() {
                   pointerEvents: 'none'
                 }} />
 
-                {/* HOT badge */}
                 <div style={{
                   position: 'absolute',
                   top: '16px',
@@ -369,7 +438,6 @@ export default function Home() {
                 </div>
 
                 <div style={{ position: 'relative', zIndex: 2 }}>
-                  {/* Icon row */}
                   <div style={{
                     fontSize: '3rem',
                     marginBottom: '12px',
@@ -380,7 +448,6 @@ export default function Home() {
                     🎓⚔️🏆
                   </div>
                   
-                  {/* Main title */}
                   <h2 style={{
                     fontSize: '2rem',
                     fontWeight: '900',
@@ -396,7 +463,6 @@ export default function Home() {
                     CAMPUS WARS
                   </h2>
                   
-                  {/* Subtitle */}
                   <p style={{
                     fontSize: '1.1rem',
                     color: '#FFFFFF',
@@ -409,7 +475,6 @@ export default function Home() {
                     AI-Powered College Roast Battles 🔥
                   </p>
 
-                  {/* Battle examples */}
                   <div style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr 1fr',
@@ -439,7 +504,6 @@ export default function Home() {
                     ))}
                   </div>
 
-                  {/* Stats row */}
                   <div style={{
                     display: 'flex',
                     justifyContent: 'center',
@@ -471,7 +535,6 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* CTA */}
                   <div style={{
                     textAlign: 'center',
                     fontSize: '1.05rem',
@@ -491,6 +554,7 @@ export default function Home() {
               </div>
             </Link>
 
+            {/* TRENDING PEOPLE */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.03)',
               backdropFilter: 'blur(20px)',
@@ -609,6 +673,7 @@ export default function Home() {
               </div>
             </div>
 
+            {/* SCAN FORM */}
             <div style={{
               background: 'rgba(255, 255, 255, 0.03)',
               backdropFilter: 'blur(30px)',
@@ -821,6 +886,7 @@ export default function Home() {
               </button>
             </div>
 
+            {/* RECENT SCANS */}
             <div style={{
               background: 'rgba(0, 0, 0, 0.3)',
               border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -862,6 +928,7 @@ export default function Home() {
               </div>
             </div>
 
+            {/* AURA TIERS */}
             <div style={{
               background: 'rgba(0, 0, 0, 0.3)',
               border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -912,6 +979,7 @@ export default function Home() {
               </div>
             </div>
 
+            {/* BADGES */}
             <div style={{
               display: 'flex',
               justifyContent: 'center',
@@ -930,6 +998,7 @@ export default function Home() {
             </div>
           </div>
         ) : (
+          // RESULT SCREEN
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -1087,4 +1156,4 @@ export default function Home() {
       `}</style>
     </div>
   );
-    }
+                      }
