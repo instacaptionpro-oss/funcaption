@@ -1,31 +1,31 @@
 import { OpenAI } from "openai";
 import { COLLEGES } from "../../data/colleges";
 
-// Model configuration (BEST to WEAKEST)
-const GROQ_MODELS = [
+// OpenAI Model configuration (BEST to WEAKEST)
+const OPENAI_MODELS = [
   {
-    name: "Llama 3.3 70B",
-    model: "llama-3.3-70b-versatile",
+    name: "GPT-4o",
+    model: "gpt-4o",
     quality: "best",
+    temperature: 1.2
+  },
+  {
+    name: "GPT-4o Mini",
+    model: "gpt-4o-mini",
+    quality: "good",
     temperature: 1.3
   },
   {
-    name: "Llama 4 Maverick 17B",
-    model: "meta-llama/llama-4-maverick-17b-128e-instruct",
-    quality: "good",
-    temperature: 1.4
+    name: "GPT-4 Turbo",
+    model: "gpt-4-turbo",
+    quality: "great",
+    temperature: 1.2
   },
   {
-    name: "Qwen 3 32B",
-    model: "qwen/qwen3-32b",
-    quality: "decent",
-    temperature: 1.5
-  },
-  {
-    name: "Llama 3.1 8B Instant",
-    model: "llama-3.1-8b-instant",
+    name: "GPT-3.5 Turbo",
+    model: "gpt-3.5-turbo",
     quality: "fast",
-    temperature: 1.6
+    temperature: 1.4
   }
 ];
 
@@ -73,8 +73,8 @@ export default async function handler(req, res) {
 async function generateRoastWithFallback(college, branch, topic, rivalCollege) {
   let lastError;
 
-  for (let i = 0; i < GROQ_MODELS.length; i++) {
-    const modelConfig = GROQ_MODELS[i];
+  for (let i = 0; i < OPENAI_MODELS.length; i++) {
+    const modelConfig = OPENAI_MODELS[i];
     
     try {
       console.log(`🔄 Trying ${modelConfig.name}...`);
@@ -120,9 +120,9 @@ async function generateRoast(college, branch, topic, rivalCollege, modelConfig) 
     .sort(() => Math.random() - 0.5)
     .slice(0, Math.floor(Math.random() * 2) + 2); // 2-3 metrics
 
+  // OpenAI client (official API)
   const client = new OpenAI({
-    baseURL: "https://api.groq.com/openai/v1",
-    apiKey: process.env.GROQ_API_KEY_COLLEGE,
+    apiKey: process.env.OPENAI_API_KEY_COLLEGE,
   });
 
   const systemPrompt = `Tu SAMAY RAINA style ka SAVAGE college roaster hai.
@@ -289,4 +289,4 @@ function createFallbackCollegeData(collegeName) {
       "Mid-tier college"
     ]
   };
-  }
+           }
