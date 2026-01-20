@@ -61,6 +61,7 @@ export default function Home() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [activeCategory, setActiveCategory] = useState('influencers');
   const [liveScanners, setLiveScanners] = useState(47);
+  const [campusWarsBattles, setCampusWarsBattles] = useState(1247); // New state
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -69,6 +70,7 @@ export default function Home() {
         const change = Math.floor(Math.random() * 7) - 3;
         return Math.max(40, Math.min(60, prev + change));
       });
+      setCampusWarsBattles(prev => prev + Math.floor(Math.random() * 2)); // Increment battles
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -302,115 +304,188 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 🆕 CAMPUS WARS BANNER */}
+            {/* 🔥🔥🔥 MASSIVELY IMPROVED CAMPUS WARS BANNER 🔥🔥🔥 */}
             <Link href="/campus-wars">
               <div style={{
-                background: 'linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 200, 255, 0.15))',
-                border: '2px solid #00FFFF',
-                borderRadius: '20px',
-                padding: '20px',
-                marginBottom: '24px',
+                background: 'linear-gradient(135deg, rgba(0, 255, 255, 0.25), rgba(0, 180, 255, 0.25))',
+                border: '3px solid #00FFFF',
+                borderRadius: '24px',
+                padding: '28px 24px',
+                marginBottom: '30px',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease',
+                transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
                 position: 'relative',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                boxShadow: '0 10px 40px rgba(0, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = '0 15px 40px rgba(0, 255, 255, 0.4)';
+                e.currentTarget.style.transform = 'translateY(-6px) scale(1.02)';
+                e.currentTarget.style.boxShadow = '0 20px 60px rgba(0, 255, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.borderColor = '#00FFFF';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                e.currentTarget.style.boxShadow = '0 10px 40px rgba(0, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
               }}>
                 
-                {/* Animated glow */}
+                {/* Animated rotating background */}
                 <div style={{
                   position: 'absolute',
-                  top: '-50%',
-                  left: '-50%',
-                  width: '200%',
-                  height: '200%',
-                  background: 'radial-gradient(circle, rgba(0, 255, 255, 0.2) 0%, transparent 70%)',
-                  animation: 'spin 8s linear infinite'
+                  top: '-100%',
+                  left: '-100%',
+                  width: '300%',
+                  height: '300%',
+                  background: 'conic-gradient(from 0deg, transparent 0deg, rgba(0, 255, 255, 0.3) 60deg, transparent 120deg)',
+                  animation: 'spin 4s linear infinite',
+                  pointerEvents: 'none'
                 }} />
 
-                {/* NEW badge */}
+                {/* Pulsing glow effect */}
                 <div style={{
                   position: 'absolute',
-                  top: '12px',
-                  right: '12px',
-                  background: '#00FFFF',
-                  color: '#000',
-                  padding: '4px 12px',
+                  inset: '-20px',
+                  background: 'radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.4) 0%, transparent 70%)',
+                  animation: 'pulse-glow 3s ease-in-out infinite',
+                  pointerEvents: 'none'
+                }} />
+
+                {/* HOT badge */}
+                <div style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: '16px',
+                  background: 'linear-gradient(135deg, #FF0000, #FF4500)',
+                  color: '#FFF',
+                  padding: '6px 16px',
                   borderRadius: '20px',
-                  fontSize: '0.65rem',
+                  fontSize: '0.7rem',
                   fontWeight: '900',
-                  letterSpacing: '1px',
-                  animation: 'pulse 2s infinite'
+                  letterSpacing: '1.5px',
+                  boxShadow: '0 4px 15px rgba(255, 0, 0, 0.4)',
+                  animation: 'pulse 1.5s infinite',
+                  zIndex: 2
                 }}>
-                  🆕 NEW
+                  🔥 HOT
                 </div>
 
                 <div style={{ position: 'relative', zIndex: 2 }}>
+                  {/* Icon row */}
                   <div style={{
-                    fontSize: '2.5rem',
-                    marginBottom: '8px',
-                    textAlign: 'center'
+                    fontSize: '3rem',
+                    marginBottom: '12px',
+                    textAlign: 'center',
+                    filter: 'drop-shadow(0 0 20px rgba(0, 255, 255, 0.6))',
+                    animation: 'float 3s ease-in-out infinite'
                   }}>
-                    🎓⚔️
+                    🎓⚔️🏆
                   </div>
                   
+                  {/* Main title */}
                   <h2 style={{
-                    fontSize: '1.5rem',
+                    fontSize: '2rem',
                     fontWeight: '900',
-                    color: '#00FFFF',
+                    background: 'linear-gradient(135deg, #00FFFF, #00BFFF, #FFFFFF)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
                     textAlign: 'center',
-                    margin: '0 0 8px 0',
-                    textShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
-                    letterSpacing: '1px'
+                    margin: '0 0 10px 0',
+                    textShadow: '0 0 40px rgba(0, 255, 255, 0.8)',
+                    letterSpacing: '2px',
+                    animation: 'glow-text 2s ease-in-out infinite alternate'
                   }}>
                     CAMPUS WARS
                   </h2>
                   
+                  {/* Subtitle */}
                   <p style={{
-                    fontSize: '0.95rem',
-                    color: 'rgba(255, 255, 255, 0.9)',
+                    fontSize: '1.1rem',
+                    color: '#FFFFFF',
                     textAlign: 'center',
-                    margin: '0 0 12px 0',
-                    lineHeight: '1.5'
+                    margin: '0 0 16px 0',
+                    lineHeight: '1.6',
+                    fontWeight: '700',
+                    textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)'
                   }}>
-                    Roast your college vs rivals using AI
+                    AI-Powered College Roast Battles 🔥
                   </p>
 
+                  {/* Battle examples */}
                   <div style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    gap: '12px',
-                    flexWrap: 'wrap',
-                    marginBottom: '12px'
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '10px',
+                    marginBottom: '16px'
                   }}>
-                    {['IIT vs NIT', 'BITS vs VIT', 'DU vs DTU'].map(battle => (
-                      <span key={battle} style={{
-                        fontSize: '0.7rem',
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        background: 'rgba(0, 255, 255, 0.1)',
-                        padding: '4px 10px',
+                    {[
+                      { battle: 'IIT vs NIT', icon: '⚡' },
+                      { battle: 'BITS vs VIT', icon: '💥' },
+                      { battle: 'DU vs DTU', icon: '🎯' },
+                      { battle: 'MIT vs Stanford', icon: '🚀' }
+                    ].map((item, idx) => (
+                      <div key={idx} style={{
+                        fontSize: '0.75rem',
+                        color: '#FFFFFF',
+                        background: 'rgba(0, 255, 255, 0.15)',
+                        padding: '8px 12px',
                         borderRadius: '12px',
-                        border: '1px solid rgba(0, 255, 255, 0.3)'
+                        border: '1px solid rgba(0, 255, 255, 0.4)',
+                        fontWeight: '700',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 10px rgba(0, 255, 255, 0.2)',
+                        animation: `float 3s ease-in-out infinite ${idx * 0.2}s`
                       }}>
-                        {battle}
-                      </span>
+                        {item.icon} {item.battle}
+                      </div>
                     ))}
                   </div>
 
+                  {/* Stats row */}
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '20px',
+                    marginBottom: '16px',
+                    flexWrap: 'wrap'
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontSize: '0.8rem',
+                      color: '#FFFFFF',
+                      fontWeight: '700'
+                    }}>
+                      <span style={{ fontSize: '1.2rem' }}>⚔️</span>
+                      {campusWarsBattles.toLocaleString()}+ battles
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontSize: '0.8rem',
+                      color: '#FFFFFF',
+                      fontWeight: '700'
+                    }}>
+                      <span style={{ fontSize: '1.2rem' }}>🏆</span>
+                      Live Leaderboard
+                    </div>
+                  </div>
+
+                  {/* CTA */}
                   <div style={{
                     textAlign: 'center',
-                    fontSize: '0.85rem',
-                    fontWeight: '700',
-                    color: '#00FFFF'
+                    fontSize: '1.05rem',
+                    fontWeight: '900',
+                    color: '#00FFFF',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    padding: '14px 24px',
+                    borderRadius: '16px',
+                    border: '2px solid #00FFFF',
+                    boxShadow: '0 0 20px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(0, 255, 255, 0.1)',
+                    letterSpacing: '1px',
+                    animation: 'pulse-border 2s infinite'
                   }}>
-                    👉 Click to Start Battle
+                    👉 START ROASTING NOW 👈
                   </div>
                 </div>
               </div>
@@ -952,6 +1027,31 @@ export default function Home() {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.6; }
         }
+
+        @keyframes pulse-glow {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.7; }
+        }
+
+        @keyframes pulse-border {
+          0%, 100% { 
+            border-color: #00FFFF;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(0, 255, 255, 0.1);
+          }
+          50% { 
+            border-color: #00BFFF;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.8), inset 0 0 30px rgba(0, 255, 255, 0.2);
+          }
+        }
+
+        @keyframes glow-text {
+          from {
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.4);
+          }
+          to {
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.9), 0 0 60px rgba(0, 255, 255, 0.6);
+          }
+        }
         
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
@@ -987,4 +1087,4 @@ export default function Home() {
       `}</style>
     </div>
   );
-        }
+    }
