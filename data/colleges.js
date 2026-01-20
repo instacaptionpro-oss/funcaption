@@ -944,32 +944,8 @@ export const COLLEGES = {
       "Vellore nothing to do, Chennai weekend escape",
       "Good for studying, bad for living"
     ]
-  }
+  },
 
-  // ... Continue for remaining 40 colleges (adding in next message)
-};
-
-// College categories for easy filtering
-export const COLLEGE_CATEGORIES = {
-  iits: Object.keys(COLLEGES).filter(c => c.startsWith('IIT')),
-  nits: Object.keys(COLLEGES).filter(c => c.startsWith('NIT')),
-  bits: ['BITS Pilani', 'BITS Goa', 'BITS Hyderabad'],
-  private: ['Amity University Noida', 'Manipal Institute of Technology', 'VIT Vellore'],
-  du: Object.keys(COLLEGES).filter(c => c.includes('DU')),
-  state: Object.keys(COLLEGES).filter(c => c.includes('DTU') || c.includes('NSUT'))
-};
-
-export const getCollegeById = (id) => {
-  return Object.values(COLLEGES).find(c => c.id === id);
-};
-
-export const getCollegeByName = (name) => {
-  return COLLEGES[name];
-};
-
-export const getAllCollegeNames = () => {
-  return Object.keys(COLLEGES).sort();
-},
   "IIT Kanpur": {
     id: "iit-kanpur",
     short: "IITK",
@@ -1045,7 +1021,7 @@ export const getAllCollegeNames = () => {
       "Research paper publish karte ho but dating resume blank 💀",
       "Startup kholne ka sapna, Kanpur mein fund nahi milta 😂",
       "4 saal fog mein, career bhi foggy"
-    },
+    ],
     
     funFacts: [
       "Highest research output after Madras",
@@ -2331,7 +2307,7 @@ export const getAllCollegeNames = () => {
       "Chandigarh bhaag jaate ho Patiala se 💀",
       "Private tag but government level fees 😂",
       "Thapar > LPU > nobody cares"
-    },
+    ],
     
     funFacts: [
       "Better than LPU/Chitkara in quality",
@@ -2417,7 +2393,7 @@ export const getAllCollegeNames = () => {
       "Fish khate khate future bhi fishy 💀",
       "Cheap fees flex but placements bhi cheap feel 😂",
       "Heritage tag but modern skills heritage"
-    },
+    ],
     
     funFacts: [
       "Cheapest quality engineering (₹50k total)",
@@ -2502,7 +2478,7 @@ export const getAllCollegeNames = () => {
       "Weather perfect hai but wallet imperfect 💀",
       "Startup culture hai but success startup level rare 😂",
       "Private fees, government chaos"
-    },
+    ],
     
     funFacts: [
       "Bangalore IT hub advantage",
@@ -2587,7 +2563,7 @@ export const getAllCollegeNames = () => {
       "KIIT fest budget > education budget obvious 💀",
       "Biometric strict but quality optional 😂",
       "Backup ka backup in East India"
-    },
+    ],
     
     funFacts: [
       "Best sports facilities among privates",
@@ -2673,7 +2649,7 @@ export const getAllCollegeNames = () => {
       "CSE package flex, Mech waale chhupte hain 💀",
       "Conservative Kerala mein ho, career bhi conserve ho gaya 😂",
       "Best NIT cope but Trichy reality"
-    },
+    ],
     
     funFacts: [
       "Beautiful Kerala campus",
@@ -2857,3 +2833,25 @@ export const getAllCollegeNames = () => {
 }; // End of COLLEGES object
 
 // Export functions remain same...
+
+// College categories for easy filtering
+export const COLLEGE_CATEGORIES = {
+  iits: Object.keys(COLLEGES).filter(c => c.startsWith('IIT')),
+  nits: Object.keys(COLLEGES).filter(c => c.startsWith('NIT')),
+  bits: ['BITS Pilani', 'BITS Goa', 'BITS Hyderabad'],
+  private: ['Amity University Noida', 'Manipal Institute of Technology', 'VIT Vellore'],
+  du: Object.keys(COLLEGES).filter(c => c.includes('DU')),
+  state: Object.keys(COLLEGES).filter(c => c.includes('DTU') || c.includes('NSUT'))
+};
+
+export const getCollegeById = (id) => {
+  return Object.values(COLLEGES).find(c => c.id === id);
+};
+
+export const getCollegeByName = (name) => {
+  return COLLEGES[name];
+};
+
+export const getAllCollegeNames = () => {
+  return Object.keys(COLLEGES).sort();
+};
